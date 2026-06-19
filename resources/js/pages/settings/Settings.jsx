@@ -1,0 +1,138 @@
+import React from 'react';
+import { Form, Input, Button, Card, message, Tabs, Select, Divider, Typography, Flex } from 'antd';
+import { SaveOutlined, GlobalOutlined } from '@ant-design/icons';
+import { useTranslation } from 'react-i18next';
+import api from '../../api/axios';
+import useAuthStore from '../../store/authStore';
+
+const { Title, Text } = Typography;
+const NAVY_BLUE = '#002366';
+
+const Settings = () => {
+  const { t, i18n } = useTranslation();
+  const { user, setUser } = useAuthStore();
+  const [profileForm] = Form.useForm();
+  const [pwdForm] = Form.useForm();
+
+  React.useEffect(() => {
+    if (user) {
+      profileForm.setFieldsValue({
+        name: user.name,
+        email: user.email,
+        username: user.username,
+      });
+    }
+  }, [user]);
+
+  const saveProfile = async () => {
+    const values = await profileForm.validateFields();
+    try {
+      const res = await api.put('/settings', values);
+      setUser(res.data);
+      message.success(t('common.success'));
+    } catch (err) {
+      const data = err.response?.data;
+      if (data?.errors) Object.values(data.errors).flat().forEach((m) => message.error(m));
+      else message.error(t('common.error'));
+    }
+  };
+
+  const savePassword = async () => {
+    const values = await pwdForm.validateFields();
+    try {
+      await api.put('/settings', values);
+      pwdForm.resetFields();
+      message.success(t('common.success'));
+    } catch (err) {
+      const data = err.response?.data;
+      if (data?.errors) Object.values(data.errors).flat().forEach((m) => message.error(m));
+      else message.error(data?.message || t('common.error'));
+    }
+  };
+
+  const tabItems = [
+    {
+      key: 'profile',
+      label: t('settings.profile'),
+      children: (
+        <Form form={profileForm} layout="vertical" style={{ maxWidth: 480 }}>
+          <Form.Item name="name" label={t('settings.name')} rules={[{ required: true }]}>
+            <Input variant="filled" />
+          </Form.Item>
+          <Form.Item name="username" label={t('settings.username')} rules={[{ required: true }]}>
+            <Input variant="filled" />
+          </Form.Item>
+          <Form.Item name="email" label={t('settings.email')} rules={[{ required: true, type: 'email' }]}>
+            <Input variant="filled" />
+          </Form.Item>
+          <Button type="primary" icon={<SaveOutlined />} onClick={saveProfile} style={{ background: NAVY_BLUE }}>
+            {t('settings.save')}
+          </Button>
+        </Form>
+      ),
+    },
+    {
+      key: 'password',
+      label: t('settings.change_password'),
+      children: (
+        <Form form={pwdForm} layout="vertical" style={{ maxWidth: 480 }}>
+          <Form.Item name="current_password" label={t('settings.current_password')} rules={[{ required: true }]}>
+            <Input.Password variant="filled" />
+          </Form.Item>
+          <Form.Item name="password" label={t('settings.new_password')} rules={[{ required: true, min: 6 }]}>
+            <Input.Password variant="filled" />
+          </Form.Item>
+          <Form.Item
+            name="password_confirmation"
+            label={t('settings.confirm_password')}
+            dependencies={['password']}
+            rules={[
+              { required: true },
+              ({ getFieldValue }) => ({
+                validator(_, value) {
+                  if (!value || getFieldValue('password') === value) return Promise.resolve();
+                  return Promise.reject('Passwords do not match!');
+                },
+              }),
+            ]}
+          >
+            <Input.Password variant="filled" />
+          </Form.Item>
+          <Button type="primary" icon={<SaveOutlined />} onClick={savePassword} style={{ background: NAVY_BLUE }}>
+            {t('settings.save')}
+          </Button>
+        </Form>
+      ),
+    },
+    {
+      key: 'language',
+      label: t('settings.language'),
+      children: (
+        <div style={{ maxWidth: 320 }}>
+          <Text type="secondary" style={{ display: 'block', marginBottom: 12 }}>{t('settings.language')}</Text>
+          <Select
+            value={i18n.language}
+            onChange={(lang) => i18n.changeLanguage(lang)}
+            style={{ width: '100%' }}
+            size="large"
+            options={[
+              { value: 'km', label: '🇰🇭  ភាសាខ្មែរ (Khmer)' },
+              { value: 'en', label: '🇬🇧  English' },
+            ]}
+          />
+        </div>
+      ),
+    },
+  ];
+
+  return (
+    <div>
+      <Title level={4} style={{ color: NAVY_BLUE, marginBottom: 24 }}>{t('settings.title')}</Title>
+      <Card>
+        <Tabs items={tabItems} type="card" />
+      </Card>
+    </div>
+  );
+};
+
+export default Settings;

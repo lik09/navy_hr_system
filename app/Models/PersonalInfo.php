@@ -1,0 +1,62 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class PersonalInfo extends Model
+{
+    protected $table = 'personal_info';
+
+    protected $fillable = [
+        'user_id', 'name_kh', 'name', 'gender', 'id_number', 'date_of_birth',
+        'military_id', 'civilian_id',
+        'birth_commune', 'birth_district', 'birth_province',
+        'current_commune', 'current_district', 'current_province',
+        'phone_number', 'photo',
+    ];
+
+    protected $casts = [
+        'date_of_birth' => 'date',
+    ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function militaryInfo()
+    {
+        return $this->hasOne(MilitaryInfo::class);
+    }
+
+    public function familyInfo()
+    {
+        return $this->hasOne(FamilyInfo::class);
+    }
+
+    public function serviceHistories()
+    {
+        return $this->hasMany(MilitaryServiceHistory::class);
+    }
+
+    public function education()
+    {
+        return $this->hasMany(Education::class);
+    }
+
+    public function specializedTrainings()
+    {
+        return $this->hasMany(SpecializedTraining::class);
+    }
+
+    public function missions()
+    {
+        return $this->hasMany(Mission::class);
+    }
+
+    public function health()
+    {
+        return $this->hasMany(Health::class);
+    }
+}
