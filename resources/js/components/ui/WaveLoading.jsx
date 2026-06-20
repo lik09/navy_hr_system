@@ -9,6 +9,7 @@ export default function WaveLoading({ text = 'កំពុងផ្ទុក...'
       justifyContent: 'center',
       minHeight,
       gap: 16,
+      animation: 'fadeIn 0.25s ease',
     }}>
       <div style={{
         display: 'flex',

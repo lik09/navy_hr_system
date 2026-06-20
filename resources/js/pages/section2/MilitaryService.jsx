@@ -3,11 +3,15 @@ import { Table, Button, message, Typography, Breadcrumb, Select, Space, Popconfi
 import { PlusOutlined, SaveOutlined, EditOutlined, ArrowLeftOutlined, DeleteOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import api from '../../api/axios';
+import TblDatePicker from '../../components/ui/TblDatePicker';
 import '../../../css/TableStyle.css';
+import WaveLoading from '../../components/ui/WaveLoading';
+import { useTranslation } from 'react-i18next';
 
 const { Text } = Typography;
 
 export default function MilitaryService() {
+  const { t } = useTranslation();
   const [view, setView] = useState('list');
   const [groupedData, setGroupedData] = useState([]);
   const [personnelList, setPersonnelList] = useState([]);
@@ -163,35 +167,34 @@ export default function MilitaryService() {
 
   // ================= COLUMNS =================
   const historyColumns = [
-    { title: 'No', render: (_, __, i) => i + 1, width: 55 },
+    { title: t('tb_no'), render: (_, __, i) => i + 1, width: 55 },
     {
-      title: 'Date',
+      title: t('tb_working_period'),
       render: (_, r) => {
         const s = r.start_date ? dayjs(r.start_date).format('DD/MM/YYYY') : '—';
         const e = r.end_date || '';
         return `${s} - ${e}`;
       },
     },
-    { title: 'Rank', dataIndex: 'military_rank' },
-    { title: 'Position', dataIndex: 'position' },
-    { title: 'Office', dataIndex: 'office' },
-    { title: 'Unit', dataIndex: 'military_unit' },
-    { title: 'Place', dataIndex: 'place' },
+    { title: t('tb_military_rank'), dataIndex: 'military_rank' },
+    { title: t('position'), dataIndex: 'position' },
+    { title: t('office'), dataIndex: 'office' },
+    { title: t('unit'), dataIndex: 'military_unit' },
+    { title: t('place'), dataIndex: 'place' },
   ];
+
+  if (loading) return <WaveLoading minHeight={600} />;
 
   // ================= LIST VIEW =================
   if (view === 'list') {
     return (
       <div>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
-          <Text strong style={{ fontSize: 18 }}>Military Service</Text>
-          <Button type="primary" icon={<PlusOutlined />} onClick={openAdd}>Add</Button>
+          <Text strong style={{ fontSize: 18 }}> {t('military_service')} </Text>
+          <Button type="primary" icon={<PlusOutlined />} onClick={openAdd}>{t('add')} </Button>
         </div>
 
-        {loading ? (
-          <p>Loading...</p>
-        ) : (
-          <>
+        <>
             {/* GROUPS */}
             {paginatedGroups.map((group) => (
               <div key={group.personal_info?.id} style={{ marginBottom: 32 }}>
@@ -208,10 +211,10 @@ export default function MilitaryService() {
                 }}>
                   <span>
                     <Text strong>{group.personal_info?.name_kh} ({group.personal_info?.name})</Text>
-                    <Text style={{ marginLeft: 16 }}>ID: {group.personal_info?.id_number}</Text>
+                    <Text style={{ marginLeft: 16 }}> {t('lb_id_number')} {group.personal_info?.id_number}</Text>
                     {group.personal_info?.military_id && (
                       <Text style={{ marginLeft: 16 }}>
-                        Military ID: {group.personal_info?.military_id}
+                        {t('military_id')}: {group.personal_info?.military_id}
                       </Text>
                     )}
                   </span>
@@ -220,7 +223,7 @@ export default function MilitaryService() {
                       icon={<EditOutlined />}
                       onClick={() => openEdit(group.personal_info?.id)}
                     >
-                      Edit
+                      {t('edit')}
                     </Button>
                     <Popconfirm
                       title="លុប records ទាំងអស់?"
@@ -231,7 +234,7 @@ export default function MilitaryService() {
                       okButtonProps={{ danger: true }}
                     >
                       <Button danger icon={<DeleteOutlined />}>
-                        Delete All
+                        {t('delete_all')}
                       </Button>
                     </Popconfirm>
                   </Space>
@@ -256,12 +259,11 @@ export default function MilitaryService() {
                 pageSize={pageSize}
                 total={groupedData.length}
                 onChange={(page) => setCurrentPage(page)}
-                showTotal={(total) => `សរុប ${total} personnel`}
+                showTotal={(total) => `${t('total')} ${total} ${t('record')}`}
                 showSizeChanger={false}
               />
             </div>
-          </>
-        )}
+        </>
       </div>
     );
   }
@@ -275,21 +277,21 @@ export default function MilitaryService() {
           {
             title: (
               <span onClick={() => setView('list')} style={{ cursor: 'pointer' }}>
-                Military Service
+                {t('military_service')}
               </span>
             ),
           },
-          { title: isAdd ? 'Add' : 'Edit' },
+          { title: isAdd ? t('add') : t('edit') },
         ]}
       />
 
       {/* SELECT PERSONNEL — Add mode only */}
       {isAdd && (
         <div style={{ marginBottom: 12 }}>
-          <Text strong style={{ marginRight: 8 }}>Select Personnel:</Text>
+          <Text strong style={{ marginRight: 8 }}>{t('select_military_members')}:</Text>
           <Select
             showSearch
-            placeholder="ជ្រើសរើស Personnel"
+            placeholder={t('select_military_members')}
             style={{ width: 320 }}
             value={selectedPersonnelId}
             onChange={onSelectPersonnel}
@@ -320,28 +322,28 @@ export default function MilitaryService() {
 
       {/* TABLE FORM */}
       <div className="contianer-wrapper">
-        <div className="contianer-title">Military Service History</div>
+        <div className="contianer-title"> {t('military_service')} </div>
         <table className="contianer-table">
           <thead>
             <tr>
-              <th colSpan={2}>រយៈកាលការងារ</th>
-              <th>ឋានន្តរសក្តិ</th>
-              <th>មុខតំណែង</th>
-              <th>ការិយាល័យ</th>
-              <th>កងឯកភាព</th>
-              <th>ទីកន្លែង</th>
-              <th>Action</th>
+              <th colSpan={2}>{t('tb_working_period')}</th>
+              <th>{t('tb_military_rank')}</th>
+              <th>{t('position')}</th>
+              <th>{t('office')}</th>
+              <th>{t('military_unit')}</th>
+              <th>{t('place')}</th>
+              <th>{t('action')}</th>
             </tr>
           </thead>
           <tbody>
             {rows.map((row, i) => (
               <tr key={i}>
                 <td>
-                  <input
-                    type="date"
-                    className="contianer-input"
+                  <TblDatePicker
                     value={row.start_date}
-                    onChange={(e) => updateRow(i, 'start_date', e.target.value)}
+                    onChange={(v) => updateRow(i, 'start_date', v)}
+                    khmerDigits={false}
+                    style={{ width: '100%' }}
                   />
                 </td>
                 <td>
@@ -396,11 +398,11 @@ export default function MilitaryService() {
                       cancelText="បោះបង់"
                       okButtonProps={{ danger: true }}
                     >
-                      <Button danger>Delete</Button>
+                      <Button danger> {t('delete')} </Button>
                     </Popconfirm>
                   ) : (
                     <Button danger onClick={() => removeRow(i)}>
-                      Delete
+                      {t('delete')} 
                     </Button>
                   )}
                 </td>
@@ -416,20 +418,19 @@ export default function MilitaryService() {
             icon={<PlusOutlined />}
             onClick={addRow}
           >
-            Add Row
+            {t('add_row')}
           </Button>
 
           <div style={{  display: 'flex', gap: 10 }}>
             <Button onClick={() => setView('list')}>
-              <ArrowLeftOutlined /> Back
+              <ArrowLeftOutlined /> {t('back')}
             </Button>
             <Button
               type="primary"
-              icon={<SaveOutlined />}
               loading={saving}
               onClick={saveAll}
             >
-              Save All
+              {t('save_all')}
             </Button>
           </div>
         </Flex>

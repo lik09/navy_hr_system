@@ -65,7 +65,7 @@ export default function Dashboard() {
   const recentPersonnel = personnel.slice(0, 5);
 
   const statTiles = [
-    { key: 'total_personnel', icon: <IdcardOutlined />, value: totalPersonnel, color: NAVY_BLUE, path: '/personal-info' },
+    { key: 'total_military', icon: <IdcardOutlined />, value: totalPersonnel, color: NAVY_BLUE, path: '/personal-info' },
     { key: 'military_service', icon: <BankOutlined />, value: counts.military, color: '#1677ff', path: '/military-service' },
     { key: 'education', icon: <BookOutlined />, value: counts.education, color: '#13a8a8', path: '/education' },
     { key: 'training', icon: <TrophyOutlined />, value: counts.training, color: '#d48806', path: '/training' },
@@ -74,20 +74,20 @@ export default function Dashboard() {
   ];
 
   const quickLinks = [
-    { icon: <IdcardOutlined />, labelKey: 'nav.personal_info', path: '/personal-info' },
-    { icon: <BankOutlined />, labelKey: 'nav.military_service', path: '/military-service' },
-    { icon: <BookOutlined />, labelKey: 'nav.education', path: '/education' },
-    { icon: <TrophyOutlined />, labelKey: 'nav.training', path: '/training' },
-    { icon: <AimOutlined />, labelKey: 'nav.mission', path: '/mission' },
-    { icon: <HeartOutlined />, labelKey: 'nav.health', path: '/health' },
+    { icon: <IdcardOutlined />, labelKey: 'general_info', path: '/personal-info' },
+    { icon: <BankOutlined />, labelKey: 'military_service', path: '/military-service' },
+    { icon: <BookOutlined />, labelKey: 'education', path: '/education' },
+    { icon: <TrophyOutlined />, labelKey: 'training', path: '/training' },
+    { icon: <AimOutlined />, labelKey: 'mission', path: '/mission' },
+    { icon: <HeartOutlined />, labelKey: 'health', path: '/health' },
   ];
 
   const recentColumns = [
-    { title: t('general.no'), render: (_, __, i) => i + 1, width: 50, align: 'center' },
-    { title: t('section1.name_kh'), render: (_, r) => r.name_kh || r.name || '—' },
-    { title: t('section1.id_number'), dataIndex: 'id_number' },
-    { title: t('section1.military_rank'), render: (_, r) => r.military_info?.military_rank || '—' },
-    { title: t('section1.phone'), dataIndex: 'phone_number', render: (v) => v || '—' },
+    { title: t('tb_no'), render: (_, __, i) => i + 1, width: 50, align: 'center' },
+    { title: t('name_kh'), render: (_, r) => r.name_kh || r.name || '—' },
+    { title: t('tb_id_number'), dataIndex: 'id_number' },
+    { title: t('tb_military_rank'), render: (_, r) => r.military_info?.military_rank || '—' },
+    { title: t('tb_phone'), dataIndex: 'phone_number', render: (v) => v || '—' },
   ];
 
   // if (loading) {
@@ -104,8 +104,8 @@ export default function Dashboard() {
   return (
     <div>
       <div style={{ marginBottom: 24 }}>
-        <Title level={4} style={{ color: NAVY_BLUE, margin: 0 }}>{t('dashboard.title')}</Title>
-        <Text type="secondary">{t('dashboard.welcome', { name: user?.name || user?.username || '' })}</Text>
+        <Title level={4} style={{ color: NAVY_BLUE, margin: 0 }}>{t('dashboard')}</Title>
+        <Text type="secondary">{t('welcome', { name: user?.name || user?.username || '' })}</Text>
       </div>
 
       {/* STAT TILES */}
@@ -118,7 +118,7 @@ export default function Dashboard() {
               styles={{ body: { padding: 16 } }}
             >
               <Statistic
-                title={t(`dashboard.${tile.key}`)}
+                title={t(tile.key)}
                 value={tile.value}
                 prefix={<span style={{ color: tile.color, marginRight: 6 }}>{tile.icon}</span>}
                 valueStyle={{ color: tile.color, fontWeight: 700 }}
@@ -132,10 +132,10 @@ export default function Dashboard() {
         {/* RECENT PERSONNEL */}
         <Col xs={24} lg={16}>
           <Card
-            title={t('dashboard.recent_personnel')}
+            title={t('recent_military')}
             extra={
               <Button type="link" onClick={() => navigate('/personal-info')}>
-                {t('dashboard.view_all')} <RightOutlined />
+                {t('view_all')} <RightOutlined />
               </Button>
             }
           >
@@ -145,25 +145,25 @@ export default function Dashboard() {
               rowKey="id"
               size="small"
               pagination={false}
-              locale={{ emptyText: t('common.no_data') }}
+              locale={{ emptyText: t('no_data') }}
             />
           </Card>
         </Col>
 
         {/* GENDER + QUICK LINKS */}
         <Col xs={24} lg={8}>
-          <Card title={t('dashboard.gender_distribution')} style={{ marginBottom: 16 }}>
+          <Card title={t('gender_distribution')} style={{ marginBottom: 16 }}>
             <div style={{ marginBottom: 12 }}>
-              <Text>{t('dashboard.male')} ({maleCount})</Text>
+              <Text>{t('male')} ({maleCount})</Text>
               <Progress percent={malePct} strokeColor="#1677ff" />
             </div>
             <div>
-              <Text>{t('dashboard.female')} ({femaleCount})</Text>
+              <Text>{t('female')} ({femaleCount})</Text>
               <Progress percent={femalePct} strokeColor="#c41d7f" />
             </div>
           </Card>
 
-          <Card title={t('dashboard.quick_links')}>
+          <Card title={t('quick_links')}>
             <Space direction="vertical" style={{ width: '100%' }}>
               {quickLinks.map((link) => (
                 <Button

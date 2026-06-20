@@ -3,11 +3,14 @@ import { Table, Button, message, Typography, Breadcrumb, Select, Space, Popconfi
 import { PlusOutlined, SaveOutlined, EditOutlined, ArrowLeftOutlined, DeleteOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import api from '../../api/axios';
+import WaveLoading from '../../components/ui/WaveLoading';
 import '../../../css/TableStyle.css';
+import { useTranslation } from 'react-i18next';
 
 const { Text } = Typography;
 
 export default function Mission() {
+  const { t } = useTranslation();
   const [view, setView] = useState('list');
   const [groupedData, setGroupedData] = useState([]);
   const [personnelList, setPersonnelList] = useState([]);
@@ -162,32 +165,31 @@ export default function Mission() {
 
   // ================= COLUMNS =================
   const recordColumns = [
-    { title: 'No', render: (_, __, i) => i + 1, width: 55 },
+    { title: t('tb_no'), render: (_, __, i) => i + 1, width: 55 },
     {
-      title: 'Start Date',
+      title: t('start_date'),
       render: (_, r) => (r.start_date ? dayjs(r.start_date).format('DD/MM/YYYY') : '—'),
     },
-    { title: 'Duration', dataIndex: 'duration' },
-    { title: 'Mission Name', dataIndex: 'mission_name' },
-    { title: 'Mission Type', dataIndex: 'mission_type' },
-    { title: 'Assigned Unit', dataIndex: 'assigned_unit' },
-    { title: 'Role', dataIndex: 'role_during_mission' },
-    { title: 'Result', dataIndex: 'result' },
+    { title: t('duration'), dataIndex: 'duration' },
+    { title: t('mission_name'), dataIndex: 'mission_name' },
+    { title: t('mission_type'), dataIndex: 'mission_type' },
+    { title: t('assigned_unit'), dataIndex: 'assigned_unit' },
+    { title: t('role'), dataIndex: 'role_during_mission' },
+    { title: t('result') , dataIndex: 'result' },
   ];
+
+  if (loading) return <WaveLoading minHeight={600} />;
 
   // ================= LIST VIEW =================
   if (view === 'list') {
     return (
       <div>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
-          <Text strong style={{ fontSize: 18 }}>Mission</Text>
-          <Button type="primary" icon={<PlusOutlined />} onClick={openAdd}>Add</Button>
+          <Text strong style={{ fontSize: 18 }}>{t('mission')}</Text>
+          <Button type="primary" icon={<PlusOutlined />} onClick={openAdd}>{t('add')}</Button>
         </div>
 
-        {loading ? (
-          <p>Loading...</p>
-        ) : (
-          <>
+        <>
             {/* GROUPS */}
             {paginatedGroups.map((group) => (
               <div key={group.personal_info?.id} style={{ marginBottom: 32 }}>
@@ -204,10 +206,10 @@ export default function Mission() {
                 }}>
                   <span>
                     <Text strong>{group.personal_info?.name_kh} ({group.personal_info?.name})</Text>
-                    <Text style={{ marginLeft: 16 }}>ID: {group.personal_info?.id_number}</Text>
+                    <Text style={{ marginLeft: 16 }}>{t('lb_id_number')} {group.personal_info?.id_number}</Text>
                     {group.personal_info?.military_id && (
                       <Text style={{ marginLeft: 16 }}>
-                        Military ID: {group.personal_info?.military_id}
+                        {t('military_id')}: {group.personal_info?.military_id}
                       </Text>
                     )}
                   </span>
@@ -216,7 +218,7 @@ export default function Mission() {
                       icon={<EditOutlined />}
                       onClick={() => openEdit(group.personal_info?.id)}
                     >
-                      Edit
+                      {t('edit')}
                     </Button>
                     <Popconfirm
                       title="លុប records ទាំងអស់?"
@@ -227,7 +229,7 @@ export default function Mission() {
                       okButtonProps={{ danger: true }}
                     >
                       <Button danger icon={<DeleteOutlined />}>
-                        Delete All
+                        {t('delete_all')}
                       </Button>
                     </Popconfirm>
                   </Space>
@@ -252,12 +254,11 @@ export default function Mission() {
                 pageSize={pageSize}
                 total={groupedData.length}
                 onChange={(page) => setCurrentPage(page)}
-                showTotal={(total) => `សរុប ${total} personnel`}
+                showTotal={(total) => `${t('total')} ${total} ${t('record')}`}
                 showSizeChanger={false}
               />
             </div>
-          </>
-        )}
+        </>
       </div>
     );
   }
@@ -271,21 +272,21 @@ export default function Mission() {
           {
             title: (
               <span onClick={() => setView('list')} style={{ cursor: 'pointer' }}>
-                Mission
+                {t('mission')}
               </span>
             ),
           },
-          { title: isAdd ? 'Add' : 'Edit' },
+          { title: isAdd ? t('add') : t('edit') },
         ]}
       />
 
       {/* SELECT PERSONNEL — Add mode only */}
       {isAdd && (
         <div style={{ marginBottom: 12 }}>
-          <Text strong style={{ marginRight: 8 }}>Select Personnel:</Text>
+          <Text strong style={{ marginRight: 8 }}>{t('select_military_members')} :</Text>
           <Select
             showSearch
-            placeholder="ជ្រើសរើស Personnel"
+            placeholder={t('select_military_members')}
             style={{ width: 320 }}
             value={selectedPersonnelId}
             onChange={onSelectPersonnel}
@@ -307,27 +308,27 @@ export default function Mission() {
           borderRadius: 6,
         }}>
           <Text strong>{personalInfo.name_kh} ({personalInfo.name})</Text>
-          <Text style={{ marginLeft: 16 }}>ID: {personalInfo.id_number}</Text>
+          <Text style={{ marginLeft: 16 }}> {t('lb_id_number')} {personalInfo.id_number}</Text>
           {personalInfo.military_id && (
-            <Text style={{ marginLeft: 16 }}>Military ID: {personalInfo.military_id}</Text>
+            <Text style={{ marginLeft: 16 }}>{t('military_id')} : {personalInfo.military_id}</Text>
           )}
         </div>
       )}
 
       {/* TABLE FORM */}
       <div className="contianer-wrapper">
-        <div className="contianer-title">Mission History</div>
+        <div className="contianer-title"> {t('mission')} </div>
         <table className="contianer-table">
           <thead>
             <tr>
-              <th>ថ្ងៃចាប់ផ្តើម</th>
-              <th>រយៈពេល</th>
-              <th>ឈ្មោះបេសកកម្ម</th>
-              <th>ប្រភេទបេសកកម្ម</th>
-              <th>កងឯកភាពបំពេញ</th>
-              <th>តួនាទីអំឡុងបំពេញ</th>
-              <th>លទ្ធផល</th>
-              <th>Action</th>
+              <th>{t('start_date')}</th>
+              <th>{t('duration')}</th>
+              <th>{t('mission_name')}</th>
+              <th>{t('mission_type')}</th>
+              <th>{t('assigned_unit')}</th>
+              <th>{t('role_during_filling')}</th>
+              <th>{t('result')}</th>
+              <th>{t("action")}</th>
             </tr>
           </thead>
           <tbody>
@@ -392,11 +393,11 @@ export default function Mission() {
                       cancelText="បោះបង់"
                       okButtonProps={{ danger: true }}
                     >
-                      <Button danger>Delete</Button>
+                      <Button danger>{t('delete')}</Button>
                     </Popconfirm>
                   ) : (
                     <Button danger onClick={() => removeRow(i)}>
-                      Delete
+                      {t('delete')}
                     </Button>
                   )}
                 </td>
@@ -412,12 +413,12 @@ export default function Mission() {
             icon={<PlusOutlined />}
             onClick={addRow}
           >
-            Add Row
+            {t('add_row')}
           </Button>
 
           <div style={{ display: 'flex', gap: 10 }}>
             <Button onClick={() => setView('list')}>
-              <ArrowLeftOutlined /> Back
+              <ArrowLeftOutlined /> {t('back')}
             </Button>
             <Button
               type="primary"
@@ -425,7 +426,7 @@ export default function Mission() {
               loading={saving}
               onClick={saveAll}
             >
-              Save All
+              {t('save_all')}
             </Button>
           </div>
         </Flex>

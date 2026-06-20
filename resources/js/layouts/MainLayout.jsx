@@ -18,13 +18,13 @@ const { Text } = Typography;
 const NAVY_BLUE = '#002366';
 
 const menuItems = [
-  { key: '/dashboard', icon: <DashboardOutlined />, labelKey: 'nav.dashboard' },
-  { key: '/personal-info',    icon: <IdcardOutlined />,  labelKey: 'nav.personal_info' },
-  { key: '/military-service', icon: <BankOutlined />,    labelKey: 'nav.military_service' },
-  { key: '/education',        icon: <BookOutlined />,    labelKey: 'nav.education' },
-  { key: '/training',         icon: <TrophyOutlined />,  labelKey: 'nav.training' },
-  { key: '/mission',          icon: <AimOutlined />,     labelKey: 'nav.mission' },
-  { key: '/health',           icon: <HeartOutlined />,   labelKey: 'nav.health' },
+  { key: '/dashboard', icon: <DashboardOutlined />, labelKey: 'dashboard' },
+  { key: '/personal-info',    icon: <IdcardOutlined />,  labelKey: 'general_info' },
+  { key: '/military-service', icon: <BankOutlined />,    labelKey: 'military_service' },
+  { key: '/education',        icon: <BookOutlined />,    labelKey: 'education' },
+  { key: '/training',         icon: <TrophyOutlined />,  labelKey: 'training' },
+  { key: '/mission',          icon: <AimOutlined />,     labelKey: 'mission' },
+  { key: '/health',           icon: <HeartOutlined />,   labelKey: 'health' },
 ];
 
 const MainLayout = () => {
@@ -38,10 +38,10 @@ const MainLayout = () => {
 
   const handleLogout = () => {
     Modal.confirm({
-      title: t('nav.logout'),
-      content: t('common.confirm_delete'),
-      okText: t('common.yes'),
-      cancelText: t('common.no'),
+      title: t('logout'),
+      content: t('confirm_delete'),
+      okText: t('yes'),
+      cancelText: t('no'),
       okButtonProps: { danger: true, style: { background: '#ff4d4f' } },
       onOk: () => {
         logout();
@@ -51,11 +51,11 @@ const MainLayout = () => {
   };
 
   const langItems = [
-    { key: 'km', label: 'ខ្មែរ' },
+    { key: 'km', label: 'ភាសាខ្មែរ' },
     { key: 'en', label: 'English' },
   ];
 
-  const currentLang = i18n.language === 'km' ? 'ខ្មែរ' : 'English';
+  const currentLang = i18n.language === 'km' ? 'ភាសាខ្មែរ' : 'English';
 
   return (
     <Layout style={{ minHeight: '100vh' }}>
@@ -86,8 +86,8 @@ const MainLayout = () => {
           </div>
           {!collapsed && (
             <div style={{ marginTop: 10, color: 'white' }}>
-              <div style={{ fontSize: 18, fontWeight: 700, lineHeight: 1.5 }}> {t('general.royal_cambodian_navy')} </div>
-              <div style={{ marginTop:4 ,fontSize: 14, opacity: 0.75 }}> {t('general.hr_system')} </div>
+              <div style={{ fontSize: 18, fontWeight: 700, lineHeight: 1.5 }}> {t('royal_cambodian_navy')} </div>
+              <div style={{ marginTop:4 ,fontSize: 14, opacity: 0.75 }}> {t('hr_system')} </div>
             </div>
           )}
         </div>
@@ -111,13 +111,13 @@ const MainLayout = () => {
             style={{ color: 'rgba(255,255,255,0.75)', borderColor: 'rgba(255,255,255,0.2)', marginBottom: 8 }}
             onClick={() => navigate('/settings')}
           >
-            {!collapsed && t('nav.settings')}
+            {!collapsed && t('settings')}
           </Button>
           <Button
             block danger icon={<LogoutOutlined />}
             onClick={handleLogout}
           >
-            {!collapsed && t('nav.logout')}
+            {!collapsed && t('logout')}
           </Button>
         </div>
       </Sider>
@@ -191,7 +191,7 @@ const MainLayout = () => {
         </Content>
 
         <Footer style={{ textAlign: 'center', color: '#888', padding: '12px 24px', fontSize: 12 }}>
-          {t('general.royal_cambodian_navy_hr_ms_system')} ©{new Date().getFullYear()}
+          {t('royal_cambodian_navy_hr_ms_system')} ©{new Date().getFullYear()}
         </Footer>
       </Layout>
     </Layout>

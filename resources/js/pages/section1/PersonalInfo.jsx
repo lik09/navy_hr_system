@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
-  Table, Button, Form, Input, Select, DatePicker,
+  Table, Button, Form, Input, Select,
   Row, Col, Upload, message, Space, InputNumber,
   Descriptions, Tag, Typography, Popconfirm, Breadcrumb,
   Flex,
@@ -13,60 +13,14 @@ import { useTranslation } from 'react-i18next';
 import dayjs from 'dayjs';
 import api, { apiFormData } from '../../api/axios';
 import TblInput from '../../components/ui/TblInput';
+import TblDatePicker from '../../components/ui/TblDatePicker';
+import WaveLoading from '../../components/ui/WaveLoading';
+import { NAVY, BORDER, S, SecTitle } from '../../components/section1/personalInfoStyles';
+import PersonalInfoDetail from '../../components/section1/PersonalInfoDetail';
+import { formatNumberDisplay } from '../../utils/khmerNumerals';
 import '../../../css/Common.css';
 
 const { Text } = Typography;
-const NAVY = '#002366';
-const BORDER = '1px solid #bbb';
-const LBL_BG = '#f0f4f8';
-const KH_NUM = ['១','២','៣','៤','៥','៦','៧','៨','៩','១០'];
-
-// ── Shared styles ─────────────────────────────────────────────────────────────
-const S = {
-  section: {
-    border: BORDER, marginBottom: 12, overflow: 'hidden',
-  },
-  secTitle: {
-    background: NAVY, color: '#fff', padding: '6px 12px',
-    fontSize: 16, fontWeight: 700,
-    display: 'flex', alignItems: 'center', gap: 6,
-  },
-  dot: {
-    width: 5, height: 5, background: '#4A9EFF',
-    borderRadius: '50%', display: 'inline-block', flexShrink: 0,
-  },
-  tbl: { width: '100%', borderCollapse: 'collapse' },
-  lbl: {
-    background: LBL_BG, padding: '8px 10px', fontSize: 16,
-    border: BORDER, whiteSpace: 'nowrap', fontWeight: 500,
-    color: '#333', verticalAlign: 'middle', width: 150,
-    lineHeight: 1.5,                                        
-  },
-  lbl2: {
-    background: LBL_BG, padding: '8px 10px', fontSize: 16,
-    border: BORDER, whiteSpace: 'nowrap', fontWeight: 500,
-    color: '#333', verticalAlign: 'middle', width: 130,
-    lineHeight: 1.5,   
-  },
-  td: {
-    border: BORDER, padding: '8px 8px',
-    fontSize: 16, verticalAlign: 'middle',
-    lineHeight: 1.5,   
-  },
-  inp: {
-    width: '100%', border: 'none', outline: 'none',
-    fontSize: 16, background: 'transparent',
-    fontFamily: 'inherit', padding: '1px 0',
-  },
-};
-
-// ── Section header ────────────────────────────────────────────────────────────
-const SecTitle = ({ children }) => (
-  <div style={S.secTitle}>
-    <span style={S.dot} />
-    {children}
-  </div>
-);
 
 // ── Thin text input inside table cell ─────────────────────────────────────────
 // const TblInput = ({ value, onChange, placeholder, type = 'text', style = {} }) => (
@@ -80,18 +34,21 @@ const SecTitle = ({ children }) => (
 // );
 
 // ── Location 3-col inside a single <td> ──────────────────────────────────────
-const LocationTd = ({ vals, onChange, colSpan = 6, errors = [false, false, false] }) => (
-  <td style={{ ...S.td, padding: '4px 8px' }} colSpan={colSpan}>
-    <div style={{ display: 'grid', gridTemplateColumns: '80px 1fr 80px 1fr 100px 1fr', gap: 4, alignItems: 'center' }}>
-      <span style={{ fontSize: 16, color: '#888', textAlign: 'center' }}>ឃុំ/សង្កាត់៖</span>
-      <TblInput value={vals[0]} onChange={v => onChange(0, v)} placeholder=".................." style={errors[0] ? { border: '1px solid red' } : {}} />
-      <span style={{ fontSize: 16, color: '#888', textAlign: 'center' }}>ស្រុក/ខណ្ឌ៖</span>
-      <TblInput value={vals[1]} onChange={v => onChange(1, v)} placeholder=".................." style={errors[1] ? { border: '1px solid red' } : {}} />
-      <span style={{ fontSize: 16, color: '#888', textAlign: 'center' }}>ខេត្ត/រាជធានី៖</span>
-      <TblInput value={vals[2]} onChange={v => onChange(2, v)} placeholder=".................." style={errors[2] ? { border: '1px solid red' } : {}} />
-    </div>
-  </td>
-);
+const LocationTd = ({ vals, onChange, colSpan = 6, errors = [false, false, false] }) => {
+  const { t } = useTranslation();
+  return (
+    <td style={{ ...S.td, padding: '4px 8px' }} colSpan={colSpan}>
+      <div style={{ display: 'grid', gridTemplateColumns: '90px 1fr 80px 1fr 120px 1fr', gap: 4, alignItems: 'center' }}>
+        <span style={{ fontSize: 16, color: '#888', textAlign: 'center' }}>{t('commune')}</span>
+        <TblInput value={vals[0]} onChange={v => onChange(0, v)} placeholder=".................." style={errors[0] ? { border: '1px solid red' } : {}} />
+        <span style={{ fontSize: 16, color: '#888', textAlign: 'center' }}>{t('district')}</span>
+        <TblInput value={vals[1]} onChange={v => onChange(1, v)} placeholder=".................." style={errors[1] ? { border: '1px solid red' } : {}} />
+        <span style={{ fontSize: 16, color: '#888', textAlign: 'center' }}>{t('province')}</span>
+        <TblInput value={vals[2]} onChange={v => onChange(2, v)} placeholder=".................." style={errors[2] ? { border: '1px solid red' } : {}} />
+      </div>
+    </td>
+  );
+};
 
 // ── Table header for data list ────────────────────────────────────────────────
 const th = (extra = {}) => ({
@@ -100,7 +57,7 @@ const th = (extra = {}) => ({
 
 // ═════════════════════════════════════════════════════════════════════════════
 export default function PersonalInfo() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const [view,       setView]       = useState('list');
   const [records,    setRecords]    = useState([]);
@@ -381,27 +338,29 @@ export default function PersonalInfo() {
 
   // ── Table columns ──────────────────────────────────────────────────────────
   const columns = [
-    { title: t('general.no'),       key:'no',           width:50,  align:'center', onHeaderCell:()=>th(), render:(_,__,i)=>i+1 },
-    { title: t('section1.id_number'),  dataIndex:'id_number', key:'id_number', align:'center', onHeaderCell:()=>th(), render:v=><Tag color="blue" style={{borderRadius:10}}>{v||'—'}</Tag> },
-    { title: t('section1.name_kh'), dataIndex:'name_kh',  key:'name_kh',  onHeaderCell:()=>th({textAlign:'left'}), render:(v,r)=><Text strong>{v||r.name||'—'}</Text> },
-    { title: t('section1.name'), dataIndex:'name',      key:'name',     onHeaderCell:()=>th({textAlign:'left'}) },
-    { title: t('section1.gender'),  dataIndex:'gender',    key:'gender',   align:'center', onHeaderCell:()=>th(), render:v=>v==='male'?'ប្រុស':v==='female'?'ស្រី':'—' },
-    { title: t('section1.phone'),  dataIndex:'phone_number', key:'phone_number', onHeaderCell:()=>th({textAlign:'left'}), render:v=>v||'—' },
-    { title: t('section1.military_rank'),  key:'rank', onHeaderCell:()=>th({textAlign:'left'}), render:(_,r)=>r.military_info?.military_rank||'—' },
-    { title: t('general.status'),  key:'status', align:'center', onHeaderCell:()=>th(), render:()=><Tag color="success" style={{borderRadius:10}}>សកម្ម</Tag> },
+    { title: t('tb_no'),       key:'no',           width:50,  align:'center', onHeaderCell:()=>th(), render:(_,__,i)=>i+1 },
+    { title: t('tb_id_number'),  dataIndex:'id_number', key:'id_number', align:'center', onHeaderCell:()=>th(), render:v=><Tag color="blue" style={{borderRadius:10}}>{v||'—'}</Tag> },
+    { title: t('tb_name_kh'), dataIndex:'name_kh',  key:'name_kh',  onHeaderCell:()=>th({textAlign:'left'}), render:(v,r)=><Text strong>{v||r.name||'—'}</Text> },
+    { title: t('tb_name'), dataIndex:'name',      key:'name',     onHeaderCell:()=>th({textAlign:'left'}) },
+    { title: t('tb_gender'),  dataIndex:'gender',    key:'gender',   align:'center', onHeaderCell:()=>th(), render:v=>v==='male'?'ប្រុស':v==='female'?'ស្រី':'—' },
+    { title: t('tb_phone'),  dataIndex:'phone_number', key:'phone_number', onHeaderCell:()=>th({textAlign:'left'}), render:v=>v||'—' },
+    { title: t('tb_military_rank'),  key:'rank', onHeaderCell:()=>th({textAlign:'left'}), render:(_,r)=>r.military_info?.military_rank||'—' },
+    { title: t('tb_status'),  key:'status', align:'center', onHeaderCell:()=>th(), render:()=><Tag color="success" style={{borderRadius:10}}>សកម្ម</Tag> },
     {
-      title: t('general.action'), key:'action', align:'center', width:190, onHeaderCell:()=>th(),
+      title: t('action'), key:'action', align:'center', width:190, onHeaderCell:()=>th(),
       render:(_,record)=>(
         <Space size={4}>
-          <Button size="small" type="primary" icon={<EyeOutlined/>} style={{fontSize:11}} onClick={()=>openView(record)}>មើល</Button>
-          <Button size="small" icon={<EditOutlined/>} style={{background:'#fa8c16',color:'#fff',border:'none',fontSize:11}} onClick={()=>openEdit(record)}>កែ</Button>
+          <Button size="small" type="primary" icon={<EyeOutlined/>} style={{fontSize:11}} onClick={()=>openView(record)}>{t('view')}</Button>
+          <Button size="small" icon={<EditOutlined/>} style={{background:'#fa8c16',color:'#fff',border:'none',fontSize:11}} onClick={()=>openEdit(record)}> {t('edit')} </Button>
           <Popconfirm title="តើអ្នកចង់លុប?" okText="យល់ព្រម" cancelText="មិន" onConfirm={()=>handleDelete(record.id)}>
-            <Button size="small" danger icon={<DeleteOutlined/>} style={{fontSize:11}}>លុប</Button>
+            <Button size="small" danger icon={<DeleteOutlined/>} style={{fontSize:11}}> {t('delete')} </Button>
           </Popconfirm>
         </Space>
       ),
     },
   ];
+
+  if (loading) return <WaveLoading minHeight={600} />;
 
   // ════════════════════════════════════════════════════════════════════════════
   // LIST VIEW
@@ -409,11 +368,11 @@ export default function PersonalInfo() {
   if (view === 'list') return (
     <div>
       <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:12}}>
-        <Text style={{color:NAVY,fontWeight:700,fontSize:18}}> {t('section1.personal_info')} </Text>
-        <Button type="primary" icon={<PlusOutlined/>} onClick={openAdd} style={{background:NAVY}}>បន្ថែមថ្មី</Button>
+        <Text style={{color:NAVY,fontWeight:700,fontSize:18}}>I. {t('general_info')} </Text>
+        <Button type="primary" icon={<PlusOutlined/>} onClick={openAdd} style={{background:NAVY}}>{t('add_new')}</Button>
       </div>
       <Table columns={columns} dataSource={records} rowKey="id" loading={loading} size="small" bordered
-        pagination={{pageSize:10,showSizeChanger:true,showTotal:total=>`${t('general.total')}: ${total} ${t('general.people')}`}}
+        pagination={{pageSize:10,showSizeChanger:true,showTotal:total=>`${t('total')}: ${total} ${t('people')}`}}
         style={{borderRadius:8}}
         locale={{emptyText:'មិនទាន់មានទិន្នន័យ'}}
       />
@@ -428,26 +387,26 @@ export default function PersonalInfo() {
       {/* Top action bar */}
       <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:10 }}>
         <Breadcrumb items={[
-          {title:<span style={{cursor:'pointer',color:NAVY }} onClick={()=>setView('list')}>ព័ត៌មានផ្ទាល់ខ្លួន</span>},
-          {title:<span style={{color:'#888' }}>{editRecord?'កែប្រែ':'បន្ថែមថ្មី'}</span>},
+          {title:<span style={{cursor:'pointer',color:NAVY }} onClick={()=>setView('list')}> {t('general_info')} </span>},
+          {title:<span style={{color:'#888' }}>{editRecord? t('edit'): t('add_new') }</span>},
         ]}/>
-        {/* <Space>
-          <Button icon={<ArrowLeftOutlined/>} onClick={()=>setView('list')}>ត្រឡប់</Button>
-          <Button type="primary" icon={<SaveOutlined/>} loading={saving} onClick={saveAll}
+        <Space>
+          <Button icon={<ArrowLeftOutlined/>} onClick={()=>setView('list')}>{t('back')}</Button>
+          {/* <Button type="primary" icon={<SaveOutlined/>} loading={saving} onClick={saveAll}
             style={{background:NAVY,fontWeight:600,minWidth:190}}>
             {saving ? 'កំពុងរក្សាទុក...' : '💾 រក្សាទុកទាំងអស់'}
-          </Button>
-        </Space> */}
+          </Button> */}
+        </Space>
       </div>
 
       {/* ── SECTION I ── */}
       <div style={S.section}>
-        <SecTitle>I. ព័ត៌មានផ្ទាល់ខ្លួន</SecTitle>
+        <SecTitle>I. {t('general_info')}</SecTitle>
         <table style={S.tbl}>
           <tbody>
             {/* Row 1: Name + Gender + Photo */}
             <tr>
-              <td style={S.lbl}>- គោន្តនាម-នាម ៖</td>
+              <td style={S.lbl}>- {t('name_kh')} </td>
               <td style={S.td}>
                 <TblInput
                   value={basic.name_kh}
@@ -456,7 +415,7 @@ export default function PersonalInfo() {
                 />
               </td>
 
-              <td style={{ ...S.lbl, width:70 }}>ភេទ ៖</td>
+              <td style={{ ...S.lbl, width:70 }}> {t('gender')}</td>
               <td style={{ ...S.td, width: 150 }}>
                 <div style={{ display: 'flex', gap: 14 }}>
                   <label style={{ display: 'flex', alignItems: 'center', gap: 3, fontSize: 14 }}>
@@ -465,7 +424,7 @@ export default function PersonalInfo() {
                       checked={basic.gender === 'male'}
                       onChange={() => setBasic(p => ({ ...p, gender: 'male' }))}
                     />
-                    ប្រុស
+                    {t('male')}
                   </label>
 
                   <label style={{ display: 'flex', alignItems: 'center', gap: 3, fontSize: 14 }}>
@@ -474,7 +433,7 @@ export default function PersonalInfo() {
                       checked={basic.gender === 'female'}
                       onChange={() => setBasic(p => ({ ...p, gender: 'female' }))}
                     />
-                    ស្រី
+                    {t('female')}
                   </label>
                 </div>
               </td>
@@ -511,7 +470,7 @@ export default function PersonalInfo() {
 
             {/* Row 2 */}
             <tr>
-              <td style={S.lbl}>- អក្សរឡាតាំង ៖</td>
+              <td style={S.lbl}>- {t('name')}</td>
               <td style={S.td}>
                 <TblInput
                   value={basic.name}
@@ -521,7 +480,7 @@ export default function PersonalInfo() {
                 />
               </td>
 
-              <td style={{ ...S.lbl, width: 70 }}>អត្តលេខ ៖</td>
+              <td style={{ ...S.lbl, width: 70 }}>{t('id_number')}</td>
               <td style={S.td}>
                 <TblInput
                   value={basic.id_number}
@@ -534,21 +493,20 @@ export default function PersonalInfo() {
 
             {/* Row 3 */}
             <tr>
-              <td style={S.lbl}>- ថ្ងៃខែឆ្នាំកំណើត ៖</td>
+              <td style={S.lbl}>- {t('date_of_birth')}</td>
               <td style={S.td} colSpan={3}>
-                <TblInput
-                  type="date"
+                <TblDatePicker
                   value={basic.date_of_birth}
                   onChange={v => setBasic(p => ({ ...p, date_of_birth: v }))}
-                  className={!basic.date_of_birth ? 'empty-date' : ''}
-                  style={{ width: 140, ...(errors.date_of_birth ? { border: '1px solid red' } : {}) }}
+                  error={errors.date_of_birth}
+                  style={{ width: 140 }}
                 />
               </td>
             </tr>
 
             {/* Row 4: Military ID + Civilian ID */}
             <tr>
-              <td style={S.lbl}>- លេខអត្ត.យោធា​ ៖</td>
+              <td style={S.lbl}>- {t('military_id')}</td>
               <td style={S.td} colSpan={3}>
                 <TblInput
                   value={basic.military_id}
@@ -559,7 +517,7 @@ export default function PersonalInfo() {
             </tr>
             {/* Row 5 */}
             <tr>
-              <td style={{ ...S.lbl, width: 90 }}>- លេខអត្ត.សុីវិល ៖</td>
+              <td style={{ ...S.lbl, width: 90 }}>- {t('civilian_id')}</td>
               <td style={S.td} colSpan={3}>
                 <TblInput
                   value={basic.civilian_id}
@@ -571,7 +529,7 @@ export default function PersonalInfo() {
 
             {/* Row 6: Birth Location */}
             <tr>
-              <td style={S.lbl}>- ទីកន្លែងកំណើត ៖</td>
+              <td style={S.lbl}>- {t('birth_location')} </td>
               <LocationTd
                 vals={birthLoc}
                 onChange={(i, v) =>
@@ -588,7 +546,7 @@ export default function PersonalInfo() {
 
             {/* Row 7: Current Location */}
             <tr>
-              <td style={S.lbl}>- ទីលំនៅបច្ចុប្បន្ន ៖</td>
+              <td style={S.lbl}>- {t('current_location')}</td>
               <LocationTd
                 vals={currentLoc}
                 onChange={(i, v) =>
@@ -605,7 +563,7 @@ export default function PersonalInfo() {
 
             {/* Row 8 */}
             <tr>
-              <td style={{ ...S.lbl, width: 70 }}>- ទូរស័ព្ទ ៖</td>
+              <td style={{ ...S.lbl, width: 70 }}>- {t('phone')} </td>
               <td style={S.td} colSpan={4}>
                 <TblInput
                   value={basic.phone_number}
@@ -613,80 +571,78 @@ export default function PersonalInfo() {
                   placeholder=".................."
                 />
               </td>
-              
+
             </tr>
 
             {/* ── SECTION II ── */}
-    
-            <tr>
-              <td style={S.lbl}>- ថ្ងៃខែចូលទ័ព ៖</td>
-              <td style={S.td} colSpan={5}><TblInput type="date" 
-              value={military.military_enlistment_date} 
-              onChange={v=>setMilitary(p=>({...p,military_enlistment_date:v}))} 
-              className={!military.military_enlistment_date ? 'empty-date' : ''}
-              style={{ width:140 }}/></td>
-            </tr>
-            
 
             <tr>
-              <td style={S.lbl2}>- ឋានន្តរសក្តិ ៖</td>
+              <td style={S.lbl}>- {t('enlistment_date')}</td>
+              <td style={S.td} colSpan={5}><TblDatePicker
+              value={military.military_enlistment_date}
+              onChange={v=>setMilitary(p=>({...p,military_enlistment_date:v}))}
+              style={{ width:140 }}/></td>
+            </tr>
+
+
+            <tr>
+              <td style={S.lbl2}>- {t('military_rank')} </td>
               <td style={S.td} colSpan={5}><TblInput value={military.military_rank} onChange={v=>setMilitary(p=>({...p,military_rank:v}))} placeholder=".................." /></td>
             </tr>
 
             <tr>
-              <td style={S.lbl2}>- មុខដំណែង ៖</td>
+              <td style={S.lbl2}>- {t('position')}</td>
               <td style={S.td} colSpan={5}><TblInput value={military.position} onChange={v=>setMilitary(p=>({...p,position:v}))} placeholder=".................." /></td>
             </tr>
 
             <tr>
-              <td style={S.lbl2}>- អង្គភាព ៖</td>
+              <td style={S.lbl2}>- {t('unit')}</td>
               <td style={S.td} colSpan={5}><TblInput value={military.unit} onChange={v=>setMilitary(p=>({...p,unit:v}))} placeholder=".................." /></td>
             </tr>
 
             <tr>
-              <td style={S.lbl}>- កងឯកភាព ៖</td>
+              <td style={S.lbl}>- {t('military_unit')}</td>
               <td style={S.td} colSpan={5}><TblInput value={military.military_unit} onChange={v=>setMilitary(p=>({...p,military_unit:v}))} placeholder=".................." /></td>
             </tr>
 
             <tr>
-              <td style={S.lbl2}>- កំរិតវប្បធម៌ ៖</td>
+              <td style={S.lbl2}>- {t('education_level')}</td>
               <td style={S.td} colSpan={5}><TblInput value={military.education_level} onChange={v=>setMilitary(p=>({...p,education_level:v}))} placeholder=".................." /></td>
             </tr>
 
             <tr>
-              <td style={S.lbl}>- ជំនាញ-ឯកទេសយោធា ៖</td>
+              <td style={S.lbl}>- {t('military_specialty')}</td>
               <td style={S.td} colSpan={5}><TblInput value={military.military_specialty} onChange={v=>setMilitary(p=>({...p,military_specialty:v}))} placeholder=".................." /></td>
             </tr>
 
             <tr>
-              <td style={S.lbl}>- ថ្ងៃខែប្រកាសស័ក្តចុងក្រោយ ៖</td>
-              <td style={S.td} colSpan={5}><TblInput type="date" 
-              value={military.last_date_military_rank} 
-              onChange={v=>setMilitary(p=>({...p,last_date_military_rank:v}))} 
-              className={!military.last_date_military_rank ? 'empty-date' : ''}
+              <td style={S.lbl}>- {t('last_rank_date')}</td>
+              <td style={S.td} colSpan={5}><TblDatePicker
+              value={military.last_date_military_rank}
+              onChange={v=>setMilitary(p=>({...p,last_date_military_rank:v}))}
               style={{ width: 140 }}/></td>
-              
+
             </tr>
-            
-            
+
+
             <tr>
-              <td style={S.lbl}>- មុខដំណែងចុងក្រោយ ៖</td>
+              <td style={S.lbl}>- {t('last_position')}</td>
               <td style={S.td} colSpan={5}><TblInput value={military.last_position} onChange={v=>setMilitary(p=>({...p,last_position:v}))} placeholder=".................." /></td>
             </tr>
 
             {/* ── SECTION III ── */}
             {/* Marital status */}
             <tr>
-              <td style={S.lbl}>- ស្ថានភាពគ្រួសារ ៖</td>
+              <td style={S.lbl}>- {t('marital_status')}</td>
               <td style={S.td} colSpan={5}>
                 <div style={{ display: 'flex' }}>
                   <label style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 16, cursor: 'pointer', width: '50%' }}>
                     <input type="checkbox" checked={!marital} onChange={() => setMarital(false)} />
-                    នៅលីវ
+                    {t('single')}
                   </label>
                   <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 16, cursor: 'pointer', width: '50%' }}>
                     <input type="checkbox" checked={marital} onChange={() => setMarital(true)} />
-                    មានគ្រួសារ
+                    {t('married')}
                   </label>
                 </div>
               </td>
@@ -695,50 +651,48 @@ export default function PersonalInfo() {
             {/* Spouse rows — conditional */}
             {marital && (<>
               <tr>
-                <td style={S.lbl}>- គោន្តនាម-នាម ៖</td>
+                <td style={S.lbl}>- {t('spouse_name')}</td>
                 <td style={S.td} colSpan={5}>
                   <div style={{ display: 'flex' }}>
-                      <TblInput value={spouse.spouse_name} onChange={v=>setSpouse(p=>({...p,spouse_name:v}))} placeholder="ហេង សុវណ្ណ" style={{ width: '50%' }} />
+                      <TblInput value={spouse.spouse_name} onChange={v=>setSpouse(p=>({...p,spouse_name:v}))} placeholder=".................." style={{ width: '50%' }} />
                       <div style={{display:'flex',gap:16,width:'50%',borderLeft:BORDER,paddingLeft:8}}>
                         <label style={{display:'flex',alignItems:'center',gap:3,fontSize:16,cursor:'pointer'}}>
-                          <input type="checkbox" checked={!spouse.spouse_type} onChange={()=>setSpouse(p=>({...p,spouse_type:false}))} /> ប្តី
+                          <input type="checkbox" checked={!spouse.spouse_type} onChange={()=>setSpouse(p=>({...p,spouse_type:false}))} /> {t('husband')}
                         </label>
                         <label style={{display:'flex',alignItems:'center',gap:3,fontSize:16,cursor:'pointer'}}>
-                          <input type="checkbox" checked={spouse.spouse_type} onChange={()=>setSpouse(p=>({...p,spouse_type:true}))} /> ប្រពន្ធ
+                          <input type="checkbox" checked={spouse.spouse_type} onChange={()=>setSpouse(p=>({...p,spouse_type:true}))} /> {t('wife')}
                         </label>
                       </div>
                   </div>
                 </td>
               </tr>
               <tr>
-                <td style={S.lbl}>- ថ្ងៃខែឆ្នាំ ៖</td>
-                <td style={S.td} colSpan={5}><TblInput type="date" 
-                value={spouse.spouse_dob} 
-                onChange={v=>setSpouse(p=>({...p,spouse_dob:v}))} 
-                className={!spouse.spouse_dob ? 'empty-date' : ''}
+                <td style={S.lbl}>- {t('spouse_dob')} </td>
+                <td style={S.td} colSpan={5}><TblDatePicker
+                value={spouse.spouse_dob}
+                onChange={v=>setSpouse(p=>({...p,spouse_dob:v}))}
                 style={{ width:140 }}/></td>
               </tr>
 
             {/* check */}
               <tr>
-                <td style={S.lbl}>- ទីកន្លែងកំណើត ៖</td>
+                <td style={S.lbl}>- {t('birth_location')}</td>
                 <LocationTd vals={spouseBirth} onChange={(i,v)=>setSpouseBirth(p=>{const n=[...p];n[i]=v;return n;})} colSpan={5} />
               </tr>
               <tr>
-                <td style={S.lbl} >- ទីលំនៅបច្ចុប្បន្ន ៖</td>
+                <td style={S.lbl} >- {t('current_location')} </td>
                 <LocationTd vals={spouseCurrent} onChange={(i,v)=>setSpouseCurrent(p=>{const n=[...p];n[i]=v;return n;})} colSpan={5} />
               </tr>
 
               <tr>
-                <td style={S.lbl2}>- លិខិតរៀបអាពាហ៍ពិពាហ៍ ៖</td>
+                <td style={S.lbl2}>- {t('marriage_cert_no')} </td>
                 <td colSpan={5}>
                     <div style={{ display: 'flex' }}>
                       <div style={{paddingLeft:8, fontSize:16 , display:'flex', width:'100%'}}>
                           <span>លេខ ៖ </span>
                           <TblInput value={spouse.marriage_certificate_number} onChange={v=>setSpouse(p=>({...p,marriage_certificate_number:v}))} placeholder=".................." style={{ width: '50%' ,paddingLeft: 8}} />
-                          <TblInput type="date" value={spouse.marriage_certificate_date} 
-                          onChange={v=>setSpouse(p=>({...p,marriage_certificate_date:v}))} 
-                          className={!spouse.marriage_certificate_date ? 'empty-date' : ''}
+                          <TblDatePicker value={spouse.marriage_certificate_date}
+                          onChange={v=>setSpouse(p=>({...p,marriage_certificate_date:v}))}
                           style={{ width: 140, borderLeft: BORDER, paddingLeft: 8 }} />
                       </div>
                     </div>
@@ -749,23 +703,23 @@ export default function PersonalInfo() {
 
             {/* Children count */}
             <tr>
-              <td style={S.lbl}>- ចំនួនកូន ៖</td>
+              <td style={S.lbl}>- {t('num_children')}</td>
               <td style={S.td} colSpan={5}>
                 <div style={{display:'flex',gap:20,alignItems:'center'}}>
                   <span style={{fontSize:16}}>
-                    {t('general.total')}:{' '}
+                    {t('child_total')}
                     <input type="number" min={0} value={numChildren.total}
                       onChange={e=>setNumChildren(p=>({...p,total:+e.target.value}))}
                       style={{width:46,border:'none',borderBottom:'1px solid #aaa',outline:'none',fontSize:16,fontFamily:'inherit',background:'transparent'}} />
                   </span>
                   <span style={{fontSize:16}}>
-                    ប្រុស:{' '}
+                    {t('male_children')}
                     <input type="number" min={0} value={numChildren.male}
                       onChange={e=>setNumChildren(p=>({...p,male:+e.target.value}))}
                       style={{width:40,border:'none',borderBottom:'1px solid #aaa',outline:'none',fontSize:16,fontFamily:'inherit',background:'transparent'}} />
                   </span>
                   <span style={{fontSize:16}}>
-                    ស្រី:{' '}
+                    {t('female_children')}
                     <input type="number" min={0} value={numChildren.female}
                       onChange={e=>setNumChildren(p=>({...p,female:+e.target.value}))}
                       style={{width:40,border:'none',borderBottom:'1px solid #aaa',outline:'none',fontSize:16, fontFamily:'inherit',background:'transparent'}} />
@@ -776,28 +730,26 @@ export default function PersonalInfo() {
 
             {/* Children list */}
             <tr>
-              <td style={{...S.lbl,verticalAlign:'top',paddingTop:8}}>- ឈ្មោះកូន ៖</td>
+              <td style={{...S.lbl,verticalAlign:'top',paddingTop:8}}>- {t('child_name')} </td>
               <td style={S.td} colSpan={5}>
                 {children.map((child, idx) => (
                   <div key={idx} style={{display:'flex',alignItems:'center',gap:8,marginBottom:5}}>
                     <div style={{width:'50%',display:'flex',alignItems:'center',gap:4}}>
-                      <span style={{fontSize:16 ,color:'#666',minWidth:20}}>{KH_NUM[idx]||idx+1}.</span>
+                      <span style={{fontSize:16 ,color:'#666',minWidth:20}}>{formatNumberDisplay(idx+1, i18n.language)}.</span>
                       <input
                         value={child.name}
                         onChange={e=>updateChild(idx,'name',e.target.value)}
-                        placeholder="ឈ្មោះ​កូន................."
+                        placeholder={t('child_name')}
                         style={{flex:1,border:'none',borderBottom:'1px solid #aaa',outline:'none',fontSize:16,fontFamily:'inherit',background:'transparent',padding:'1px 2px'}}
                       />
                     </div>
 
                     <div style={{width:'50%',display:'flex',alignItems:'center',gap:4}}>
-                      <span>ថ្ងៃខែឆ្នាំកំណើត ៖</span>
-                      <input
-                        type="date"
+                      <span>{t('child_dob')}</span>
+                      <TblDatePicker
                         value={child.dob}
-                        onChange={e=>updateChild(idx,'dob',e.target.value)}
-                        className={!child.dob ? 'empty-date' : ''}
-                        style={{border:'none',borderBottom:'1px solid #aaa',outline:'none',fontSize:16,fontFamily:'inherit',background:'transparent',width:130}}
+                        onChange={v=>updateChild(idx,'dob',v)}
+                        style={{ width:130 }}
                       />
                       <button onClick={()=>removeChild(idx)}
                         style={{background:'none',border:'none',color:'#e00',cursor:'pointer',fontSize:16,padding:'0 2px',lineHeight:1}}>✕</button>
@@ -806,11 +758,11 @@ export default function PersonalInfo() {
                 ))}
                 <button onClick={addChild}
                   style={{background:'none',border:'1px dashed #002366',color:NAVY,fontSize:12,padding:'3px 10px',borderRadius:4,cursor:'pointer',fontFamily:'inherit',marginTop:4}}>
-                  + បន្ថែមឈ្មោះកូន
+                  + {t('add_new_child')}
                 </button>
               </td>
             </tr>
-            
+
 
           </tbody>
         </table>
@@ -819,148 +771,19 @@ export default function PersonalInfo() {
 
       {/* Bottom Save */}
       <div style={{display:'flex',justifyContent:'flex-end',gap:8,paddingBottom:24}}>
-        <Button icon={<ArrowLeftOutlined/>} onClick={()=>setView('list')}>ត្រឡប់</Button>
+        <Button icon={<ArrowLeftOutlined/>} onClick={()=>setView('list')}> {t('back')} </Button>
         <Button type="primary"  loading={saving} onClick={saveAll}
           style={{background:NAVY,fontWeight:600,minWidth:200}}>
-          {saving ? 'កំពុងរក្សាទុក...' : '💾 រក្សាទុកទាំងអស់'}
+          {saving ? t('saving') : t('save_all')}
         </Button>
       </div>
     </div>
   );
 
   // ════════════════════════════════════════════════════════════════════════════
-  // VIEW DETAIL
+  // VIEW DETAIL — read-only, full field set
   // ════════════════════════════════════════════════════════════════════════════
-  if (view === 'view') {
-    const r = viewRecord;
-    const mi = r?.military_info;
-    const fi = r?.family_info;
-    return (
-      <div>
-        <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:10}}>
-          <Breadcrumb items={[
-            {title:<span style={{cursor:'pointer',color:NAVY}} onClick={()=>setView('list')}>ព័ត៌មានផ្ទាល់ខ្លួន</span>},
-            {title:<span style={{color:'#888'}}>ព័ត៌មានលំអិត</span>},
-          ]}/>
-          <Space>
-            <Button icon={<ArrowLeftOutlined/>} onClick={()=>setView('list')}>ត្រឡប់</Button>
-            <Button icon={<EditOutlined/>} style={{background:'#fa8c16',color:'#fff',border:'none'}} onClick={()=>openEdit(r)}>✏️ កែប្រែ</Button>
-          </Space>
-        </div>
-
-        {/* Section I view */}
-        <div style={S.section}>
-          <SecTitle>I. ព័ត៌មានផ្ទាល់ខ្លួន / Personal Information</SecTitle>
-          <table style={S.tbl}>
-            <tbody>
-              <tr>
-                <td style={S.lbl}>- គោត្ត-នាម :</td>
-                <td style={S.td}><Text strong>{r?.name_kh||'—'}</Text></td>
-                <td style={{...S.lbl,...{width:70}}}>ភេទ :</td>
-                <td style={S.td}>{r?.gender==='male'?'ប្រុស':r?.gender==='female'?'ស្រី':'—'}</td>
-                <td style={{...S.td,...{width:90,textAlign:'center'}}} rowSpan={5}>
-                  {r?.photo
-                    ? <img src={`/storage/${r.photo}`} alt="photo" style={{width:76,height:96,objectFit:'cover',borderRadius:4,border:'1px solid #ddd'}} />
-                    : <div style={{width:76,height:96,background:'#e8f0fe',borderRadius:4,border:'1px solid #ddd',display:'flex',alignItems:'center',justifyContent:'center',fontSize:28,margin:'0 auto'}}>👤</div>
-                  }
-                </td>
-              </tr>
-              <tr>
-                <td style={S.lbl}>- អក្សររូម (EN) :</td>
-                <td style={S.td}>{r?.name||'—'}</td>
-                <td style={{...S.lbl,...{width:70}}}>អត្តលេខ :</td>
-                <td style={S.td}><Tag color="blue" style={{borderRadius:10}}>{r?.id_number}</Tag></td>
-              </tr>
-              <tr>
-                <td style={S.lbl}>- ថ្ងៃខែឆ្នាំ :</td>
-                <td style={S.td}>{r?.date_of_birth ? dayjs(r.date_of_birth).format('DD/MM/YYYY') : '—'}</td>
-                <td style={{...S.lbl,...{width:70}}}>ទូរស័ព្ទ :</td>
-                <td style={S.td}>{r?.phone_number||'—'}</td>
-              </tr>
-              <tr>
-                <td style={S.lbl}>- លេខអត្ត.អត្តន :</td>
-                <td style={S.td}>{r?.military_id||'—'}</td>
-                <td style={{...S.lbl,...{width:70}}}>ស.រ.ស :</td>
-                <td style={S.td}>{r?.civilian_id||'—'}</td>
-              </tr>
-              <tr>
-                <td style={S.lbl}>- ទីកន្លែងកំណើត :</td>
-                <td style={S.td} colSpan={3}>{[r?.birth_commune,r?.birth_district,r?.birth_province].filter(Boolean).join(' / ')||'—'}</td>
-              </tr>
-              <tr>
-                <td style={S.lbl}>- ទីលំនៅបច្ចុប្បន្ន :</td>
-                <td style={S.td} colSpan={4}>{[r?.current_commune,r?.current_district,r?.current_province].filter(Boolean).join(' / ')||'—'}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        {/* Section II view */}
-        {mi && (
-          <div style={S.section}>
-            <SecTitle>II. ព័ត៌មានការងារយោធា / Military Information</SecTitle>
-            <table style={S.tbl}>
-              <tbody>
-                <tr>
-                  <td style={S.lbl}>- ថ្ងៃចូលបំរើ :</td>
-                  <td style={S.td}>{mi.military_enlistment_date ? dayjs(mi.military_enlistment_date).format('DD/MM/YYYY') : '—'}</td>
-                  <td style={S.lbl2}>- ហត្ថន័យ :</td>
-                  <td style={S.td}><Tag color="geekblue">{mi.military_rank||'—'}</Tag></td>
-                </tr>
-                <tr>
-                  <td style={S.lbl}>- មុខដំណែង :</td>
-                  <td style={S.td}>{mi.position||'—'}</td>
-                  <td style={S.lbl2}>- ឯកទេស :</td>
-                  <td style={S.td}>{mi.military_specialty||'—'}</td>
-                </tr>
-                <tr>
-                  <td style={S.lbl}>- អជ្ញាធរ :</td>
-                  <td style={S.td}>{mi.unit||'—'}</td>
-                  <td style={S.lbl2}>- កងឯក :</td>
-                  <td style={S.td}>{mi.military_unit||'—'}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        )}
-
-        {/* Section III view */}
-        {fi && (
-          <div style={S.section}>
-            <SecTitle>III. ព័ត៌មានគ្រួសារ / Family Information</SecTitle>
-            <table style={S.tbl}>
-              <tbody>
-                <tr>
-                  <td style={S.lbl}>- ស្ថានភាព :</td>
-                  <td style={S.td} colSpan={3}>{fi.marital_status ? 'មានគ្រួសារ' : 'នៅលីវ'}</td>
-                </tr>
-                {fi.spouse_name && <>
-                  <tr>
-                    <td style={S.lbl}>- ប្ដី/ប្រពន្ធ :</td>
-                    <td style={S.td}><Text strong>{fi.spouse_name}</Text></td>
-                    <td style={S.lbl2}>- ថ្ងៃខែ :</td>
-                    <td style={S.td}>{fi.spouse_dob ? dayjs(fi.spouse_dob).format('DD/MM/YYYY') : '—'}</td>
-                  </tr>
-                </>}
-                <tr>
-                  <td style={S.lbl}>- ចំនួនកូន :</td>
-                  <td style={S.td} colSpan={3}>
-                    {fi.number_of_children||0} នាក់ (ប្រុស: {fi.male_children_count||0}, ស្រី: {fi.female_children_count||0})
-                  </td>
-                </tr>
-                {fi.children?.length > 0 && fi.children.map((c,i) => (
-                  <tr key={i}>
-                    <td style={{...S.lbl,fontWeight:400}}>{KH_NUM[i]||i+1}. ឈ្មោះ :</td>
-                    <td style={S.td}>{c.name||'—'}</td>
-                    <td style={S.lbl2}>ថ្ងៃខែ :</td>
-                    <td style={S.td}>{c.date_of_birth ? dayjs(c.date_of_birth).format('DD/MM/YYYY') : '—'}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </div>
-    );
-  }
+  if (view === 'view') return (
+    <PersonalInfoDetail record={viewRecord} onBack={() => setView('list')} onEdit={openEdit} />
+  );
 }

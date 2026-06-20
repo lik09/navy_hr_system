@@ -3,6 +3,11 @@
     50%       { transform: scaleY(1);   opacity: 1; }
 }
 
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
 html.dark {
     --wave-bar-color: #4a7fc1;
 }

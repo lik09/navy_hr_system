@@ -50,6 +50,7 @@ class HealthController extends Controller
             'records.*.health_check_date'        => 'nullable|date',
             'records.*.weight'                   => 'nullable|numeric',
             'records.*.height'                   => 'nullable|numeric',
+            'records.*.bmi_standard_level'        => 'nullable|numeric',
             'records.*.blood_pressure'           => 'nullable|string|max:50',
             'records.*.physical_condition'       => 'nullable|string|max:255',
             'records.*.vaccination'              => 'nullable|string',
@@ -62,15 +63,11 @@ class HealthController extends Controller
         $savedIds = [];
 
         foreach ($request->records as $row) {
-            $bmi = (!empty($row['weight']) && !empty($row['height']))
-                ? round($row['weight'] / (($row['height'] / 100) ** 2), 2)
-                : null;
-
             $payload = [
                 'health_check_date'      => $row['health_check_date'] ?? null,
                 'weight'                 => $row['weight'] ?? null,
                 'height'                 => $row['height'] ?? null,
-                'bmi_standard_level'     => $bmi,
+                'bmi_standard_level'     => $row['bmi_standard_level'] ?? null,
                 'blood_pressure'         => $row['blood_pressure'] ?? null,
                 'physical_condition'     => $row['physical_condition'] ?? null,
                 'vaccination'            => $row['vaccination'] ?? null,
@@ -134,10 +131,6 @@ class HealthController extends Controller
             'assigned_doctor'       => 'nullable|string|max:255',
             'next_health_check_date'=> 'nullable|date',
         ]);
-
-        if (! empty($data['weight']) && ! empty($data['height'])) {
-            $data['bmi_standard_level'] = round($data['weight'] / (($data['height'] / 100) ** 2), 2);
-        }
 
         $record->update($data);
         return response()->json($record);

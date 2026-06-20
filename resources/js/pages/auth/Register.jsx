@@ -22,14 +22,14 @@ const Register = () => {
     try {
       const res = await api.post('/auth/register', values);
       setAuth(res.data.token, res.data.user);
-      message.success(t('common.success'));
+      message.success(t('success'));
       navigate('/personal-info');
     } catch (err) {
       const data = err.response?.data;
       if (data?.errors) {
         Object.values(data.errors).flat().forEach((m) => message.error(m));
       } else {
-        message.error(data?.message || t('common.error'));
+        message.error(data?.message || t('error'));
       }
     }
   };
@@ -61,32 +61,32 @@ const Register = () => {
             <span style={{ fontSize: 28 }}>⚓</span>
           </div>
           <Title level={4} style={{ margin: 0, color: NAVY_BLUE }}>Royal Cambodian Navy</Title>
-          <Text type="secondary">{t('auth.register')}</Text>
+          <Text type="secondary">{t('register')}</Text>
         </Flex>
 
         <Form layout="vertical" onFinish={onFinish} size="large">
-          <Form.Item name="name" label={t('auth.name')} rules={[{ required: true }]}>
+          <Form.Item name="name" label={t('name')} rules={[{ required: true }]}>
             <Input prefix={<UserOutlined style={{ color: NAVY_BLUE }} />} />
           </Form.Item>
-          <Form.Item name="username" label={t('auth.username')} rules={[{ required: true }]}>
+          <Form.Item name="username" label={t('username')} rules={[{ required: true }]}>
             <Input prefix={<UserOutlined style={{ color: NAVY_BLUE }} />} />
           </Form.Item>
-          <Form.Item name="email" label={t('auth.email')} rules={[{ required: true, type: 'email' }]}>
+          <Form.Item name="email" label={t('email')} rules={[{ required: true, type: 'email' }]}>
             <Input prefix={<MailOutlined style={{ color: NAVY_BLUE }} />} />
           </Form.Item>
-          <Form.Item name="role" label={t('auth.role')} initialValue="user">
+          <Form.Item name="role" label={t('role')} initialValue="user">
             <Select>
               <Select.Option value="user">User</Select.Option>
               <Select.Option value="admin">Admin</Select.Option>
               <Select.Option value="officer">Officer</Select.Option>
             </Select>
           </Form.Item>
-          <Form.Item name="password" label={t('auth.password')} rules={[{ required: true, min: 6 }]}>
+          <Form.Item name="password" label={t('password')} rules={[{ required: true, min: 6 }]}>
             <Input.Password prefix={<LockOutlined style={{ color: NAVY_BLUE }} />} />
           </Form.Item>
           <Form.Item
             name="password_confirmation"
-            label={t('auth.confirm_password')}
+            label={t('confirm_password')}
             dependencies={['password']}
             rules={[
               { required: true },
@@ -106,14 +106,14 @@ const Register = () => {
             block
             style={{ background: NAVY_BLUE, borderColor: NAVY_BLUE, height: 44 }}
           >
-            {t('auth.register')}
+            {t('register')}
           </Button>
         </Form>
 
         <Flex justify="center" style={{ marginTop: 20 }}>
-          <Text type="secondary">{t('auth.have_account')}&nbsp;</Text>
+          <Text type="secondary">{t('have_account')}&nbsp;</Text>
           <Link to="/login" style={{ color: NAVY_BLUE, fontWeight: 600 }}>
-            {t('auth.login_here')}
+            {t('login_here')}
           </Link>
         </Flex>
       </Card>

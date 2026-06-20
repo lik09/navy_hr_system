@@ -2,11 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { Table, Button, message, Typography, Breadcrumb, Select, Space, Popconfirm, Pagination, Flex } from 'antd';
 import { PlusOutlined, SaveOutlined, EditOutlined, ArrowLeftOutlined, DeleteOutlined } from '@ant-design/icons';
 import api from '../../api/axios';
+import WaveLoading from '../../components/ui/WaveLoading';
 import '../../../css/TableStyle.css';
+import { useTranslation } from 'react-i18next';
 
 const { Text } = Typography;
 
 export default function Education() {
+  const { t } = useTranslation();
   const [view, setView] = useState('list');
   const [groupedData, setGroupedData] = useState([]);
   const [personnelList, setPersonnelList] = useState([]);
@@ -163,32 +166,31 @@ export default function Education() {
 
   // ================= COLUMNS =================
   const recordColumns = [
-    { title: 'No', render: (_, __, i) => i + 1, width: 55 },
+    { title: t('tb_no'), render: (_, __, i) => i + 1, width: 55 },
     {
-      title: 'Year',
+      title: t('academic_year'),
       render: (_, r) => `${r.from_year || '—'} - ${r.to_year || '—'}`,
     },
-    { title: 'Duration', dataIndex: 'duration' },
-    { title: 'Education Level', dataIndex: 'education_level' },
-    { title: 'Course', dataIndex: 'course_name' },
-    { title: 'Institution', dataIndex: 'institution_name' },
-    { title: 'Domestic', dataIndex: 'is_domestic' },
-    { title: 'Overseas', dataIndex: 'is_overseas' },
+    { title: t('duration'), dataIndex: 'duration' },
+    { title: t('level'), dataIndex: 'education_level' },
+    { title: t('course_name'), dataIndex: 'course_name' },
+    { title: t('institution'), dataIndex: 'institution_name' },
+    { title: t('domestic'), dataIndex: 'is_domestic' },
+    { title: t('overseas'), dataIndex: 'is_overseas' },
   ];
+
+  if (loading) return <WaveLoading minHeight={600} />;
 
   // ================= LIST VIEW =================
   if (view === 'list') {
     return (
       <div>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
-          <Text strong style={{ fontSize: 18 }}>Education</Text>
-          <Button type="primary" icon={<PlusOutlined />} onClick={openAdd}>Add</Button>
+          <Text strong style={{ fontSize: 18 }}> {t('education')} </Text>
+          <Button type="primary" icon={<PlusOutlined />} onClick={openAdd}>{t('add')}</Button>
         </div>
 
-        {loading ? (
-          <p>Loading...</p>
-        ) : (
-          <>
+        <>
             {/* GROUPS */}
             {paginatedGroups.map((group) => (
               <div key={group.personal_info?.id} style={{ marginBottom: 32 }}>
@@ -205,10 +207,10 @@ export default function Education() {
                 }}>
                   <span>
                     <Text strong>{group.personal_info?.name_kh} ({group.personal_info?.name})</Text>
-                    <Text style={{ marginLeft: 16 }}>ID: {group.personal_info?.id_number}</Text>
+                    <Text style={{ marginLeft: 16 }}> {t('lb_id_number')} {group.personal_info?.id_number}</Text>
                     {group.personal_info?.military_id && (
                       <Text style={{ marginLeft: 16 }}>
-                        Military ID: {group.personal_info?.military_id}
+                        {t('military_id')} : {group.personal_info?.military_id}
                       </Text>
                     )}
                   </span>
@@ -217,7 +219,7 @@ export default function Education() {
                       icon={<EditOutlined />}
                       onClick={() => openEdit(group.personal_info?.id)}
                     >
-                      Edit
+                      {t('edit')}
                     </Button>
                     <Popconfirm
                       title="លុប records ទាំងអស់?"
@@ -228,7 +230,7 @@ export default function Education() {
                       okButtonProps={{ danger: true }}
                     >
                       <Button danger icon={<DeleteOutlined />}>
-                        Delete All
+                        {t('delete_all')}
                       </Button>
                     </Popconfirm>
                   </Space>
@@ -253,12 +255,11 @@ export default function Education() {
                 pageSize={pageSize}
                 total={groupedData.length}
                 onChange={(page) => setCurrentPage(page)}
-                showTotal={(total) => `សរុប ${total} personnel`}
+                showTotal={(total) => `${t('total')} ${total} ${t('record')}`}
                 showSizeChanger={false}
               />
             </div>
-          </>
-        )}
+        </>
       </div>
     );
   }
@@ -272,21 +273,21 @@ export default function Education() {
           {
             title: (
               <span onClick={() => setView('list')} style={{ cursor: 'pointer' }}>
-                Education
+                {t('education')}
               </span>
             ),
           },
-          { title: isAdd ? 'Add' : 'Edit' },
+          { title: isAdd ? t('add') : t('edit') },
         ]}
       />
 
       {/* SELECT PERSONNEL — Add mode only */}
       {isAdd && (
         <div style={{ marginBottom: 12 }}>
-          <Text strong style={{ marginRight: 8 }}>Select Personnel:</Text>
+          <Text strong style={{ marginRight: 8 }}>{t('select_military_members')}:</Text>
           <Select
             showSearch
-            placeholder="ជ្រើសរើស Personnel"
+            placeholder={t('select_military_members')}
             style={{ width: 320 }}
             value={selectedPersonnelId}
             onChange={onSelectPersonnel}
@@ -307,33 +308,33 @@ export default function Education() {
           borderRadius: 6,
         }}>
           <Text strong>{personalInfo.name_kh} ({personalInfo.name})</Text>
-          <Text style={{ marginLeft: 16 }}>ID: {personalInfo.id_number}</Text>
+          <Text style={{ marginLeft: 16 }}> {t('lb_id_number')} {personalInfo.id_number}</Text>
           {personalInfo.military_id && (
-            <Text style={{ marginLeft: 16 }}>Military ID: {personalInfo.military_id}</Text>
+            <Text style={{ marginLeft: 16 }}> {t('military_id')} : {personalInfo.military_id}</Text>
           )}
         </div>
       )}
 
       {/* TABLE FORM */}
       <div className="contianer-wrapper">
-        <div className="contianer-title">Education History</div>
+        <div className="contianer-title"> {t('education')} </div>
         <table className="contianer-table">
           <thead>
             <tr>
-              <th colSpan={3}>រយៈកាលសិក្សា</th>
-              <th colSpan={2}>ប្រភេទការអប់រំ</th>
-              <th colSpan={4}>ទីកន្លែងសិក្សា</th>
+              <th colSpan={3}>{t('study_period')}</th>
+              <th colSpan={2}>{t('type_education')}</th>
+              <th colSpan={4}>{t('study_place')}</th>
               
             </tr>
             <tr>
-              <th colSpan={2}>ឆ្នាំសិក្សា</th>
-              <th>រយៈពេល</th>
-              <th>កំរិតសិក្សា</th>
-              <th>ឈ្មោះវគ្គសិក្សា</th>
-              <th>ឈ្មោះគ្រឹះស្ថានអប់រំ</th>
-              <th>ក្នុងប្រទេស</th>
-              <th>ក្រៅប្រទេស</th>
-              <th>Action</th>
+              <th colSpan={2}>{t('academic_year')}</th>
+              <th>{t('duration')}</th>
+              <th>{t('level')}</th>
+              <th>{t('course_name')}</th>
+              <th>{t('institution')}</th>
+              <th>{t('domestic')}</th>
+              <th>{t('overseas')}</th>
+              <th>{t('action')}</th>
             </tr>
           </thead>
           <tbody>
@@ -404,11 +405,11 @@ export default function Education() {
                       cancelText="បោះបង់"
                       okButtonProps={{ danger: true }}
                     >
-                      <Button danger>Delete</Button>
+                      <Button danger>{t('delete')}</Button>
                     </Popconfirm>
                   ) : (
                     <Button danger onClick={() => removeRow(i)}>
-                      Delete
+                      {t('delete')}
                     </Button>
                   )}
                 </td>
@@ -424,12 +425,12 @@ export default function Education() {
             icon={<PlusOutlined />}
             onClick={addRow}
           >
-            Add Row
+            {t('add_row')}
           </Button>
 
           <div style={{ display: 'flex', gap: 10 }}>
             <Button onClick={() => setView('list')}>
-              <ArrowLeftOutlined /> Back
+              <ArrowLeftOutlined /> {t('back')}
             </Button>
             <Button
               type="primary"
@@ -437,7 +438,7 @@ export default function Education() {
               loading={saving}
               onClick={saveAll}
             >
-              Save All
+              {t('save_all')}
             </Button>
           </div>
         </Flex>

@@ -3,11 +3,14 @@ import { Table, Button, message, Typography, Breadcrumb, Select, Space, Popconfi
 import { PlusOutlined, SaveOutlined, EditOutlined, ArrowLeftOutlined, DeleteOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import api from '../../api/axios';
+import WaveLoading from '../../components/ui/WaveLoading';
 import '../../../css/TableStyle.css';
+import { useTranslation } from 'react-i18next';
 
 const { Text } = Typography;
 
 export default function Health() {
+  const { t } = useTranslation();
   const [view, setView] = useState('list');
   const [groupedData, setGroupedData] = useState([]);
   const [personnelList, setPersonnelList] = useState([]);
@@ -50,18 +53,6 @@ export default function Health() {
       assigned_doctor: r.assigned_doctor || '',
       next_health_check_date: r.next_health_check_date ? dayjs(r.next_health_check_date).format('YYYY-MM-DD') : '',
     };
-  }
-
-  function calcBMI(row) {
-    const w = parseFloat(row.weight);
-    const h = parseFloat(row.height);
-    if (!w || !h) return '';
-    const bmi = w / ((h / 100) ** 2);
-    const val = bmi.toFixed(1);
-    if (bmi < 18.5) return `${val} (ស្គម)`;
-    if (bmi < 25) return `${val} (ធម្មតា)`;
-    if (bmi < 30) return `${val} (លើស)`;
-    return `${val} (ធាត់)`;
   }
 
   // ================= FETCH =================
@@ -180,39 +171,38 @@ export default function Health() {
 
   // ================= COLUMNS =================
   const recordColumns = [
-    { title: 'No', render: (_, __, i) => i + 1, width: 55 },
+    { title: t('tb_no'), render: (_, __, i) => i + 1, width: 55 },
     {
-      title: 'Check Date',
+      title: t('check_date'),
       render: (_, r) => (r.health_check_date ? dayjs(r.health_check_date).format('DD/MM/YYYY') : '—'),
     },
-    { title: 'Weight', dataIndex: 'weight' },
-    { title: 'Height', dataIndex: 'height' },
-    { title: 'BMI', dataIndex: 'bmi_standard_level' },
-    { title: 'Blood Pressure', dataIndex: 'blood_pressure' },
-    { title: 'Physical Condition', dataIndex: 'physical_condition' },
-    { title: 'Vaccination', dataIndex: 'vaccination' },
-    { title: 'Chronic Disease', dataIndex: 'chronic_disease' },
-    { title: 'Regular Medication', dataIndex: 'regular_medication' },
-    { title: 'Assigned Doctor', dataIndex: 'assigned_doctor' },
+    { title: t('weight'), dataIndex: 'weight' },
+    { title: t('height'), dataIndex: 'height' },
+    { title: t('bmi'), dataIndex: 'bmi_standard_level' },
+    { title: t('blood_pressure'), dataIndex: 'blood_pressure' },
+    { title: t('physical_condition'), dataIndex: 'physical_condition' },
+    { title: t('vaccination'), dataIndex: 'vaccination' },
+    { title: t('chronic_disease'), dataIndex: 'chronic_disease' },
+    { title: t('regular_medication'), dataIndex: 'regular_medication' },
+    { title: t('assigned_doctor'), dataIndex: 'assigned_doctor' },
     {
-      title: 'Next Check',
+      title: t('next_check'),
       render: (_, r) => (r.next_health_check_date ? dayjs(r.next_health_check_date).format('DD/MM/YYYY') : '—'),
     },
   ];
+
+  if (loading) return <WaveLoading minHeight={600} />;
 
   // ================= LIST VIEW =================
   if (view === 'list') {
     return (
       <div>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
-          <Text strong style={{ fontSize: 18 }}>Health</Text>
-          <Button type="primary" icon={<PlusOutlined />} onClick={openAdd}>Add</Button>
+          <Text strong style={{ fontSize: 18 }}> {t('health')} </Text>
+          <Button type="primary" icon={<PlusOutlined />} onClick={openAdd}>{t('add')}</Button>
         </div>
 
-        {loading ? (
-          <p>Loading...</p>
-        ) : (
-          <>
+        <>
             {/* GROUPS */}
             {paginatedGroups.map((group) => (
               <div key={group.personal_info?.id} style={{ marginBottom: 32 }}>
@@ -229,10 +219,10 @@ export default function Health() {
                 }}>
                   <span>
                     <Text strong>{group.personal_info?.name_kh} ({group.personal_info?.name})</Text>
-                    <Text style={{ marginLeft: 16 }}>ID: {group.personal_info?.id_number}</Text>
+                    <Text style={{ marginLeft: 16 }}> {t('lb_id_number')} {group.personal_info?.id_number}</Text>
                     {group.personal_info?.military_id && (
                       <Text style={{ marginLeft: 16 }}>
-                        Military ID: {group.personal_info?.military_id}
+                        {t('military_id')} : {group.personal_info?.military_id}
                       </Text>
                     )}
                   </span>
@@ -241,7 +231,7 @@ export default function Health() {
                       icon={<EditOutlined />}
                       onClick={() => openEdit(group.personal_info?.id)}
                     >
-                      Edit
+                      {t('edit')}
                     </Button>
                     <Popconfirm
                       title="លុប records ទាំងអស់?"
@@ -252,7 +242,7 @@ export default function Health() {
                       okButtonProps={{ danger: true }}
                     >
                       <Button danger icon={<DeleteOutlined />}>
-                        Delete All
+                        {t('delete_all')}
                       </Button>
                     </Popconfirm>
                   </Space>
@@ -278,12 +268,11 @@ export default function Health() {
                 pageSize={pageSize}
                 total={groupedData.length}
                 onChange={(page) => setCurrentPage(page)}
-                showTotal={(total) => `សរុប ${total} personnel`}
+                showTotal={(total) => `${t('total')} ${total} ${t('record')}`}
                 showSizeChanger={false}
               />
             </div>
-          </>
-        )}
+        </>
       </div>
     );
   }
@@ -297,21 +286,21 @@ export default function Health() {
           {
             title: (
               <span onClick={() => setView('list')} style={{ cursor: 'pointer' }}>
-                Health
+                {t("health")}
               </span>
             ),
           },
-          { title: isAdd ? 'Add' : 'Edit' },
+          { title: isAdd ? t('add') : t('edit') },
         ]}
       />
 
       {/* SELECT PERSONNEL — Add mode only */}
       {isAdd && (
         <div style={{ marginBottom: 12 }}>
-          <Text strong style={{ marginRight: 8 }}>Select Personnel:</Text>
+          <Text strong style={{ marginRight: 8 }}>{t('select_military_members')} :</Text>
           <Select
             showSearch
-            placeholder="ជ្រើសរើស Personnel"
+            placeholder= {t('select_military_members')}
             style={{ width: 320 }}
             value={selectedPersonnelId}
             onChange={onSelectPersonnel}
@@ -333,31 +322,31 @@ export default function Health() {
           borderRadius: 6,
         }}>
           <Text strong>{personalInfo.name_kh} ({personalInfo.name})</Text>
-          <Text style={{ marginLeft: 16 }}>ID: {personalInfo.id_number}</Text>
+          <Text style={{ marginLeft: 16 }}>{t('lb_id_number')} {personalInfo.id_number}</Text>
           {personalInfo.military_id && (
-            <Text style={{ marginLeft: 16 }}>Military ID: {personalInfo.military_id}</Text>
+            <Text style={{ marginLeft: 16 }}>{t('military_id')} : {personalInfo.military_id}</Text>
           )}
         </div>
       )}
 
       {/* TABLE FORM */}
       <div className="contianer-wrapper">
-        <div className="contianer-title">Health History</div>
+        <div className="contianer-title">{t('health')}</div>
         <table className="contianer-table">
           <thead>
             <tr>
-              <th>ថ្ងៃពិនិត្យសុខភាព</th>
-              <th>ទម្ងន់ (kg)</th>
-              <th>កម្ពស់ (cm)</th>
-              <th>កំរិតស្តង់ដា</th>
-              <th>សម្ពាធឈាម</th>
-              <th>កាយសម្បទា</th>
-              <th>វ៉ាក់សាំង</th>
-              <th>ជំងឺប្រចាំកាយ</th>
-              <th>ថ្នាំប្រចាំកាយ</th>
-              <th>គ្រូពេទ្យប្រចាំ</th>
-              <th>ថ្ងៃពិនិត្យសុខភាពបន្ទាប់</th>
-              <th>Action</th>
+              <th>{t('check_date')}</th>
+              <th>{t('weight')}</th>
+              <th>{t('height')}</th>
+              <th>{t('bmi')}</th>
+              <th>{t('blood_pressure')}</th>
+              <th>{t('physical_condition')}</th>
+              <th>{t('vaccination')}</th>
+              <th>{t('chronic_disease')}</th>
+              <th>{t('regular_medication')}</th>
+              <th>{t('assigned_doctor')}</th>
+              <th>{t('next_check')}</th>
+              <th>{t('action')}</th>
             </tr>
           </thead>
           <tbody>
@@ -385,7 +374,13 @@ export default function Health() {
                     onChange={(e) => updateRow(i, 'height', e.target.value)}
                   />
                 </td>
-                <td>{calcBMI(row) || '—'}</td>
+                <td>
+                  <input
+                    className="contianer-input"
+                    value={row.bmi_standard_level}
+                    onChange={(e) => updateRow(i, 'bmi_standard_level', e.target.value)}
+                  />
+                </td>
                 <td>
                   <input
                     className="contianer-input"
@@ -447,11 +442,11 @@ export default function Health() {
                       cancelText="បោះបង់"
                       okButtonProps={{ danger: true }}
                     >
-                      <Button danger>Delete</Button>
+                      <Button danger>{t('delete')}</Button>
                     </Popconfirm>
                   ) : (
                     <Button danger onClick={() => removeRow(i)}>
-                      Delete
+                      {t('delete')}
                     </Button>
                   )}
                 </td>
@@ -467,12 +462,12 @@ export default function Health() {
             icon={<PlusOutlined />}
             onClick={addRow}
           >
-            Add Row
+            {t('add_row')}
           </Button>
 
           <div style={{display: 'flex', gap: 10 }}>
             <Button onClick={() => setView('list')}>
-              <ArrowLeftOutlined /> Back
+              <ArrowLeftOutlined /> {t('back')}
             </Button>
             <Button
               type="primary"
@@ -480,7 +475,7 @@ export default function Health() {
               loading={saving}
               onClick={saveAll}
             >
-              Save All
+              {t('save_all')}
             </Button>
           </div>
         </Flex>

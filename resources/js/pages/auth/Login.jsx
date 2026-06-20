@@ -22,14 +22,14 @@ const Login = () => {
     try {
       const res = await api.post('/auth/login', values);
       setAuth(res.data.token, res.data.user);
-      message.success(t('common.success'));
+      message.success(t('success'));
       navigate('/personal-info');
     } catch (err) {
       const data = err.response?.data;
       if (data?.errors) {
         Object.values(data.errors).flat().forEach((m) => message.error(m));
       } else {
-        message.error(data?.message || t('common.error'));
+        message.error(data?.message || t('error'));
       }
     }
   };
@@ -72,15 +72,15 @@ const Login = () => {
         <Form layout="vertical" onFinish={onFinish} size="large">
           <Form.Item
             name="username"
-            label={t('auth.username')}
-            rules={[{ required: true, message: `${t('auth.username')} is required` }]}
+            label={t('username')}
+            rules={[{ required: true, message: `${t('username')} is required` }]}
           >
             <Input prefix={<UserOutlined style={{ color: NAVY_BLUE }} />} />
           </Form.Item>
           <Form.Item
             name="password"
-            label={t('auth.password')}
-            rules={[{ required: true, message: `${t('auth.password')} is required` }]}
+            label={t('password')}
+            rules={[{ required: true, message: `${t('password')} is required` }]}
           >
             <Input.Password prefix={<LockOutlined style={{ color: NAVY_BLUE }} />} />
           </Form.Item>
@@ -90,14 +90,14 @@ const Login = () => {
             block
             style={{ background: NAVY_BLUE, borderColor: NAVY_BLUE, height: 44, marginTop: 8 }}
           >
-            {t('auth.login')}
+            {t('login')}
           </Button>
         </Form>
 
         <Flex justify="center" style={{ marginTop: 20 }}>
-          <Text type="secondary">{t('auth.no_account')}&nbsp;</Text>
+          <Text type="secondary">{t('no_account')}&nbsp;</Text>
           <Link to="/register" style={{ color: NAVY_BLUE, fontWeight: 600 }}>
-            {t('auth.register_here')}
+            {t('register_here')}
           </Link>
         </Flex>
       </Card>
