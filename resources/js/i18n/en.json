@@ -150,6 +150,9 @@
   "add_new" : "Add New",
   "back" : "Back",
   "detail_info" : "Detail Infomation",
+  "download" : "Download",
+  "download_pdf" : "Download PDF",
+  "download_excel" : "Download Excel",
   "tb_working_period" : "Working Period",
   "delete_all" : "Delete All",
   "add" : "Add",
@@ -163,7 +166,27 @@
   "lb_level" : "Level",
   "mission_name" : "Mission Name",
   "mission_type" : "Mission Type",
-  "role_during_filling" :"Role during filling"
+  "role_during_filling" :"Role during filling",
+  "setup" : "Setup",
+  "created_succes" : "Created successfully",
+  "updated_succes" : "Updated successfully",
+  "deleted_succes" : "Deleted successfully",
+  "failed_to_deete" : "Failed to delete.",
+  "lb_name" : "Name (EN)",
+  "lb_name_kh" : "Name (KH)",
+  "active" : "Active",
+  "inactive" : "Inactive",
+  "please_enter_name_kh" : "Please enter name in Khmer",
+  "please_enter_name_en" : "Please enter name in English",
+  "refresh" : "Refresh",
+  "pls_select_military_rank" : "Please select military rank",
+  "pls_select_position" : "Please select posistion",
+  "pls_select_unit" : "Please select unit",
+  "pls_select_military_unit" : "Please select military unit",
+  "pls_select_education_level" : "Please select education level",
+  "pls_select_military_specialty" : "Please select military specialty"
+
+
 
   
 }

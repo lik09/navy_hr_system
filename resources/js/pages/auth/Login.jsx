@@ -5,6 +5,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import api from '../../api/axios';
 import useAuthStore from '../../store/authStore';
+import logo from '../../assets/logo1.jpg';
 
 const { Title, Text } = Typography;
 const NAVY_BLUE = '#002366';
@@ -54,16 +55,14 @@ const Login = () => {
         bodyStyle={{ padding: '40px 40px 32px' }}
       >
         <Flex vertical align="center" style={{ marginBottom: 32 }}>
-          <div
-            style={{
-              width: 80, height: 80, borderRadius: '50%',
-              background: NAVY_BLUE,
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              marginBottom: 16,
-              boxShadow: '0 4px 16px rgba(0,35,102,0.4)',
-            }}
-          >
-            <span style={{ fontSize: 36 }}>⚓</span>
+          <div style={{
+            width: 90, height: 90,
+            borderRadius: '50%',
+            overflow: 'hidden',
+            boxShadow: '0 4px 16px rgba(0,35,102,0.4)',
+            marginBottom:18,
+          }}>
+            <img src={logo} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="logo.jpg" />
           </div>
           <Title level={4} style={{ margin: 0, color: NAVY_BLUE }}>Royal Cambodian Navy</Title>
           <Text type="secondary" style={{ fontSize: 13 }}>Personnel Management System</Text>

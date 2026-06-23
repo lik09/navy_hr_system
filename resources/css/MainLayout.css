@@ -1,0 +1,25 @@
+/* Hide scrollbar but keep scroll functional */
+.sider-menu-scroll::-webkit-scrollbar {
+  display: none;
+}
+.sider-menu-scroll {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* ✅ Fix sub-menu background color */
+.ant-menu-dark .ant-menu-sub,
+.ant-menu-dark.ant-menu-inline .ant-menu-sub {
+  background-color: #002366 !important;
+}
+
+/* ✅ Fix sub-menu item hover */
+/* .ant-menu-dark .ant-menu-item:hover,
+.ant-menu-dark .ant-menu-submenu-title:hover {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+} */
+
+/* ✅ Sub-menu item selected */
+/* .ant-menu-dark .ant-menu-item-selected {
+  background-color: rgba(255, 255, 255, 0.15) !important;
+} */

@@ -11,6 +11,13 @@ use App\Http\Controllers\API\EducationController;
 use App\Http\Controllers\API\SpecializedTrainingController;
 use App\Http\Controllers\API\MissionController;
 use App\Http\Controllers\API\HealthController;
+use App\Http\Controllers\API\PersonnelExportController;
+use App\Http\Controllers\API\EducationLevelController;
+use App\Http\Controllers\API\MilitaryRankController;
+use App\Http\Controllers\API\MilitarySpecialtyController;
+use App\Http\Controllers\API\MilitaryUnitController;
+use App\Http\Controllers\API\PositionController;
+use App\Http\Controllers\API\UnitController;
 
 // Public auth routes
 Route::prefix('auth')->group(function () {
@@ -28,6 +35,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/personnel-info',       [PersonalInfoController::class, 'store']);
     Route::post('/personnel-info/{id}',  [PersonalInfoController::class, 'update']);
     Route::delete('/personnel-info/{id}', [PersonalInfoController::class, 'destroy']);
+    Route::get('/personnel-info/{id}/export/pdf',   [PersonnelExportController::class, 'pdf']);
+    Route::get('/personnel-info/{id}/export/excel', [PersonnelExportController::class, 'excel']);
 
     // Section I — Military Info (single record per personal_info)
     Route::get('/military-info',         [MilitaryInfoController::class, 'index']);
@@ -56,6 +65,16 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Section VI — Health (multi-record table)
     Route::apiResource('health', HealthController::class);
+
+    // setup
+    Route::apiResource('military-rank', MilitaryRankController::class);
+    Route::apiResource('position', PositionController::class);
+    Route::apiResource('unit', UnitController::class);
+    Route::apiResource('military-unit', MilitaryUnitController::class);
+    Route::apiResource('education-level', EducationLevelController::class);
+    Route::apiResource('military-specialty', MilitarySpecialtyController::class);
+
+
 
     // Settings
     Route::get('/settings', [AuthController::class, 'me']);

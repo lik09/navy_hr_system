@@ -14,6 +14,12 @@ import Health from './pages/section6/Health.jsx';
 import Settings from './pages/settings/Settings.jsx';
 import PrivateRoute from './components/auth/PrivateRoute.jsx';
 import useThemeStore from './store/themeStore.js';
+import MilitaryRank from './pages/setup/MilitaryRank.jsx';
+import Position from './pages/setup/Position.jsx';
+import Unit from './pages/setup/Unit.jsx';
+import MilitaryUnit from './pages/setup/MilitaryUnit.jsx';
+import EducationLevel from './pages/setup/EducationLevel.jsx';
+import MilitarySpecialty from './pages/setup/MilitarySpecialty.jsx';
 
 const App = () => {
   const mode = useThemeStore((s) => s.mode);
@@ -53,6 +59,14 @@ const App = () => {
             <Route path="training"          element={<Training />} />
             <Route path="mission"           element={<Mission />} />
             <Route path="health"            element={<Health />} />
+            
+            <Route path="/setup/military-rank"   element={<MilitaryRank />} />
+            <Route path="/setup/position"   element={<Position />} />
+            <Route path="/setup/unit"   element={<Unit />} />
+            <Route path="/setup/military-unit"   element={<MilitaryUnit />} />
+            <Route path="/setup/education-level"   element={<EducationLevel />} />
+            <Route path="/setup/military-specialty"   element={<MilitarySpecialty />} />
+
             <Route path="settings"  element={<Settings />} />
             <Route path="*"         element={<Navigate to="/dashboard" replace />} />
           </Route>

@@ -1,0 +1,62 @@
+/* ✅ លុប scrollbar ក្នុង Select dropdown */
+.ant-select-dropdown .rc-virtual-list-scrollbar {
+  display: none !important;
+}
+.ant-select-dropdown .rc-virtual-list-holder {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+.ant-select-dropdown .rc-virtual-list-holder::-webkit-scrollbar {
+  display: none !important;
+}
+
+/* ✅ កែ border color Select — ប្រើ NAVY */
+.ant-select:not(.ant-select-disabled):hover .ant-select-selector {
+  border-color: #002366 !important;
+}
+.ant-select-focused .ant-select-selector,
+.ant-select-open .ant-select-selector {
+  border-color: #002366 !important;
+  box-shadow: 0 0 0 2px rgba(0, 35, 102, 0.15) !important;
+}
+
+/* ✅ Selected item highlight color */
+.ant-select-item-option-selected:not(.ant-select-item-option-disabled) {
+  background-color: rgba(0, 35, 102, 0.1) !important;
+  color: #002366 !important;
+  font-weight: 500 !important;
+}
+
+/* ✅ Hover item */
+.ant-select-item-option-active:not(.ant-select-item-option-disabled) {
+  background-color: rgba(0, 35, 102, 0.06) !important;
+}
+
+
+/* .ant-select-selector {
+  border: none !important;
+  box-shadow: none !important;
+
+}
+
+.ant-select-focused .ant-select-selector,
+.ant-select-open .ant-select-selector {
+  border: none !important;
+  box-shadow: none !important;
+  
+} */
+ /* លុប border */
+.custom-select .ant-select-selector {
+  border: none !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  padding-left: 0 !important;
+}
+
+/* Focus */
+.custom-select.ant-select-focused .ant-select-selector,
+.custom-select.ant-select-open .ant-select-selector {
+  border: none !important;
+  box-shadow: none !important;
+}

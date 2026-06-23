@@ -150,6 +150,9 @@
   "add_new" : "បន្ថែមថ្មី",
   "back" : "ត្រឡប់",
   "detail_info" : "ព័ត៌មានលំអិត",
+  "download" : "ទាញយក",
+  "download_pdf" : "ទាញយក PDF",
+  "download_excel" : "ទាញយក Excel",
   "tb_working_period" : "រយៈកាលការងារ",
   "delete_all" : "លុបទាំងអស់",
   "add" : "បន្ថែម",
@@ -163,7 +166,26 @@
   "lb_level" : "កំរិត",
   "mission_name" : "ឈ្មោះបេសកកម្ម",
   "mission_type" : "ប្រភេទបេសកកម្ម",
-  "role_during_filling" :"តួនាទីអំឡុងបំពេញ"
+  "role_during_filling" :"តួនាទីអំឡុងបំពេញ",
+  "setup" : "រៀបចំ",
+  "created_succes" : "បានបង្កើតដោយជោគជ័យ",
+  "updated_succes" : "បានធ្វើបច្ចុប្បន្នភាពដោយជោគជ័យ",
+  "deleted_succes" : "បានលុបចេញដោយជោគជ័យ",
+  "failed_to_deete" : "បរាជ័យក្នុងការលុប",
+  "lb_name" : "ឈ្មោះ (អង់គ្លេស)",
+  "lb_name_kh" : "ឈ្មោះ (ខ្មែរ)",
+  "active" : "សកម្ម",
+  "inactive" : "អសកម្ម",
+  "please_enter_name_kh" : "សូមបញ្ចូលឈ្មោះជាភាសាខ្មែរ",
+  "please_enter_name_en" : "សូមបញ្ចូលឈ្មោះជាភាសាអង់គ្លេស",
+  "refresh" : "កំណត់ឡើងវិញ",
+  "pls_select_military_rank" : "សូមជ្រើសរើសឋានន្តរសក្តិ",
+  "pls_select_position" : "សូមជ្រើសរើសមុខតំណែង",
+  "pls_select_unit" : "សូមជ្រើសរើសអង្គភាព",
+  "pls_select_military_unit" : "សូមជ្រើសរើសកងឯកភាព",
+  "pls_select_education_level" : "សូមជ្រើសរើសកំរិតវប្បធម៍",
+  "pls_select_military_specialty" : "សូមជ្រើសរើសជំនាញ-ឯកទេសយោធា"
+  
   
 
 
