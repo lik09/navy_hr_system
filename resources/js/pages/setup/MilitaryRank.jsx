@@ -142,8 +142,7 @@ function MilitaryRank() {
                 type="primary"
                 icon={<EditOutlined />}
                 size="small"
-                style={{ background: NAVY }}
-                style={{fontSize:11}}
+                style={{ background: NAVY ,fontSize:11}}
                 onClick={() => openEdit(record)}
             >
                 {t('edit')}
