@@ -1,16 +1,20 @@
 import React, { useEffect, useState } from 'react';
-import { Table, Button, message, Typography, Breadcrumb, Select, Space, Popconfirm, Pagination, Flex } from 'antd';
-import { PlusOutlined, SaveOutlined, EditOutlined, ArrowLeftOutlined, DeleteOutlined } from '@ant-design/icons';
+import { Table, Button, Input, Tooltip, message, Typography, Breadcrumb, Select, Space, Popconfirm, Pagination, Flex } from 'antd';
+import { PlusOutlined, SaveOutlined, EditOutlined, ArrowLeftOutlined, DeleteOutlined, SearchOutlined, ReloadOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import api from '../../api/axios';
 import WaveLoading from '../../components/ui/WaveLoading';
 import '../../../css/TableStyle.css';
 import { useTranslation } from 'react-i18next';
+import useAuthStore from '../../store/authStore';
+import { hasPermission } from '../../config/routePermissions';
 
 const { Text } = Typography;
 
 export default function Mission() {
   const { t } = useTranslation();
+  const { user } = useAuthStore();
+  const can = (key) => hasPermission(user, key);
   const [view, setView] = useState('list');
   const [groupedData, setGroupedData] = useState([]);
   const [personnelList, setPersonnelList] = useState([]);
@@ -20,11 +24,19 @@ export default function Mission() {
   const [saving, setSaving] = useState(false);
   const [isAdd, setIsAdd] = useState(false);
   const [rows, setRows] = useState([emptyRow()]);
+  const [searchText, setSearchText] = useState('');
 
   // ================= PAGINATION STATE =================
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 5;
-  const paginatedGroups = groupedData.slice(
+  const filteredGroups = groupedData.filter((g) => {
+    if (!searchText.trim()) return true;
+    const q = searchText.trim().toLowerCase();
+    const p = g.personal_info;
+    return [p?.name_kh, p?.name, p?.id_number, p?.military_id]
+      .some(v => (v || '').toLowerCase().includes(q));
+  });
+  const paginatedGroups = filteredGroups.slice(
     (currentPage - 1) * pageSize,
     currentPage * pageSize
   );
@@ -186,7 +198,23 @@ export default function Mission() {
       <div>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
           <Text strong style={{ fontSize: 18 }}>{t('mission')}</Text>
-          <Button type="primary" icon={<PlusOutlined />} onClick={openAdd}>{t('add')}</Button>
+          {can('ADD_MISSION_HISTORY') && (
+            <Button type="primary" icon={<PlusOutlined />} onClick={openAdd}>{t('add')}</Button>
+          )}
+        </div>
+
+        <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
+          <Input
+            placeholder={`${t('search')}...`}
+            prefix={<SearchOutlined/>}
+            value={searchText}
+            onChange={e => { setSearchText(e.target.value); setCurrentPage(1); }}
+            allowClear
+            style={{ width: 220 }}
+          />
+          <Tooltip title={t('refresh')}>
+            <Button icon={<ReloadOutlined/>} onClick={fetchData} />
+          </Tooltip>
         </div>
 
         <>
@@ -214,12 +242,15 @@ export default function Mission() {
                     )}
                   </span>
                   <Space>
+                    {can('EDIT_MISSION_HISTORY') && (
                     <Button
                       icon={<EditOutlined />}
                       onClick={() => openEdit(group.personal_info?.id)}
                     >
                       {t('edit')}
                     </Button>
+                    )}
+                    {can('DELETE_MISSION_HISTORY') && (
                     <Popconfirm
                       title="លុប records ទាំងអស់?"
                       description={`លុប mission ទាំងអស់របស់ ${group.personal_info?.name_kh}?`}
@@ -232,6 +263,7 @@ export default function Mission() {
                         {t('delete_all')}
                       </Button>
                     </Popconfirm>
+                    )}
                   </Space>
                 </div>
 
@@ -252,7 +284,7 @@ export default function Mission() {
               <Pagination
                 current={currentPage}
                 pageSize={pageSize}
-                total={groupedData.length}
+                total={filteredGroups.length}
                 onChange={(page) => setCurrentPage(page)}
                 showTotal={(total) => `${t('total')} ${total} ${t('record')}`}
                 showSizeChanger={false}

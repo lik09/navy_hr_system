@@ -20,9 +20,11 @@
   "register_here": "ចុះឈ្មោះ",
   "title": "ផ្នែកទី២ : ព័ត៌មានការងារយោធា",
   "welcome": "សូមស្វាគមន៍, {{name}}",
-  "total_military": "ចំនួនយោធាសរុប",
-  "recent_military": "យោធាថ្មីៗ",
+  "total_military": "ចំនួនបុល្គិកសរុប",
+  "total_unit": "ចំនួនអង្គភាពសរុប",
+  "recent_military": "បុល្គិកថ្មីៗ",
   "gender_distribution": "ស្ថិតិតាមភេទ",
+  "section_overview": "ទិដ្ឋភាពទូទៅតាមផ្នែក",
   "quick_links": "តំណភ្ជាប់រហ័ស",
   "male": "ប្រុស",
   "female": "ស្រី",
@@ -48,6 +50,7 @@
   "tb_phone" : "ទូរស័ព្ទ",
   "tb_military_rank" : "ឋានន្តរសក្តិ",
   "tb_status" : "ស្ថានភាព",
+  "created_by" : "បង្កើតដោយ",
   "actions": "សកម្មភាព",
   "search": "ស្វែងរក",
   "royal_cambodian_navy_hr_ms_system": "កងទ័ពជើងទឹក​​កម្ពុជា — ប្រព័ន្ធគ្រប់គ្រងធនធានមនុស្ស",
@@ -184,10 +187,25 @@
   "pls_select_unit" : "សូមជ្រើសរើសអង្គភាព",
   "pls_select_military_unit" : "សូមជ្រើសរើសកងឯកភាព",
   "pls_select_education_level" : "សូមជ្រើសរើសកំរិតវប្បធម៍",
-  "pls_select_military_specialty" : "សូមជ្រើសរើសជំនាញ-ឯកទេសយោធា"
-  
-  
-
-
-
+  "pls_select_military_specialty" : "សូមជ្រើសរើសជំនាញ-ឯកទេសយោធា",
+  "roles" : "តួនាទី",
+  "permissions" : "សិទ្ធិ",
+  "tb_role" : "តួនាទី",
+  "tb_permission" : "សិទ្ធិ",
+  "lb_role" : "តួនាទី",
+  "lb_key" : "កូដ",
+  "lb_group" : "ក្រុម",
+  "lb_description" : "ការពិពណ៌នា",
+  "please_enter_key" : "សូមបញ្ចូលកូដ",
+  "manage_permissions" : "គ្រប់គ្រងសិទ្ធិ",
+  "users" : "អ្នកប្រើប្រាស់",
+  "please_enter_username" : "សូមបញ្ចូលឈ្មោះអ្នកប្រើ",
+  "please_enter_email" : "សូមបញ្ចូលអ៊ីមែលឱ្យត្រឹមត្រូវ",
+  "please_enter_password" : "សូមបញ្ចូលលេខសម្ងាត់ (យ៉ាងតិច៦តួ)",
+  "leave_blank_to_keep_password" : "ទុកទំនេរបើមិនចង់ផ្លាស់ប្ដូរលេខសម្ងាត់",
+  "confirm_delete_user" : "តើអ្នកពិតជាចង់លុបអ្នកប្រើនេះមែនទេ? វានឹងលុបទិន្នន័យបុគ្គលិករបស់គាត់ផងដែរ (ប្រសិនបើមាន)។",
+  "role_and_permission" : "តួនាទី និងការអនុញ្ញាត",
+  "role_permission" : "ការអនុញ្ញាតតួនាទី",
+  "extra_permissions" : "សិទ្ធិបន្ថែម",
+  "extra_permissions_hint" : "ផ្ដល់ដោយផ្ទាល់ដល់អ្នកប្រើនេះ បន្ថែមលើសិទ្ធិដែលទទួលបានពីតួនាទី"
 }

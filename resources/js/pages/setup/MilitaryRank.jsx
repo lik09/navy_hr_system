@@ -5,12 +5,16 @@ import { useTranslation } from 'react-i18next';
 import { NAVY } from '../../components/section1/personalInfoStyles';
 import api from '../../api/axios';
 import WaveLoading from '../../components/ui/WaveLoading';
+import useAuthStore from '../../store/authStore';
+import { hasPermission } from '../../config/routePermissions';
 const { Title, Text } = Typography;
 
 
 function MilitaryRank() {
     const {t} = useTranslation();
     const [form] = Form.useForm();
+    const { user } = useAuthStore();
+    const can = (key) => hasPermission(user, key);
 
     const [state, setState] = useState({list: []  ,loading:false });
     const [open, setOpen] = useState(false);
@@ -138,26 +142,30 @@ function MilitaryRank() {
       render: (_, record) => (
 
         <Space>
-            <Button
-                type="primary"
-                icon={<EditOutlined />}
-                size="small"
-                style={{ background: NAVY ,fontSize:11}}
-                onClick={() => openEdit(record)}
-            >
-                {t('edit')}
-            </Button>
-
-            <Popconfirm
-                title="Delete this item?"
-                okText="Yes" cancelText="No"
-                okButtonProps={{ danger: true }}
-                onConfirm={() => handleDelete(record.id)}
-            >
-                <Button danger icon={<DeleteOutlined />} size="small" style={{fontSize:11}}>
-                {t('delete')}
+            {can('EDIT_MILITARY_RANK') && (
+                <Button
+                    type="primary"
+                    icon={<EditOutlined />}
+                    size="small"
+                    style={{ background: NAVY ,fontSize:11}}
+                    onClick={() => openEdit(record)}
+                >
+                    {t('edit')}
                 </Button>
-            </Popconfirm>
+            )}
+
+            {can('DELETE_MILITARY_RANK') && (
+                <Popconfirm
+                    title="Delete this item?"
+                    okText="Yes" cancelText="No"
+                    okButtonProps={{ danger: true }}
+                    onConfirm={() => handleDelete(record.id)}
+                >
+                    <Button danger icon={<DeleteOutlined />} size="small" style={{fontSize:11}}>
+                    {t('delete')}
+                    </Button>
+                </Popconfirm>
+            )}
         </Space>
       ),
     },
@@ -180,14 +188,16 @@ function MilitaryRank() {
         </Col>
 
         <Col>
-            <Button
-              type="primary"
-              icon={<PlusOutlined />}
-              style={{ background: NAVY }}
-              onClick={openCreate}
-            >
-              {t('add_new')}
-            </Button>
+            {can('ADD_MILITARY_RANK') && (
+              <Button
+                type="primary"
+                icon={<PlusOutlined />}
+                style={{ background: NAVY }}
+                onClick={openCreate}
+              >
+                {t('add_new')}
+              </Button>
+            )}
         </Col>
       </Row>
 

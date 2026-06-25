@@ -9,7 +9,7 @@ class PersonalInfo extends Model
     protected $table = 'personal_info';
 
     protected $fillable = [
-        'user_id', 'name_kh', 'name', 'gender', 'id_number', 'date_of_birth',
+        'created_by', 'name_kh', 'name', 'gender', 'id_number', 'date_of_birth',
         'military_id', 'civilian_id',
         'birth_commune', 'birth_district', 'birth_province',
         'current_commune', 'current_district', 'current_province',
@@ -20,9 +20,9 @@ class PersonalInfo extends Model
         'date_of_birth' => 'date',
     ];
 
-    public function user()
+    public function creator()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'created_by');
     }
 
     public function militaryInfo()

@@ -3,12 +3,13 @@ import {
   Table, Button, Form, Input, Select,
   Row, Col, Upload, message, Space, InputNumber,
   Descriptions, Tag, Typography, Popconfirm, Breadcrumb,
-  Flex, Dropdown,
+  Flex, Dropdown, Tooltip,
 } from 'antd';
 import {
   PlusOutlined, SaveOutlined, EditOutlined, EyeOutlined,
   DeleteOutlined, CameraOutlined, ArrowLeftOutlined,
   DownloadOutlined, FilePdfOutlined, FileExcelOutlined,
+  SearchOutlined, ReloadOutlined,
 } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import dayjs from 'dayjs';
@@ -19,6 +20,8 @@ import WaveLoading from '../../components/ui/WaveLoading';
 import { NAVY, BORDER, S, SecTitle } from '../../components/section1/personalInfoStyles';
 import PersonalInfoDetail from '../../components/section1/PersonalInfoDetail';
 import { formatNumberDisplay } from '../../utils/khmerNumerals';
+import useAuthStore from '../../store/authStore';
+import { hasPermission } from '../../config/routePermissions';
 import '../../../css/Common.css';
 import '../../../css/Personal.css';
 
@@ -49,6 +52,8 @@ const th = (extra = {}) => ({
 // ═════════════════════════════════════════════════════════════════════════════
 export default function PersonalInfo() {
   const { t, i18n } = useTranslation();
+  const { user } = useAuthStore();
+  const can = (key) => hasPermission(user, key);
 
   const [view,       setView]       = useState('list');
   const [records,    setRecords]    = useState([]);
@@ -58,6 +63,7 @@ export default function PersonalInfo() {
   const [editRecord, setEditRecord] = useState(null);
   const [viewRecord, setViewRecord] = useState(null);
   const [fileList,   setFileList]   = useState([]);
+  const [searchText, setSearchText] = useState('');
 
   // ── Options for Select dropdowns ───────────────────────────────────────────
   const [options, setOptions] = useState({
@@ -455,31 +461,46 @@ export default function PersonalInfo() {
       render:()=><Tag color="success" style={{borderRadius:10}}>{t('active')}</Tag>,
     },
     {
+      title: t('created_by'), key:'created_by', onHeaderCell:()=>th({textAlign:'left'}),
+      render:(_,r)=>r.creator?.name || '—',
+    },
+    {
       title: t('action'), key:'action', align:'center', width:260, onHeaderCell:()=>th(),
       render:(_,record)=>(
         <Space size={4}>
           <Button size="small" type="primary" icon={<EyeOutlined/>} style={{fontSize:11}} onClick={()=>openView(record)}>
             {t('view')}
           </Button>
-          <Button size="small" icon={<EditOutlined/>}
-            style={{background:'#fa8c16',color:'#fff',border:'none',fontSize:11}}
-            onClick={()=>openEdit(record)}>
-            {t('edit')}
-          </Button>
+          {can('EDIT_GENERAL_INFORMATION') && (
+            <Button size="small" icon={<EditOutlined/>}
+              style={{background:'#fa8c16',color:'#fff',border:'none',fontSize:11}}
+              onClick={()=>openEdit(record)}>
+              {t('edit')}
+            </Button>
+          )}
           <Dropdown menu={{ items: [
             { key:'pdf',   icon:<FilePdfOutlined/>,   label:t('download_pdf'),   onClick:()=>handleDownload(record,'pdf') },
             { key:'excel', icon:<FileExcelOutlined/>, label:t('download_excel'), onClick:()=>handleDownload(record,'excel') },
           ]}} trigger={['click']}>
             <Button size="small" icon={<DownloadOutlined/>} style={{fontSize:11}}>{t('download')}</Button>
           </Dropdown>
-          <Popconfirm title={t('confirm_delete')} okText={t('yes')} cancelText={t('cancel')}
-            onConfirm={()=>handleDelete(record.id)}>
-            <Button size="small" danger icon={<DeleteOutlined/>} style={{fontSize:11}}>{t('delete')}</Button>
-          </Popconfirm>
+          {can('DELETE_GENERAL_INFORMATION') && (
+            <Popconfirm title={t('confirm_delete')} okText={t('yes')} cancelText={t('cancel')}
+              onConfirm={()=>handleDelete(record.id)}>
+              <Button size="small" danger icon={<DeleteOutlined/>} style={{fontSize:11}}>{t('delete')}</Button>
+            </Popconfirm>
+          )}
         </Space>
       ),
     },
   ];
+
+  const filteredRecords = records.filter((r) => {
+    if (!searchText.trim()) return true;
+    const q = searchText.trim().toLowerCase();
+    return [r.name_kh, r.name, r.id_number, r.military_id, r.phone_number]
+      .some(v => (v || '').toLowerCase().includes(q));
+  });
 
   if (loading) return <WaveLoading minHeight={600} />;
 
@@ -490,12 +511,27 @@ export default function PersonalInfo() {
     <div>
       <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:12}}>
         <Text style={{color:NAVY,fontWeight:700,fontSize:18}}>I. {t('general_info')}</Text>
-        <Button type="primary" icon={<PlusOutlined/>} onClick={openAdd} style={{background:NAVY}}>
-          {t('add_new')}
-        </Button>
+        {can('ADD_GENERAL_INFORMATION') && (
+          <Button type="primary" icon={<PlusOutlined/>} onClick={openAdd} style={{background:NAVY}}>
+            {t('add_new')}
+          </Button>
+        )}
+      </div>
+      <div style={{display:'flex',gap:8,marginBottom:12}}>
+        <Input
+          placeholder={`${t('search')}...`}
+          prefix={<SearchOutlined/>}
+          value={searchText}
+          onChange={e=>setSearchText(e.target.value)}
+          allowClear
+          style={{width:220}}
+        />
+        <Tooltip title={t('refresh')}>
+          <Button icon={<ReloadOutlined/>} onClick={fetchRecords} />
+        </Tooltip>
       </div>
       <Table
-        columns={columns} dataSource={records} rowKey="id"
+        columns={columns} dataSource={filteredRecords} rowKey="id"
         loading={loading} size="small" bordered
         pagination={{ pageSize:10, showSizeChanger:true, showTotal:total=>`${t('total')}: ${total} ${t('people')}` }}
         style={{borderRadius:8}}

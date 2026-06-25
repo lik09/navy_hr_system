@@ -13,10 +13,7 @@ class SpecializedTrainingController extends Controller
         $query = SpecializedTraining::query()
             ->with(['personalInfo' => function ($q) {
                 $q->select('id', 'id_number', 'name_kh', 'name', 'phone_number', 'military_id', 'civilian_id');
-            }])
-            ->whereHas('personalInfo', function ($q) use ($request) {
-                $q->where('user_id', $request->user()->id);
-            });
+            }]);
 
         if ($request->filled('personal_info_id')) {
             $query->where('personal_info_id', $request->personal_info_id);
@@ -41,7 +38,7 @@ class SpecializedTrainingController extends Controller
     {
         $personalInfoId = $request->filled('personal_info_id')
             ? $request->personal_info_id
-            : $this->ownedPersonalInfoId($request);
+            : $this->existingPersonalInfoId($request);
 
         $request->validate([
             'personal_info_id'           => 'nullable|integer|exists:personal_info,id',
@@ -107,7 +104,6 @@ class SpecializedTrainingController extends Controller
                 $q->select('id', 'id_number', 'name_kh', 'name', 'phone_number', 'military_id', 'civilian_id');
             }])
             ->where('id', $id)
-            ->whereHas('personalInfo', fn($q) => $q->where('user_id', $request->user()->id))
             ->firstOrFail();
 
         return response()->json($record);
@@ -115,9 +111,7 @@ class SpecializedTrainingController extends Controller
 
     public function update(Request $request, $id)
     {
-        $record = SpecializedTraining::where('id', $id)
-            ->whereHas('personalInfo', fn($q) => $q->where('user_id', $request->user()->id))
-            ->firstOrFail();
+        $record = SpecializedTraining::where('id', $id)->firstOrFail();
 
         $data = $request->validate([
             'duration_study'   => 'nullable|string|max:100',
@@ -136,9 +130,7 @@ class SpecializedTrainingController extends Controller
 
     public function destroy(Request $request, $id)
     {
-        $record = SpecializedTraining::where('id', $id)
-            ->whereHas('personalInfo', fn($q) => $q->where('user_id', $request->user()->id))
-            ->firstOrFail();
+        $record = SpecializedTraining::where('id', $id)->firstOrFail();
 
         $record->delete();
         return response()->json(['message' => 'Deleted successfully.']);

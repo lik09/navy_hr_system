@@ -11,7 +11,7 @@ class ChildController extends Controller
 {
     public function index(Request $request)
     {
-        $familyInfoId = FamilyInfo::where('personal_info_id', $this->ownedPersonalInfoId($request))->value('id');
+        $familyInfoId = FamilyInfo::where('personal_info_id', $this->existingPersonalInfoId($request))->value('id');
 
         $records = Child::where('family_info_id', $familyInfoId)
             ->orderBy('id')
@@ -22,7 +22,7 @@ class ChildController extends Controller
 
     public function store(Request $request)
     {
-        $familyInfoId = $this->ownedFamilyInfoIdForCreate($request);
+        $familyInfoId = $this->familyInfoIdForCreate($request);
 
         $data = $request->validate([
             'name'          => 'nullable|string|max:255',
@@ -37,17 +37,13 @@ class ChildController extends Controller
 
     public function show(Request $request, $id)
     {
-        $record = Child::where('id', $id)
-            ->whereHas('familyInfo.personalInfo', fn ($q) => $q->where('user_id', $request->user()->id))
-            ->firstOrFail();
+        $record = Child::where('id', $id)->firstOrFail();
         return response()->json($record);
     }
 
     public function update(Request $request, $id)
     {
-        $record = Child::where('id', $id)
-            ->whereHas('familyInfo.personalInfo', fn ($q) => $q->where('user_id', $request->user()->id))
-            ->firstOrFail();
+        $record = Child::where('id', $id)->firstOrFail();
 
         $data = $request->validate([
             'name'          => 'nullable|string|max:255',
@@ -61,9 +57,7 @@ class ChildController extends Controller
 
     public function destroy(Request $request, $id)
     {
-        $record = Child::where('id', $id)
-            ->whereHas('familyInfo.personalInfo', fn ($q) => $q->where('user_id', $request->user()->id))
-            ->firstOrFail();
+        $record = Child::where('id', $id)->firstOrFail();
         $record->delete();
         return response()->json(['message' => 'Deleted successfully.']);
     }

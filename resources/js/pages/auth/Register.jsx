@@ -1,10 +1,11 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Form, Input, Button, Card, message, Typography, Flex, Select } from 'antd';
 import { UserOutlined, LockOutlined, MailOutlined } from '@ant-design/icons';
 import { useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import api from '../../api/axios';
 import useAuthStore from '../../store/authStore';
+import logo from '../../assets/logo1.jpg';
 
 const { Title, Text } = Typography;
 const NAVY_BLUE = '#002366';
@@ -13,10 +14,20 @@ const Register = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { token, setAuth } = useAuthStore();
+  const [roles, setRoles] = useState([]);
 
   useEffect(() => {
     if (token) navigate('/personal-info', { replace: true });
   }, [token, navigate]);
+
+  useEffect(() => {
+    api.get('/roles/public')
+      .then((res) => setRoles(res.data || []))
+      .catch(() => message.error('Failed to load roles.'));
+  }, []);
+
+  const toSelectOptions = (list) =>
+    (list || []).map((item) => ({ value: item.id, label: item.name }));
 
   const onFinish = async (values) => {
     try {
@@ -52,13 +63,16 @@ const Register = () => {
         <Flex vertical align="center" style={{ marginBottom: 28 }}>
           <div
             style={{
-              width: 64, height: 64, borderRadius: '50%',
+              width: 120, height: 120,
+              overflow: 'hidden',
+              boxShadow: '0 4px 16px rgba(0,35,102,0.4)', 
+              borderRadius: '50%',
               background: NAVY_BLUE,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               marginBottom: 12,
             }}
           >
-            <span style={{ fontSize: 28 }}>⚓</span>
+            <img src={logo} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="logo.jpg" />
           </div>
           <Title level={4} style={{ margin: 0, color: NAVY_BLUE }}>Royal Cambodian Navy</Title>
           <Text type="secondary">{t('register')}</Text>
@@ -74,12 +88,8 @@ const Register = () => {
           <Form.Item name="email" label={t('email')} rules={[{ required: true, type: 'email' }]}>
             <Input prefix={<MailOutlined style={{ color: NAVY_BLUE }} />} />
           </Form.Item>
-          <Form.Item name="role" label={t('role')} initialValue="user">
-            <Select>
-              <Select.Option value="user">User</Select.Option>
-              <Select.Option value="admin">Admin</Select.Option>
-              <Select.Option value="officer">Officer</Select.Option>
-            </Select>
+          <Form.Item name="role_id" label={t('lb_role')} rules={[{ required: true }]}>
+            <Select options={toSelectOptions(roles)} />
           </Form.Item>
           <Form.Item name="password" label={t('password')} rules={[{ required: true, min: 6 }]}>
             <Input.Password prefix={<LockOutlined style={{ color: NAVY_BLUE }} />} />

@@ -16,7 +16,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'role',
+        'role_id',
     ];
 
     protected $hidden = [
@@ -32,8 +32,42 @@ class User extends Authenticatable
         ];
     }
 
-    public function personalInfo()
+    public function createdPersonalInfo()
     {
-        return $this->hasOne(PersonalInfo::class);
+        return $this->hasMany(PersonalInfo::class, 'created_by');
+    }
+
+    public function role()
+    {
+        return $this->belongsTo(Role::class);
+    }
+
+    // Permissions granted directly to this user, in addition to their role.
+    public function permissions()
+    {
+        return $this->belongsToMany(
+            Permission::class,
+            'user_permissions',
+            'user_id',
+            'permission_id'
+        );
+    }
+
+    public function isAdmin(): bool
+    {
+        return strtolower((string) $this->role?->key) === 'admin';
+    }
+
+    public function hasPermission(string $key): bool
+    {
+        if ($this->isAdmin()) {
+            return true;
+        }
+
+        if ($this->role?->permissions?->contains('key', $key)) {
+            return true;
+        }
+
+        return $this->permissions?->contains('key', $key) ?? false;
     }
 }

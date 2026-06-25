@@ -11,8 +11,7 @@ class PersonalInfoController extends Controller
 {
     public function index(Request $request)
     {
-        $records = PersonalInfo::with(['militaryInfo', 'familyInfo.children'])
-            ->where('user_id', $request->user()->id)
+        $records = PersonalInfo::with(['militaryInfo', 'familyInfo.children', 'creator'])
             ->orderByDesc('id')
             ->get();
 
@@ -39,7 +38,7 @@ class PersonalInfoController extends Controller
             'photo'            => 'nullable|file|image|max:5120',
         ]);
 
-        $data['user_id'] = $request->user()->id;
+        $data['created_by'] = $request->user()->id;
 
         if ($request->hasFile('photo')) {
             $data['photo'] = $request->file('photo')->store('personnel_photos', 'public');
@@ -52,9 +51,7 @@ class PersonalInfoController extends Controller
 
     public function update(Request $request, $id)
     {
-        $info = PersonalInfo::where('id', $id)
-            ->where('user_id', $request->user()->id)
-            ->firstOrFail();
+        $info = PersonalInfo::where('id', $id)->firstOrFail();
 
         $data = $request->validate([
             'name_kh'          => 'nullable|string|max:255',
@@ -93,9 +90,7 @@ class PersonalInfoController extends Controller
 
     public function destroy(Request $request, $id)
     {
-        $info = PersonalInfo::where('id', $id)
-            ->where('user_id', $request->user()->id)
-            ->firstOrFail();
+        $info = PersonalInfo::where('id', $id)->firstOrFail();
 
         if ($info->photo) {
             Storage::disk('public')->delete($info->photo);

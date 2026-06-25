@@ -18,7 +18,7 @@ class MilitaryInfoController extends Controller
             'educationLevel',
             'militarySpecialty',
         ])
-        ->where('personal_info_id', $this->ownedPersonalInfoId($request))
+        ->where('personal_info_id', $this->existingPersonalInfoId($request))
         ->first();
 
         return response()->json($info);
@@ -26,7 +26,7 @@ class MilitaryInfoController extends Controller
 
     public function store(Request $request)
     {
-        $personalInfoId = $this->ownedPersonalInfoId($request);
+        $personalInfoId = $this->existingPersonalInfoId($request);
 
         $data = $request->validate([
             'military_enlistment_date' => 'nullable|date',
@@ -60,9 +60,7 @@ class MilitaryInfoController extends Controller
 
     public function update(Request $request, $id)
     {
-        $info = MilitaryInfo::where('id', $id)
-            ->whereHas('personalInfo', fn ($q) => $q->where('user_id', $request->user()->id))
-            ->firstOrFail();
+        $info = MilitaryInfo::where('id', $id)->firstOrFail();
 
         $data = $request->validate([
             'military_enlistment_date' => 'nullable|date',

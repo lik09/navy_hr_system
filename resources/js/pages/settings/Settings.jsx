@@ -4,6 +4,7 @@ import { SaveOutlined, GlobalOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import api from '../../api/axios';
 import useAuthStore from '../../store/authStore';
+import { hasPermission } from '../../config/routePermissions';
 
 const { Title, Text } = Typography;
 const NAVY_BLUE = '#002366';
@@ -11,6 +12,7 @@ const NAVY_BLUE = '#002366';
 const Settings = () => {
   const { t, i18n } = useTranslation();
   const { user, setUser } = useAuthStore();
+  const can = (key) => hasPermission(user, key);
   const [profileForm] = Form.useForm();
   const [pwdForm] = Form.useForm();
 
@@ -27,7 +29,7 @@ const Settings = () => {
   const saveProfile = async () => {
     const values = await profileForm.validateFields();
     try {
-      const res = await api.put('/settings', values);
+      const res = await api.put('/settings/profile', values);
       setUser(res.data);
       message.success(t('success'));
     } catch (err) {
@@ -40,7 +42,7 @@ const Settings = () => {
   const savePassword = async () => {
     const values = await pwdForm.validateFields();
     try {
-      await api.put('/settings', values);
+      await api.put('/settings/password', values);
       pwdForm.resetFields();
       message.success(t('success'));
     } catch (err) {
@@ -51,7 +53,7 @@ const Settings = () => {
   };
 
   const tabItems = [
-    {
+    can('VIEW_PROFILE') && {
       key: 'profile',
       label: t('profile'),
       children: (
@@ -65,13 +67,15 @@ const Settings = () => {
           <Form.Item name="email" label={t('email')} rules={[{ required: true, type: 'email' }]}>
             <Input variant="filled" />
           </Form.Item>
-          <Button type="primary" icon={<SaveOutlined />} onClick={saveProfile} style={{ background: NAVY_BLUE }}>
-            {t('save')}
-          </Button>
+          {can('EDIT_PROFILE') && (
+            <Button type="primary" icon={<SaveOutlined />} onClick={saveProfile} style={{ background: NAVY_BLUE }}>
+              {t('save')}
+            </Button>
+          )}
         </Form>
       ),
     },
-    {
+    can('CHANGE_PASSWORD') && {
       key: 'password',
       label: t('change_password'),
       children: (
@@ -123,7 +127,7 @@ const Settings = () => {
         </div>
       ),
     },
-  ];
+  ].filter(Boolean);
 
   return (
     <div>

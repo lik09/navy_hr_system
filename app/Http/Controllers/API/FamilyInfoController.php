@@ -10,13 +10,13 @@ class FamilyInfoController extends Controller
 {
     public function index(Request $request)
     {
-        $info = FamilyInfo::with('children')->where('personal_info_id', $this->ownedPersonalInfoId($request))->first();
+        $info = FamilyInfo::with('children')->where('personal_info_id', $this->existingPersonalInfoId($request))->first();
         return response()->json($info);
     }
 
     public function store(Request $request)
     {
-        $personalInfoId = $this->ownedPersonalInfoId($request);
+        $personalInfoId = $this->existingPersonalInfoId($request);
 
         $data = $request->validate([
             'marital_status'             => 'nullable|boolean',
@@ -47,9 +47,7 @@ class FamilyInfoController extends Controller
 
     public function update(Request $request, $id)
     {
-        $info = FamilyInfo::where('id', $id)
-            ->whereHas('personalInfo', fn ($q) => $q->where('user_id', $request->user()->id))
-            ->firstOrFail();
+        $info = FamilyInfo::where('id', $id)->firstOrFail();
 
         $data = $request->validate([
             'marital_status'             => 'nullable|boolean',

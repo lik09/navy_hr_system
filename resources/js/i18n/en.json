@@ -20,9 +20,11 @@
   "register_here": "Register",
   "title": "Section II: Military Service History",
   "welcome": "Welcome back, {{name}}",
-  "total_military": "Total Military",
-  "recent_military": "Recent military",
+  "total_military": "Total Employees",
+  "total_unit": "Total Unit",
+  "recent_military": "Recent Employee",
   "gender_distribution": "Gender Distribution",
+  "section_overview": "Section Overview",
   "quick_links": "Quick Links",
   "male": "Male",
   "female": "Female",
@@ -48,6 +50,7 @@
   "tb_phone" : "Phone",
   "tb_military_rank" : "Military Rank",
   "tb_status" : "Status",
+  "created_by" : "Created By",
   "actions": "Actions",
   "search": "Search",
   "royal_cambodian_navy_hr_ms_system": "Royal Cambodian Navy - HR Management System",
@@ -184,9 +187,25 @@
   "pls_select_unit" : "Please select unit",
   "pls_select_military_unit" : "Please select military unit",
   "pls_select_education_level" : "Please select education level",
-  "pls_select_military_specialty" : "Please select military specialty"
-
-
-
-  
+  "pls_select_military_specialty" : "Please select military specialty",
+  "roles" : "Roles",
+  "permissions" : "Permissions",
+  "tb_role" : "Role",
+  "tb_permission" : "Permission",
+  "lb_role" : "Role",
+  "lb_key" : "Key",
+  "lb_group" : "Group",
+  "lb_description" : "Description",
+  "please_enter_key" : "Please enter key",
+  "manage_permissions" : "Manage Permissions",
+  "users" : "Users",
+  "please_enter_username" : "Please enter username",
+  "please_enter_email" : "Please enter a valid email",
+  "please_enter_password" : "Please enter password (min 6 characters)",
+  "leave_blank_to_keep_password" : "Leave blank to keep the current password",
+  "confirm_delete_user" : "Are you sure you want to delete this user? This will also permanently delete their personnel record (if any).",
+  "role_and_permission" : "Role and Permission",
+  "role_permission" : "Role Permission",
+  "extra_permissions" : "Extra Permissions",
+  "extra_permissions_hint" : "Granted directly to this user, in addition to their role"
 }

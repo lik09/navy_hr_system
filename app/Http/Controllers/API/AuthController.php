@@ -17,7 +17,7 @@ class AuthController extends Controller
             'name'     => 'required|string|max:255',
             'email'    => 'required|email|unique:users,email',
             'password' => 'required|string|min:6|confirmed',
-            'role'     => 'nullable|string',
+            'role_id'  => 'nullable|integer|exists:roles,id',
         ]);
 
         $user = User::create([
@@ -25,14 +25,14 @@ class AuthController extends Controller
             'name'     => $data['name'],
             'email'    => $data['email'],
             'password' => Hash::make($data['password']),
-            'role'     => $data['role'] ?? 'user',
+            'role_id'  => $data['role_id'] ?? null,
         ]);
 
         $token = $user->createToken('rcn-token')->plainTextToken;
 
         return response()->json([
             'token' => $token,
-            'user'  => $user,
+            'user'  => $user->load(['role.permissions', 'permissions']),
         ], 201);
     }
 
@@ -53,12 +53,11 @@ class AuthController extends Controller
             ]);
         }
 
-        $user->tokens()->delete();
         $token = $user->createToken('rcn-token')->plainTextToken;
 
         return response()->json([
             'token' => $token,
-            'user'  => $user,
+            'user'  => $user->load(['role.permissions', 'permissions']),
         ]);
     }
 
@@ -70,31 +69,40 @@ class AuthController extends Controller
 
     public function me(Request $request)
     {
-        return response()->json($request->user());
+        return response()->json($request->user()->load(['role.permissions', 'permissions']));
     }
 
-    public function updateSettings(Request $request)
+    public function updateProfile(Request $request)
     {
         $user = $request->user();
 
         $data = $request->validate([
-            'name'             => 'sometimes|string|max:255',
-            'email'            => 'sometimes|email|unique:users,email,' . $user->id,
-            'username'         => 'sometimes|string|unique:users,username,' . $user->id,
-            'current_password' => 'required_with:password|string',
-            'password'         => 'nullable|string|min:6|confirmed',
+            'name'     => 'sometimes|string|max:255',
+            'email'    => 'sometimes|email|unique:users,email,' . $user->id,
+            'username' => 'sometimes|string|unique:users,username,' . $user->id,
         ]);
 
-        if (isset($data['password'])) {
-            if (! Hash::check($data['current_password'], $user->password)) {
-                throw ValidationException::withMessages([
-                    'current_password' => ['Current password is incorrect.'],
-                ]);
-            }
-            $data['password'] = Hash::make($data['password']);
+        $user->update($data);
+
+        return response()->json($user->load(['role.permissions', 'permissions']));
+    }
+
+    public function changePassword(Request $request)
+    {
+        $user = $request->user();
+
+        $data = $request->validate([
+            'current_password' => 'required|string',
+            'password'         => 'required|string|min:6|confirmed',
+        ]);
+
+        if (! Hash::check($data['current_password'], $user->password)) {
+            throw ValidationException::withMessages([
+                'current_password' => ['Current password is incorrect.'],
+            ]);
         }
 
-        $user->update(collect($data)->except(['current_password'])->toArray());
+        $user->update(['password' => Hash::make($data['password'])]);
 
         return response()->json($user);
     }

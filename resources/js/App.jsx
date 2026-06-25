@@ -13,6 +13,8 @@ import Mission from './pages/section5/Mission.jsx';
 import Health from './pages/section6/Health.jsx';
 import Settings from './pages/settings/Settings.jsx';
 import PrivateRoute from './components/auth/PrivateRoute.jsx';
+import PermissionRoute from './components/auth/PermissionRoute.jsx';
+import { ROUTE_PERMISSIONS } from './config/routePermissions.js';
 import useThemeStore from './store/themeStore.js';
 import MilitaryRank from './pages/setup/MilitaryRank.jsx';
 import Position from './pages/setup/Position.jsx';
@@ -20,6 +22,10 @@ import Unit from './pages/setup/Unit.jsx';
 import MilitaryUnit from './pages/setup/MilitaryUnit.jsx';
 import EducationLevel from './pages/setup/EducationLevel.jsx';
 import MilitarySpecialty from './pages/setup/MilitarySpecialty.jsx';
+import Role from './pages/Role/Role.jsx';
+import Permission from './pages/Role/Permission.jsx';
+import RolePermission from './pages/Role/RolePermission.jsx';
+import User from './pages/user/user.jsx';
 
 const App = () => {
   const mode = useThemeStore((s) => s.mode);
@@ -52,20 +58,27 @@ const App = () => {
             }
           >
             <Route index element={<Navigate to="/dashboard" replace />} />
-            <Route path="dashboard" element={<Dashboard />} />
-            <Route path="personal-info"     element={<PersonalInfo />} />
-            <Route path="military-service"  element={<MilitaryService />} />
-            <Route path="education"         element={<Education />} />
-            <Route path="training"          element={<Training />} />
-            <Route path="mission"           element={<Mission />} />
-            <Route path="health"            element={<Health />} />
-            
-            <Route path="/setup/military-rank"   element={<MilitaryRank />} />
-            <Route path="/setup/position"   element={<Position />} />
-            <Route path="/setup/unit"   element={<Unit />} />
-            <Route path="/setup/military-unit"   element={<MilitaryUnit />} />
-            <Route path="/setup/education-level"   element={<EducationLevel />} />
-            <Route path="/setup/military-specialty"   element={<MilitarySpecialty />} />
+            <Route path="dashboard" element={<PermissionRoute permission={ROUTE_PERMISSIONS['/dashboard']}><Dashboard /></PermissionRoute>} />
+            <Route path="personal-info"     element={<PermissionRoute permission={ROUTE_PERMISSIONS['/personal-info']}><PersonalInfo /></PermissionRoute>} />
+            <Route path="military-service"  element={<PermissionRoute permission={ROUTE_PERMISSIONS['/military-service']}><MilitaryService /></PermissionRoute>} />
+            <Route path="education"         element={<PermissionRoute permission={ROUTE_PERMISSIONS['/education']}><Education /></PermissionRoute>} />
+            <Route path="training"          element={<PermissionRoute permission={ROUTE_PERMISSIONS['/training']}><Training /></PermissionRoute>} />
+            <Route path="mission"           element={<PermissionRoute permission={ROUTE_PERMISSIONS['/mission']}><Mission /></PermissionRoute>} />
+            <Route path="health"            element={<PermissionRoute permission={ROUTE_PERMISSIONS['/health']}><Health /></PermissionRoute>} />
+
+            <Route path="/setup/military-rank"   element={<PermissionRoute permission={ROUTE_PERMISSIONS['/setup/military-rank']}><MilitaryRank /></PermissionRoute>} />
+            <Route path="/setup/position"   element={<PermissionRoute permission={ROUTE_PERMISSIONS['/setup/position']}><Position /></PermissionRoute>} />
+            <Route path="/setup/unit"   element={<PermissionRoute permission={ROUTE_PERMISSIONS['/setup/unit']}><Unit /></PermissionRoute>} />
+            <Route path="/setup/military-unit"   element={<PermissionRoute permission={ROUTE_PERMISSIONS['/setup/military-unit']}><MilitaryUnit /></PermissionRoute>} />
+            <Route path="/setup/education-level"   element={<PermissionRoute permission={ROUTE_PERMISSIONS['/setup/education-level']}><EducationLevel /></PermissionRoute>} />
+            <Route path="/setup/military-specialty"   element={<PermissionRoute permission={ROUTE_PERMISSIONS['/setup/military-specialty']}><MilitarySpecialty /></PermissionRoute>} />
+
+            {/*  */}
+            <Route path="/role"   element={<PermissionRoute permission={ROUTE_PERMISSIONS['/role']}><Role /></PermissionRoute>} />
+            <Route path="/permission"   element={<PermissionRoute permission={ROUTE_PERMISSIONS['/permission']}><Permission /></PermissionRoute>} />
+            <Route path="/role-permission"   element={<PermissionRoute permission={ROUTE_PERMISSIONS['/role-permission']}><RolePermission /></PermissionRoute>} />
+            <Route path="/users"   element={<PermissionRoute permission={ROUTE_PERMISSIONS['/users']}><User /></PermissionRoute>} />
+
 
             <Route path="settings"  element={<Settings />} />
             <Route path="*"         element={<Navigate to="/dashboard" replace />} />

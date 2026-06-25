@@ -8,32 +8,25 @@ use Illuminate\Http\Request;
 
 abstract class Controller
 {
-    protected function authPersonalInfoId(Request $request): ?int
-    {
-        return PersonalInfo::where('user_id', $request->user()->id)->value('id');
-    }
-
-    protected function authFamilyInfoId(Request $request): ?int
-    {
-        $personalInfoId = $this->authPersonalInfoId($request);
-
-        return $personalInfoId ? FamilyInfo::where('personal_info_id', $personalInfoId)->value('id') : null;
-    }
-
-    protected function ownedPersonalInfoId(Request $request): int
+    /**
+     * Validate that the posted personal_info_id refers to an existing roster record.
+     * Ownership is not checked here — any authenticated user holding the relevant
+     * permission may operate on any personnel record (created_by is audit-only).
+     */
+    protected function existingPersonalInfoId(Request $request): int
     {
         $id = $request->input('personal_info_id');
         abort_if(!$id, 422, 'personal_info_id is required.');
 
-        $owned = PersonalInfo::where('id', $id)->where('user_id', $request->user()->id)->exists();
-        abort_unless($owned, 403, 'Not your personal info record.');
+        $exists = PersonalInfo::where('id', $id)->exists();
+        abort_unless($exists, 404, 'Personal info record not found.');
 
         return (int) $id;
     }
 
-    protected function ownedFamilyInfoIdForCreate(Request $request): int
+    protected function familyInfoIdForCreate(Request $request): int
     {
-        $familyInfoId = FamilyInfo::where('personal_info_id', $this->ownedPersonalInfoId($request))->value('id');
+        $familyInfoId = FamilyInfo::where('personal_info_id', $this->existingPersonalInfoId($request))->value('id');
         abort_if(!$familyInfoId, 422, 'Family info must be created first.');
 
         return $familyInfoId;

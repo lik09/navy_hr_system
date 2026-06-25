@@ -23,4 +23,16 @@ const useAuthStore = create(
   )
 );
 
+// Auth state is persisted to localStorage, which is shared across every tab/window
+// on this origin. If another tab logs in/out (changing 'rcn-auth'), this tab is left
+// rendering a stale session while still sending requests under the new token — reload
+// so it picks up the account that's actually active.
+if (typeof window !== 'undefined') {
+  window.addEventListener('storage', (event) => {
+    if (event.key === 'rcn-auth') {
+      window.location.reload();
+    }
+  });
+}
+
 export default useAuthStore;

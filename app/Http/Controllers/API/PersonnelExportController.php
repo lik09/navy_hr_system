@@ -21,9 +21,7 @@ class PersonnelExportController extends Controller
             'specializedTrainings',
             'missions',
             'health',
-        ])
-            ->where('user_id', $request->user()->id)
-            ->findOrFail($id);
+        ])->findOrFail($id);
     }
 
     public function pdf(Request $request, $id)

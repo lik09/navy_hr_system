@@ -16,10 +16,13 @@ import {
   ReadOutlined,
   SafetyCertificateOutlined,
   UnorderedListOutlined,
+  KeyOutlined,
+  TeamOutlined,
 } from '@ant-design/icons';
 import useAuthStore from '../store/authStore';
 import useThemeStore from '../store/themeStore';
 import logo from '../assets/logo1.jpg';
+import { ROUTE_PERMISSIONS, hasPermission } from '../config/routePermissions';
 import '../../css/MainLayout.css';
 
 const { Header, Sider, Content, Footer } = Layout;
@@ -47,7 +50,31 @@ const menuItems = [
       { key: '/setup/military-specialty', icon: <SafetyCertificateOutlined />,   labelKey: 'military_specialty' },
     ],
   },
+  {
+    key: '/roles',
+    icon: <TeamOutlined />,
+    labelKey: 'roles',
+    children: [
+      { key: '/role', icon: <SafetyCertificateOutlined />, labelKey: 'role_and_permission' },
+      { key: '/role-permission', icon: <KeyOutlined />, labelKey: 'role_permission' },
+      // { key: '/users', icon: <UserOutlined />, labelKey: 'users' },
+    ],
+  },
+  { key: '/users',   icon: <UserOutlined />,    labelKey: 'users' },
+
 ];
+
+// Drop menu items (and child items) the user's role doesn't have permission for
+const filterMenuItems = (items, user) =>
+  items
+    .map((item) => {
+      if (item.children) {
+        const children = item.children.filter((child) => hasPermission(user, ROUTE_PERMISSIONS[child.key]));
+        return children.length ? { ...item, children } : null;
+      }
+      return hasPermission(user, ROUTE_PERMISSIONS[item.key]) ? item : null;
+    })
+    .filter(Boolean);
 
 // Derive open keys from current path so sub-menu stays open on refresh
 const getDefaultOpenKeys = (pathname) => {
@@ -65,6 +92,7 @@ const MainLayout = () => {
   const { user, logout } = useAuthStore();
   const { mode, toggleMode } = useThemeStore();
   const { token: { colorBgContainer, borderRadiusLG, colorText } } = antTheme.useToken();
+  const visibleMenuItems = filterMenuItems(menuItems, user);
 
   const handleLogout = () => {
     Modal.confirm({
@@ -144,24 +172,39 @@ const MainLayout = () => {
               textAlign: 'center',
               cursor: 'pointer',
               flexShrink: 0,
+              transition: 'padding 0.3s cubic-bezier(0.2, 0, 0, 1)',
             }}
             onClick={() => navigate('/dashboard')}
           >
+            {/* Logo Image */}
             <div style={{
-              width: 65, height: 65,
+              width: collapsed ? 65 : 120,
+              height: collapsed ? 65 : 120,
               borderRadius: '50%',
               overflow: 'hidden',
               boxShadow: '0 4px 16px rgba(0,35,102,0.4)',
               margin: '0 auto',
+              transition: 'width 0.3s cubic-bezier(0.2, 0, 0, 1), height 0.3s cubic-bezier(0.2, 0, 0, 1)',
             }}>
               <img src={logo} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="logo.jpg" />
             </div>
-            {!collapsed && (
-              <div style={{ marginTop: 14, color: 'white' }}>
-                <div style={{ fontSize: 18, fontWeight: 700, lineHeight: 1.5 }}>{t('royal_cambodian_navy')}</div>
-                <div style={{ marginTop: 4, fontSize: 14, opacity: 0.75 }}>{t('hr_system')}</div>
+
+            {/* ✅ Logo Text — smooth fade */}
+            <div style={{
+              marginTop: collapsed ? 0 : 16,
+              color: 'white',
+              overflow: 'hidden',
+              maxHeight: collapsed ? 0 : 80,
+              opacity: collapsed ? 0 : 1,
+              transition: 'max-height 0.3s cubic-bezier(0.2, 0, 0, 1), opacity 0.25s ease, margin-top 0.3s ease',
+            }}>
+              <div style={{ fontSize: 18, fontWeight: 700, lineHeight: 1.5 }}>
+                {t('royal_cambodian_navy')}
               </div>
-            )}
+              <div style={{ marginTop: 4, fontSize: 14, opacity: 0.75 }}>
+                {t('hr_system')}
+              </div>
+            </div>
           </div>
 
           {/* Menu — scrollable */}
@@ -172,7 +215,7 @@ const MainLayout = () => {
               selectedKeys={[location.pathname]}
               defaultOpenKeys={getDefaultOpenKeys(location.pathname)}
               style={{ background: NAVY_BLUE, borderRight: 0, marginTop: 8 }}
-              items={buildMenuItems(menuItems)}
+              items={buildMenuItems(visibleMenuItems)}
             />
           </div>
 

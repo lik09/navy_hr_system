@@ -16,7 +16,7 @@ const Login = () => {
   const { token, setAuth } = useAuthStore();
 
   useEffect(() => {
-    if (token) navigate('/personal-info', { replace: true });
+    if (token) navigate('/dashboard', { replace: true });
   }, [token, navigate]);
 
   const onFinish = async (values) => {
@@ -24,7 +24,7 @@ const Login = () => {
       const res = await api.post('/auth/login', values);
       setAuth(res.data.token, res.data.user);
       message.success(t('success'));
-      navigate('/personal-info');
+      navigate('/dashboard');
     } catch (err) {
       const data = err.response?.data;
       if (data?.errors) {
@@ -56,7 +56,7 @@ const Login = () => {
       >
         <Flex vertical align="center" style={{ marginBottom: 32 }}>
           <div style={{
-            width: 90, height: 90,
+            width: 120, height: 120,
             borderRadius: '50%',
             overflow: 'hidden',
             boxShadow: '0 4px 16px rgba(0,35,102,0.4)',
