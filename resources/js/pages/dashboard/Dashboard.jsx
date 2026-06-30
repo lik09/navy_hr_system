@@ -28,7 +28,8 @@ const countRecords = (data) => {
 };
 
 export default function Dashboard() {
-  const { t } = useTranslation();
+  const { t ,i18n } = useTranslation();
+  
   const navigate = useNavigate();
   const { user } = useAuthStore();
 
@@ -42,6 +43,7 @@ export default function Dashboard() {
     health: 0,
     unit: 0,
   });
+
 
   useEffect(() => {
   const fetchAll = async () => {
@@ -122,9 +124,17 @@ export default function Dashboard() {
 
   const recentColumns = [
     { title: t('tb_no'),           render: (_, __, i) => i + 1, width: 50, align: 'center' },
-    { title: t('name_kh'),         render: (_, r) => r.name_kh || r.name || '—' },
+    { title: t('name_kh'),        
+      render: (_, r) => {
+        return (i18n.language === 'km' ? r.name_kh : r.name) || r.name_kh || r.name || '—';
+      }, },
     { title: t('tb_id_number'),    dataIndex: 'id_number' },
-    { title: t('tb_military_rank'),render: (_, r) => r.military_info?.military_rank || '—' },
+    { title: t('tb_military_rank'), 
+      render: (_, r) => {
+        const rank = r.military_info?.military_rank;
+        return (i18n.language === 'km' ? rank?.name_kh : rank?.name) || rank?.name_kh || rank?.name || '—';
+      },
+    },
     { title: t('tb_phone'),        dataIndex: 'phone_number', render: (v) => v || '—' },
   ];
 

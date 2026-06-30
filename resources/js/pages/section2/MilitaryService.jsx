@@ -9,6 +9,7 @@ import WaveLoading from '../../components/ui/WaveLoading';
 import { useTranslation } from 'react-i18next';
 import useAuthStore from '../../store/authStore';
 import { hasPermission } from '../../config/routePermissions';
+import { NAVY } from '../../components/section1/personalInfoStyles';
 
 const { Text } = Typography;
 
@@ -248,7 +249,8 @@ export default function MilitaryService() {
                   </span>
                   <Space>
                     {can('EDIT_MILITARY_SERVICE_HISTORY') && (
-                      <Button
+                      <Button 
+                        style={{ color:NAVY ,borderColor: NAVY }}
                         icon={<EditOutlined />}
                         onClick={() => openEdit(group.personal_info?.id)}
                       >
@@ -280,6 +282,7 @@ export default function MilitaryService() {
                   pagination={false}
                   size="small"
                   style={{ border: '1px solid #d9d9d9' }}
+                  scroll={{ x: 'max-content' }}
                 />
               </div>
             ))}
@@ -345,9 +348,9 @@ export default function MilitaryService() {
           borderRadius: 6,
         }}>
           <Text strong>{personalInfo.name_kh} ({personalInfo.name})</Text>
-          <Text style={{ marginLeft: 16 }}>ID: {personalInfo.id_number}</Text>
+          <Text style={{ marginLeft: 16 }}>{t('lb_id_number')} {personalInfo.id_number}</Text>
           {personalInfo.military_id && (
-            <Text style={{ marginLeft: 16 }}>Military ID: {personalInfo.military_id}</Text>
+            <Text style={{ marginLeft: 16 }}>{t('military_id')} : {personalInfo.military_id}</Text>
           )}
         </div>
       )}

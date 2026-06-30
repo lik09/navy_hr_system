@@ -13,6 +13,14 @@ const PersonalInfoDetail = ({ record, onBack, onEdit }) => {
   const r = record;
   const mi = r?.military_info;
   const fi = r?.family_info;
+  
+   // ── DEBUG ──
+  console.log('🔍 FULL record:', r);
+  console.log('🔍 record keys:', Object.keys(r || {}));
+  console.log('🔍 military_info:', mi, '| keys:', Object.keys(mi || {}));
+  console.log('🔍 family_info:', fi, '| keys:', Object.keys(fi || {}));
+  console.log('🔍 children:', fi?.children);
+  // ───────────
 
   return (
     <div>
@@ -109,32 +117,32 @@ const PersonalInfoDetail = ({ record, onBack, onEdit }) => {
 
             <tr>
               <td style={S.lbl2}>- {t('military_rank')} </td>
-              <td style={S.td} colSpan={5}><Tag color="geekblue">{mi?.military_rank||'—'}</Tag></td>
+              <td style={S.td} colSpan={5}>{mi?.military_rank?.name_kh || mi?.military_rank?.name || '—'}</td>
             </tr>
 
             <tr>
               <td style={S.lbl2}>- {t('position')}</td>
-              <td style={S.td} colSpan={5}>{mi?.position||'—'}</td>
+              <td style={S.td} colSpan={5}>{mi?.position?.name_kh || mi?.position?.name || '—'}</td>
             </tr>
 
             <tr>
               <td style={S.lbl2}>- {t('unit')}</td>
-              <td style={S.td} colSpan={5}>{mi?.unit||'—'}</td>
+              <td style={S.td} colSpan={5}>{mi?.unit?.name_kh || mi?.unit?.name || '—'}</td>
             </tr>
 
             <tr>
               <td style={S.lbl}>- {t('military_unit')}</td>
-              <td style={S.td} colSpan={5}>{mi?.military_unit||'—'}</td>
+              <td style={S.td} colSpan={5}>{mi?.military_unit?.name_kh || mi?.military_unit?.name || '—'}</td>
             </tr>
 
             <tr>
               <td style={S.lbl2}>- {t('education_level')}</td>
-              <td style={S.td} colSpan={5}>{mi?.education_level||'—'}</td>
+              <td style={S.td} colSpan={5}>{mi?.education_level?.name_kh || mi?.education_level?.name || '—'}</td>
             </tr>
 
             <tr>
               <td style={S.lbl}>- {t('military_specialty')}</td>
-              <td style={S.td} colSpan={5}>{mi?.military_specialty||'—'}</td>
+              <td style={S.td} colSpan={5}>{mi?.military_specialty?.name_kh || mi?.military_specialty?.name || '—'}</td>
             </tr>
 
             <tr>

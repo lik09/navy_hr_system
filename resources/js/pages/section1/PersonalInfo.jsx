@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import {
   Table, Button, Form, Input, Select,
-  Row, Col, Upload, message, Space, InputNumber,
+  Row, Col, Upload, Space, InputNumber,
   Descriptions, Tag, Typography, Popconfirm, Breadcrumb,
-  Flex, Dropdown, Tooltip,
+  Flex, Dropdown, Tooltip, Modal, App,
 } from 'antd';
 import {
   PlusOutlined, SaveOutlined, EditOutlined, EyeOutlined,
@@ -13,7 +13,7 @@ import {
 } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import dayjs from 'dayjs';
-import api, { apiFormData, downloadFile } from '../../api/axios';
+import api, { apiFormData, downloadFile, fetchPdfBlobUrl } from '../../api/axios';
 import TblInput from '../../components/ui/TblInput';
 import TblDatePicker from '../../components/ui/TblDatePicker';
 import WaveLoading from '../../components/ui/WaveLoading';
@@ -51,6 +51,7 @@ const th = (extra = {}) => ({
 
 // ═════════════════════════════════════════════════════════════════════════════
 export default function PersonalInfo() {
+  const { message } = App.useApp();
   const { t, i18n } = useTranslation();
   const { user } = useAuthStore();
   const can = (key) => hasPermission(user, key);
@@ -64,6 +65,21 @@ export default function PersonalInfo() {
   const [viewRecord, setViewRecord] = useState(null);
   const [fileList,   setFileList]   = useState([]);
   const [searchText, setSearchText] = useState('');
+  const [pdfViewer,  setPdfViewer]  = useState({ open: false, url: '', filename: '' });
+
+  const openPdf = async (apiUrl) => {
+    try {
+      const { blobUrl, filename } = await fetchPdfBlobUrl(apiUrl);
+      setPdfViewer({ open: true, url: blobUrl, filename });
+    } catch (err) {
+      message.error(err?.message || t('error'));
+    }
+  };
+
+  const closePdf = () => {
+    if (pdfViewer.url) window.URL.revokeObjectURL(pdfViewer.url);
+    setPdfViewer({ open: false, url: '', filename: '' });
+  };
 
   // ── Options for Select dropdowns ───────────────────────────────────────────
   const [options, setOptions] = useState({
@@ -287,10 +303,18 @@ export default function PersonalInfo() {
   // ── Download ───────────────────────────────────────────────────────────────
   const handleDownload = async (record, type) => {
     try {
-      const ext = type === 'pdf' ? 'pdf' : 'xlsx';
-      await downloadFile(`/personnel-info/${record.id}/export/${type}`, `personnel-${record.id_number}.${ext}`);
+      if (type === 'pdf') {
+        await openPdf(`/personnel-info/${record.id}/export/pdf`);
+      } 
     } catch { message.error(t('error')); }
   };
+
+  const handleRosterDownload = async () => {
+    try {
+      await downloadFile('/personnel-info/export/roster', `personnel-roster-${dayjs().format('YYYYMMDD')}.xlsx`);
+    } catch { message.error(t('error')); }
+  };
+
 
   // ── Validate ───────────────────────────────────────────────────────────────
   const validateForm = () => {
@@ -478,18 +502,27 @@ export default function PersonalInfo() {
               {t('edit')}
             </Button>
           )}
+          {can('DOWNLOAD_PDF') && (
           <Dropdown menu={{ items: [
-            { key:'pdf',   icon:<FilePdfOutlined/>,   label:t('download_pdf'),   onClick:()=>handleDownload(record,'pdf') },
-            { key:'excel', icon:<FileExcelOutlined/>, label:t('download_excel'), onClick:()=>handleDownload(record,'excel') },
+            {
+              key: 'pdf',
+              icon: <FilePdfOutlined style={{ color: '#c0392b' }} />,
+              label: t('download_pdf'),
+              onClick: () => handleDownload(record, 'pdf'),
+            }
           ]}} trigger={['click']}>
-            <Button size="small" icon={<DownloadOutlined/>} style={{fontSize:11}}>{t('download')}</Button>
+            <Button size="small" icon={<DownloadOutlined />} style={{ fontSize: 11  ,color: NAVY ,borderColor: NAVY}}>
+              {t('download')}
+            </Button>
           </Dropdown>
+          )}
           {can('DELETE_GENERAL_INFORMATION') && (
             <Popconfirm title={t('confirm_delete')} okText={t('yes')} cancelText={t('cancel')}
               onConfirm={()=>handleDelete(record.id)}>
               <Button size="small" danger icon={<DeleteOutlined/>} style={{fontSize:11}}>{t('delete')}</Button>
             </Popconfirm>
           )}
+          
         </Space>
       ),
     },
@@ -508,6 +541,7 @@ export default function PersonalInfo() {
   // LIST VIEW
   // ════════════════════════════════════════════════════════════════════════════
   if (view === 'list') return (
+    <>
     <div>
       <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:12}}>
         <Text style={{color:NAVY,fontWeight:700,fontSize:18}}>I. {t('general_info')}</Text>
@@ -529,6 +563,13 @@ export default function PersonalInfo() {
         <Tooltip title={t('refresh')}>
           <Button icon={<ReloadOutlined/>} onClick={fetchRecords} />
         </Tooltip>
+        {can('DOWNLOAD_EXCEL') && (
+        <Tooltip title= {t('dw_roster_excel')} >
+          <Button icon={<FileExcelOutlined/>} style={{color:'#1d6f42',borderColor:'#1d6f42'}} onClick={handleRosterDownload}>
+            { t('download_excel') }
+          </Button>
+        </Tooltip>
+        )}
       </div>
       <Table
         columns={columns} dataSource={filteredRecords} rowKey="id"
@@ -536,8 +577,28 @@ export default function PersonalInfo() {
         pagination={{ pageSize:10, showSizeChanger:true, showTotal:total=>`${t('total')}: ${total} ${t('people')}` }}
         style={{borderRadius:8}}
         locale={{emptyText:t('no_data')}}
+        scroll={{ x: 'max-content' }}
       />
     </div>
+    <Modal
+      open={pdfViewer.open}
+      onCancel={closePdf}
+      footer={
+        <a href={pdfViewer.url} download={pdfViewer.filename}>
+          <Button type="primary" icon={<DownloadOutlined />}>{t('download_pdf')}</Button>
+        </a>
+      }
+      width="90vw"
+      style={{ top: 20 }}
+      destroyOnHidden
+    >
+      <iframe
+        src={pdfViewer.url}
+        title="PDF Preview"
+        style={{ width: '100%', height: '80vh' , border: 'none' }}
+      />
+    </Modal>
+    </>
   );
 
   // ════════════════════════════════════════════════════════════════════════════

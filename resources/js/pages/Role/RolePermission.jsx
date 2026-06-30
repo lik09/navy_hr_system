@@ -11,7 +11,8 @@ import { hasPermission } from '../../config/routePermissions';
 const { Text } = Typography;
 
 function RolePermission() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const isKm = i18n.language === 'km';
   const { user } = useAuthStore();
   const can = (key) => hasPermission(user, key);
 
@@ -33,7 +34,7 @@ function RolePermission() {
       const res = await api.get('roles', { params: { per_page: 1000 } });
       setState({ list: res.data?.data?.data || [], loading: false });
     } catch {
-      message.error('Failed to load data.');
+      message.error(t('error'));
       setState(s => ({ ...s, loading: false }));
     }
   }, []);
@@ -44,7 +45,7 @@ function RolePermission() {
       const res = await api.get('permissions/grouped');
       setGroups(res.data?.data || {});
     } catch {
-      message.error('Failed to load permissions.');
+      message.error(t('error'));
     }
   }, []);
 
@@ -113,6 +114,11 @@ function RolePermission() {
     {
       title: t('lb_name'),
       dataIndex: 'name',
+      render: (v) => <Text strong>{v}</Text>,
+    },
+    {
+      title: t('lb_name_kh'),
+      dataIndex: 'name_kh',
       render: (v) => <Text strong>{v}</Text>,
     },
     {
@@ -196,12 +202,13 @@ function RolePermission() {
         }}
         bordered
         size="middle"
+        scroll={{ x: 'max-content' }}
       />
 
       <Modal
         centered
         width={1100}
-        title={`គ្រប់គ្រងសិទ្ធិ — ${activeRole?.name || ''}`}
+        title={`${t('manage_permissions')} — ${isKm ? (activeRole?.name_kh || activeRole?.name) : activeRole?.name || ''}`}
         open={open}
         onCancel={() => setOpen(false)}
         onOk={handleSave}
@@ -209,7 +216,7 @@ function RolePermission() {
         cancelText={t('cancel')}
         confirmLoading={btnLoading}
         okButtonProps={{ style: { background: '#0f3460', borderColor: '#0f3460' } }}
-        destroyOnClose
+        destroyOnHidden
       >
         <div style={{ maxHeight: 600, overflowY: 'auto', padding: '4px 0' }}>
           {Object.keys(groups).length === 0 && (
@@ -274,9 +281,9 @@ function RolePermission() {
                         onChange={(e) =>
                           toggle(perm.id, e.target.checked)
                         }
-                        style={{ fontSize: 12 }}
+                        style={{ fontSize: 12 , display: 'flex', alignItems: 'center',  lineHeight: 1.5 }}
                       >
-                        {perm.name}
+                        {isKm ? (perm.name_kh || perm.name) : perm.name}
                       </Checkbox>
                     </div>
                   ))}

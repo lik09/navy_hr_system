@@ -8,6 +8,7 @@ import '../../../css/TableStyle.css';
 import { useTranslation } from 'react-i18next';
 import useAuthStore from '../../store/authStore';
 import { hasPermission } from '../../config/routePermissions';
+import { NAVY } from '../../components/section1/personalInfoStyles';
 
 const { Text } = Typography;
 
@@ -257,6 +258,7 @@ export default function Health() {
                   <Space>
                     {can('EDIT_HEALTH_INFORMATION') && (
                       <Button
+                        style={{ color:NAVY ,borderColor: NAVY }}
                         icon={<EditOutlined />}
                         onClick={() => openEdit(group.personal_info?.id)}
                       >
@@ -503,7 +505,6 @@ export default function Health() {
             </Button>
             <Button
               type="primary"
-              icon={<SaveOutlined />}
               loading={saving}
               onClick={saveAll}
             >

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
@@ -17,7 +18,10 @@ class User extends Authenticatable
         'email',
         'password',
         'role_id',
+        'image',
     ];
+
+    protected $appends = ['image_url'];
 
     protected $hidden = [
         'password',
@@ -30,6 +34,13 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function getImageUrlAttribute(): ?string
+    {
+        return $this->image
+            ? Storage::disk('public')->url($this->image)
+            : null;
     }
 
     public function createdPersonalInfo()

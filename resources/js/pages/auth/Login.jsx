@@ -65,21 +65,21 @@ const Login = () => {
             <img src={logo} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="logo.jpg" />
           </div>
           <Title level={4} style={{ margin: 0, color: NAVY_BLUE }}>Royal Cambodian Navy</Title>
-          <Text type="secondary" style={{ fontSize: 13 }}>Personnel Management System</Text>
+          <Text type="secondary" style={{ fontSize: 13 }}>HR Management System</Text>
         </Flex>
 
         <Form layout="vertical" onFinish={onFinish} size="large">
           <Form.Item
             name="username"
             label={t('username')}
-            rules={[{ required: true, message: `${t('username')} is required` }]}
+            rules={[{ required: true, message: t('field_required', { field: t('username') }) }]}
           >
             <Input prefix={<UserOutlined style={{ color: NAVY_BLUE }} />} />
           </Form.Item>
           <Form.Item
             name="password"
             label={t('password')}
-            rules={[{ required: true, message: `${t('password')} is required` }]}
+            rules={[{ required: true, message: t('field_required', { field: t('password') }) }]}
           >
             <Input.Password prefix={<LockOutlined style={{ color: NAVY_BLUE }} />} />
           </Form.Item>

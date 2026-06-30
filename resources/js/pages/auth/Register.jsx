@@ -79,19 +79,26 @@ const Register = () => {
         </Flex>
 
         <Form layout="vertical" onFinish={onFinish} size="large">
-          <Form.Item name="name" label={t('name')} rules={[{ required: true }]}>
+          <Form.Item name="name" label={t('name')} rules={[{ required: true ,message: t('field_required', { field: t('name') }) }]}>
             <Input prefix={<UserOutlined style={{ color: NAVY_BLUE }} />} />
           </Form.Item>
-          <Form.Item name="username" label={t('username')} rules={[{ required: true }]}>
+          <Form.Item name="username" label={t('username')} rules={[{ required: true ,message: t('field_required', { field: t('username') }) }]}>
             <Input prefix={<UserOutlined style={{ color: NAVY_BLUE }} />} />
           </Form.Item>
-          <Form.Item name="email" label={t('email')} rules={[{ required: true, type: 'email' }]}>
+          <Form.Item name="email" label={t('email')} rules={[{ required: true, message: t('field_required', { field: t('email') }) }]}>
             <Input prefix={<MailOutlined style={{ color: NAVY_BLUE }} />} />
           </Form.Item>
-          <Form.Item name="role_id" label={t('lb_role')} rules={[{ required: true }]}>
+          <Form.Item name="role_id" label={t('lb_role')} rules={[{ required: true ,message: t('select_field_required', { field: t('name')})}]}>
             <Select options={toSelectOptions(roles)} />
           </Form.Item>
-          <Form.Item name="password" label={t('password')} rules={[{ required: true, min: 6 }]}>
+          <Form.Item 
+            name="password" 
+            label={t('password')} 
+            rules={[
+              { required: true, message: t('field_required', { field: t('password') }) },
+              { min: 6, message: t('password_least_6_char') },
+            ]}
+          >
             <Input.Password prefix={<LockOutlined style={{ color: NAVY_BLUE }} />} />
           </Form.Item>
           <Form.Item
@@ -99,11 +106,11 @@ const Register = () => {
             label={t('confirm_password')}
             dependencies={['password']}
             rules={[
-              { required: true },
+              { required: true ,message: t('field_required', { field: t('confirm_password') }) },
               ({ getFieldValue }) => ({
                 validator(_, value) {
                   if (!value || getFieldValue('password') === value) return Promise.resolve();
-                  return Promise.reject('Passwords do not match!');
+                  return Promise.reject( t('password_do_not_match') );
                 },
               }),
             ]}

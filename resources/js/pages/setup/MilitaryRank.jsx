@@ -231,6 +231,7 @@ function MilitaryRank() {
         showTotal: (total) => `${t('total')} : ${total} ${t('record')} ` }}
         bordered
         size="middle"
+        scroll={{ x: 'max-content' }}
       />
 
       {/* Modal */}
@@ -249,7 +250,7 @@ function MilitaryRank() {
         cancelText={t('cancel')}
         confirmLoading={btnLoading}
         okButtonProps={{ style: { background: NAVY } }}
-        destroyOnClose
+        destroyOnHidden
       >
         <Form form={form} layout="vertical" style={{ marginTop: 16 }}>
           <Form.Item

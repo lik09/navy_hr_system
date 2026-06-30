@@ -7,6 +7,7 @@ import '../../../css/TableStyle.css';
 import { useTranslation } from 'react-i18next';
 import useAuthStore from '../../store/authStore';
 import { hasPermission } from '../../config/routePermissions';
+import { NAVY } from '../../components/section1/personalInfoStyles';
 
 const { Text } = Typography;
 
@@ -245,6 +246,7 @@ export default function Education() {
                   <Space>
                     {can('EDIT_EDUCATION_HISTORY') && (
                       <Button
+                        style={{ color:NAVY ,borderColor: NAVY }}
                         icon={<EditOutlined />}
                         onClick={() => openEdit(group.personal_info?.id)}
                       >
@@ -276,6 +278,7 @@ export default function Education() {
                   pagination={false}
                   size="small"
                   style={{ border: '1px solid #d9d9d9' }}
+                  scroll={{ x: 'max-content' }}
                 />
               </div>
             ))}
@@ -466,7 +469,6 @@ export default function Education() {
             </Button>
             <Button
               type="primary"
-              icon={<SaveOutlined />}
               loading={saving}
               onClick={saveAll}
             >

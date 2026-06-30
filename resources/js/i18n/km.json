@@ -11,7 +11,11 @@
   "register": "ចុះឈ្មោះ",
   "username": "ឈ្មោះអ្នកប្រើ",
   "password": "លេខសម្ងាត់",
-  "confirm_password": "បញ្ជាក់លេខសម្ងាត់ថ្មី",
+  "field_required": "សូមបញ្ចូល{{field}}",
+  "select_field_required": "សូមជ្រើសរើស{{field}}",
+  "confirm_password": "បញ្ជាក់លេខសម្ងាត់",
+  "password_least_6_char" : "ពាក្យសម្ងាត់ត្រូវតែមានយ៉ាងហោចណាស់ ៦ តួអក្សរ",
+  "password_do_not_match" : "ពាក្យសម្ងាត់មិនត្រូវគ្នាទេ!",
   "email": "អ៊ីមែល",
   "role": "តួនាទីអំឡុងបំពេញ",
   "have_account": "មានគណនីហើយ?",
@@ -207,5 +211,6 @@
   "role_and_permission" : "តួនាទី និងការអនុញ្ញាត",
   "role_permission" : "ការអនុញ្ញាតតួនាទី",
   "extra_permissions" : "សិទ្ធិបន្ថែម",
-  "extra_permissions_hint" : "ផ្ដល់ដោយផ្ទាល់ដល់អ្នកប្រើនេះ បន្ថែមលើសិទ្ធិដែលទទួលបានពីតួនាទី"
+  "extra_permissions_hint" : "ផ្ដល់ដោយផ្ទាល់ដល់អ្នកប្រើនេះ បន្ថែមលើសិទ្ធិដែលទទួលបានពីតួនាទី",
+  "dw_roster_excel"  : "ទាញយកបញ្ជី Excel"
 }

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
@@ -77,14 +78,29 @@ class AuthController extends Controller
         $user = $request->user();
 
         $data = $request->validate([
-            'name'     => 'sometimes|string|max:255',
-            'email'    => 'sometimes|email|unique:users,email,' . $user->id,
-            'username' => 'sometimes|string|unique:users,username,' . $user->id,
+            'name'         => 'sometimes|string|max:255',
+            'email'        => 'sometimes|email|unique:users,email,' . $user->id,
+            'username'     => 'sometimes|string|unique:users,username,' . $user->id,
+            'image'        => 'sometimes|nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'remove_image' => 'sometimes|boolean',
         ]);
 
+        if ($request->boolean('remove_image')) {
+            if ($user->image && Storage::disk('public')->exists($user->image)) {
+                Storage::disk('public')->delete($user->image);
+            }
+            $data['image'] = null;
+        } elseif ($request->hasFile('image')) {
+            if ($user->image && Storage::disk('public')->exists($user->image)) {
+                Storage::disk('public')->delete($user->image);
+            }
+            $data['image'] = $request->file('image')->store('user_images', 'public');
+        }
+
+        unset($data['remove_image']);
         $user->update($data);
 
-        return response()->json($user->load(['role.permissions', 'permissions']));
+        return response()->json($user->fresh()->load(['role.permissions', 'permissions']));
     }
 
     public function changePassword(Request $request)

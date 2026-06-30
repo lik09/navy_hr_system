@@ -41,8 +41,6 @@ Route::middleware('auth:sanctum')->group(function () {
     // ── Section I: General Information ───────────────────────
     // ✅ GET open to all authenticated — Dashboard needs these
     Route::get('/personnel-info',                   [PersonalInfoController::class, 'index']);
-    Route::get('/personnel-info/{id}/export/pdf',   [PersonnelExportController::class, 'pdf']);
-    Route::get('/personnel-info/{id}/export/excel', [PersonnelExportController::class, 'excel']);
     Route::get('/military-info',                    [MilitaryInfoController::class, 'index']);
     Route::get('/family-info',                      [FamilyInfoController::class, 'index']);
     Route::apiResource('children', ChildController::class)->only(['index', 'show']);
@@ -63,6 +61,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::middleware('permission:DELETE_GENERAL_INFORMATION')->group(function () {
         Route::delete('/personnel-info/{id}', [PersonalInfoController::class, 'destroy']);
         Route::apiResource('children', ChildController::class)->only(['destroy']);
+    });
+    Route::middleware('permission:DOWNLOAD_EXCEL')->group(function () {
+        Route::get('/personnel-info/export/roster', [PersonnelExportController::class, 'roster']);
+    });
+    Route::middleware('permission:DOWNLOAD_PDF')->group(function () {
+        Route::get('/personnel-info/{id}/export/pdf', [PersonnelExportController::class, 'pdf']);
     });
 
     // ── Section II: Military Service History ─────────────────
@@ -280,7 +284,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // PermissionRoute redirects every permission-denied user here.
     Route::get('/settings', [AuthController::class, 'me']);
     Route::middleware('permission:EDIT_PROFILE')->group(function () {
-        Route::put('/settings/profile', [AuthController::class, 'updateProfile']);
+        Route::post('/settings/profile', [AuthController::class, 'updateProfile']);
     });
     Route::middleware('permission:CHANGE_PASSWORD')->group(function () {
         Route::put('/settings/password', [AuthController::class, 'changePassword']);

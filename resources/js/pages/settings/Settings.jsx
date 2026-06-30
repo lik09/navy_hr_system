@@ -1,8 +1,8 @@
 import React from 'react';
-import { Form, Input, Button, Card, message, Tabs, Select, Divider, Typography, Flex } from 'antd';
-import { SaveOutlined, GlobalOutlined } from '@ant-design/icons';
+import { Form, Input, Button, Card, message, Tabs, Select, Typography, Flex, Avatar, Upload } from 'antd';
+import { SaveOutlined, GlobalOutlined, UserOutlined, CameraOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
-import api from '../../api/axios';
+import api, { apiFormData } from '../../api/axios';
 import useAuthStore from '../../store/authStore';
 import { hasPermission } from '../../config/routePermissions';
 
@@ -15,6 +15,10 @@ const Settings = () => {
   const can = (key) => hasPermission(user, key);
   const [profileForm] = Form.useForm();
   const [pwdForm] = Form.useForm();
+  const [imageFile, setImageFile]   = React.useState(null);
+  const [previewUrl, setPreviewUrl] = React.useState(user?.image_url || null);
+  const [hovering, setHovering]     = React.useState(false);
+  const [removeImage, setRemoveImage] = React.useState(false);
 
   React.useEffect(() => {
     if (user) {
@@ -23,14 +27,25 @@ const Settings = () => {
         email: user.email,
         username: user.username,
       });
+      setPreviewUrl(user.image_url || null);
+      setRemoveImage(false);
     }
   }, [user]);
 
   const saveProfile = async () => {
     const values = await profileForm.validateFields();
     try {
-      const res = await api.put('/settings/profile', values);
+      const fd = new FormData();
+      if (values.name)     fd.append('name',     values.name);
+      if (values.username) fd.append('username', values.username);
+      if (values.email)    fd.append('email',    values.email);
+      if (imageFile)       fd.append('image',    imageFile);
+      if (removeImage)     fd.append('remove_image', '1');
+
+      const res = await apiFormData('/settings/profile', 'POST', fd);
       setUser(res.data);
+      setImageFile(null);
+      setRemoveImage(false);
       message.success(t('success'));
     } catch (err) {
       const data = err.response?.data;
@@ -57,22 +72,92 @@ const Settings = () => {
       key: 'profile',
       label: t('profile'),
       children: (
-        <Form form={profileForm} layout="vertical" style={{ maxWidth: 480 }}>
-          <Form.Item name="name" label={t('name')} rules={[{ required: true }]}>
-            <Input variant="filled" />
-          </Form.Item>
-          <Form.Item name="username" label={t('username')} rules={[{ required: true }]}>
-            <Input variant="filled" />
-          </Form.Item>
-          <Form.Item name="email" label={t('email')} rules={[{ required: true, type: 'email' }]}>
-            <Input variant="filled" />
-          </Form.Item>
-          {can('EDIT_PROFILE') && (
-            <Button type="primary" icon={<SaveOutlined />} onClick={saveProfile} style={{ background: NAVY_BLUE }}>
-              {t('save')}
-            </Button>
-          )}
-        </Form>
+        <Flex style={{width: '100%'}}>
+          <Form form={profileForm} layout="vertical" style={{ maxWidth: 480 ,width: '100%'}}>
+            <div
+              style={{ position: 'relative', width: 100, margin: '10px auto 16px' }}
+              onMouseEnter={() => setHovering(true)}
+              onMouseLeave={() => setHovering(false)}
+            >
+              <Upload
+                name="image"
+                accept="image/png,image/jpeg,image/webp"
+                showUploadList={false}
+                customRequest={() => {}}
+                beforeUpload={(file) => {
+                  const allowed = ['image/jpeg', 'image/png', 'image/webp'];
+                  if (!allowed.includes(file.type)) {
+                    message.error('Only JPG / PNG / WEBP images are allowed');
+                    return Upload.LIST_IGNORE;
+                  }
+                  if (file.size / 1024 / 1024 > 2) {
+                    message.error('Image must be smaller than 2 MB');
+                    return Upload.LIST_IGNORE;
+                  }
+                  setImageFile(file);
+                  setPreviewUrl(URL.createObjectURL(file));
+                  setRemoveImage(false);
+                  return false;
+                }}
+              >
+                <div style={{ cursor: 'pointer', position: 'relative', display: 'inline-block' }}>
+                  <Avatar
+                    size={100}
+                    src={previewUrl || undefined}
+                    icon={!previewUrl && <UserOutlined />}
+                    style={{ backgroundColor: NAVY_BLUE }}
+                  />
+                  {!(previewUrl && hovering) && (
+                    <div style={{
+                      position: 'absolute', bottom: 0, right: 0,
+                      background: NAVY_BLUE, borderRadius: '50%',
+                      width: 28, height: 28, display: 'flex',
+                      alignItems: 'center', justifyContent: 'center',
+                    }}>
+                      <CameraOutlined style={{ color: '#fff', fontSize: 14 }} />
+                    </div>
+                  )}
+                </div>
+              </Upload>
+
+              {previewUrl && hovering && (
+                <div
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setPreviewUrl(null);
+                    setImageFile(null);
+                    setRemoveImage(true);
+                  }}
+                  style={{
+                    position: 'absolute', top: 0, left: 0,
+                    width: 100, height: 100,
+                    borderRadius: '50%',
+                    background: 'rgba(0,0,0,0.45)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    cursor: 'pointer', zIndex: 10,
+                  }}
+                >
+                  <DeleteOutlined style={{ color: '#ff4d4f', fontSize: 24 }} />
+                </div>
+              )}
+            </div>
+
+            <Form.Item name="name" label={t('name')} rules={[{ required: true }]}>
+              <Input variant="filled" />
+            </Form.Item>
+            <Form.Item name="username" label={t('username')} rules={[{ required: true }]}>
+              <Input variant="filled" />
+            </Form.Item>
+            <Form.Item name="email" label={t('email')} rules={[{ required: true, type: 'email' }]}>
+              <Input variant="filled" />
+            </Form.Item>
+            {can('EDIT_PROFILE') && (
+              <Button type="primary" icon={<SaveOutlined />} onClick={saveProfile} style={{ background: NAVY_BLUE }}>
+                {t('save')}
+              </Button>
+            )}
+          </Form>
+        </Flex>
       ),
     },
     can('CHANGE_PASSWORD') && {

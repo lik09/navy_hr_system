@@ -9,14 +9,32 @@ use Illuminate\Support\Facades\Storage;
 
 class PersonalInfoController extends Controller
 {
-    public function index(Request $request)
-    {
-        $records = PersonalInfo::with(['militaryInfo', 'familyInfo.children', 'creator'])
-            ->orderByDesc('id')
-            ->get();
+    // public function index(Request $request)
+    // {
+    //     $records = PersonalInfo::with(['militaryInfo', 'familyInfo.children', 'creator'])
+    //         ->orderByDesc('id')
+    //         ->get();
 
-        return response()->json($records);
-    }
+    //     return response()->json($records);
+    // }
+    public function index(Request $request)
+{
+    $records = PersonalInfo::with([
+        'militaryInfo.militaryRank',
+        'militaryInfo.position',
+        'militaryInfo.unit',
+        'militaryInfo.militaryUnit',
+        'militaryInfo.educationLevel',
+        'militaryInfo.militarySpecialty',
+        'familyInfo.children',
+        'creator',
+    ])
+        ->orderByDesc('id')
+        ->get();
+
+    return response()->json($records);
+}
+    
 
     public function store(Request $request)
     {

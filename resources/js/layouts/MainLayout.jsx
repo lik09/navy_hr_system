@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-  Layout, Menu, Button, Flex, Avatar, Dropdown, Modal, Typography, theme as antTheme,
+  Layout, Menu, Button, Flex, Avatar, Dropdown, Modal, Typography, theme as antTheme, App as AntdApp,
 } from 'antd';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -142,6 +142,7 @@ const MainLayout = () => {
     });
 
   return (
+    <AntdApp>
     <Layout style={{ minHeight: '100vh' }}>
       <Sider
         collapsible
@@ -276,7 +277,10 @@ const MainLayout = () => {
             </Button>
 
             <Flex align="center" gap={8}>
-              <Avatar size="small" icon={<UserOutlined />} style={{ backgroundColor: NAVY_BLUE }} />
+              <Avatar size="large" icon={<UserOutlined />} 
+                src={user?.image_url || undefined}
+                style={{ backgroundColor: NAVY_BLUE }} 
+              />
               <Text style={{ color: colorText, fontWeight: 500 }}>{user?.name || user?.username}</Text>
             </Flex>
           </Flex>
@@ -300,6 +304,7 @@ const MainLayout = () => {
         </Footer>
       </Layout>
     </Layout>
+    </AntdApp>
   );
 };
 

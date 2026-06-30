@@ -236,6 +236,7 @@ function MilitarySpecialty() {
         }}
         bordered
         size="middle"
+        scroll={{ x: 'max-content' }}
       />
 
       {/* Modal */}
@@ -258,7 +259,7 @@ function MilitarySpecialty() {
         cancelText={t('cancel')}
         confirmLoading={btnLoading}
         okButtonProps={{ style: { background: NAVY } }}
-        destroyOnClose
+        destroyOnHidden
       >
         <Form form={form} layout="vertical" style={{ marginTop: 16 }}>
           <Form.Item

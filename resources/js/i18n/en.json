@@ -10,8 +10,12 @@
   "login": "Login",
   "register": "Register",
   "username": "Username",
+  "field_required": "{{field}} is required",
+  "select_field_required": "{{field}} is required",
   "password": "Password",
   "confirm_password": "Confirm New Password",
+  "password_least_6_char" : "Password must be at least 6 characters",
+  "password_do_not_match" : "Passwords do not match!",
   "email": "Email",
   "role": "Role During Mission",
   "have_account": "Already have an account?",
@@ -207,5 +211,6 @@
   "role_and_permission" : "Role and Permission",
   "role_permission" : "Role Permission",
   "extra_permissions" : "Extra Permissions",
-  "extra_permissions_hint" : "Granted directly to this user, in addition to their role"
+  "extra_permissions_hint" : "Granted directly to this user, in addition to their role",
+  "dw_roster_excel"  : "Download Roster Excel"
 }

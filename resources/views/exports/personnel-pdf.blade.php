@@ -2,355 +2,649 @@
 <html lang="km">
 <head>
 <meta charset="utf-8">
-<?php
-    $khmerRegularUri = 'file://' . str_replace('\\', '/', resource_path('fonts/Battambang-Regular.ttf'));
-    $khmerBoldUri = 'file://' . str_replace('\\', '/', resource_path('fonts/Battambang-Bold.ttf'));
-?>
 <style>
-    @font-face {
-        font-family: 'Khmer';
-        font-style: normal;
-        font-weight: normal;
-        src: url('{{ $khmerRegularUri }}') format('truetype');
-    }
-    @font-face {
-        font-family: 'Khmer';
-        font-style: normal;
-        font-weight: bold;
-        src: url('{{ $khmerBoldUri }}') format('truetype');
-    }
-
+    * { font-family: 'Noto Sans Khmer', sans-serif; }
+    /* margin ផ្តល់ចន្លោះឲ្យ header/footer នៅគ្រប់ទំព័រ */
     @page {
-        size: A4 portrait;
-        margin: 130px 36px 90px 36px;
+        margin: 20px 25px 25px 25px;   /* top right bottom left */
     }
 
-    * { font-family: 'Khmer', sans-serif; }
-
-    body { font-size: 12px; color: #222; }
-
-    .pdf-header {
+    /* ===== HEADER គ្រប់ទំព័រ ===== */
+    header.pdf-header {
         position: fixed;
-        top: -100px;
+        top: 0px;              
         left: 0px;
         right: 0px;
-        text-align: center;
+        height: 20px;
+        text-align: left;
+        padding-bottom: 5px;
+        
     }
-    .pdf-header .line { border-top: 2px solid #002366; margin: 4px 0; }
-    .pdf-header .red  { color: #c00000; font-weight: bold; font-size: 15px; }
-    .pdf-header .blue { color: #002366; font-weight: bold; font-size: 13px; }
-
-    .pdf-footer {
-        position: fixed;
-        bottom: -70px;
-        left: 0px;
-        right: 0px;
-        text-align: center;
-    }
-    .pdf-footer .line { border-top: 2px solid #002366; margin-bottom: 4px; }
-    .pdf-footer .blue { color: #002366; font-weight: bold; font-size: 11px; }
-    .pdf-footer .pagenum:before { content: "ទំព័រ " counter(page); color: #c00000; font-size: 10px; }
-
-    .section-title {
-        background: #002366;
-        color: #fff;
-        padding: 6px 12px;
-        font-size: 15px;
+    header.pdf-header .h1 {    
+        font-size: 13px;
         font-weight: bold;
-        margin-bottom: 0;
+        color: #1F3864;
+        line-height: 1.4;
+        margin: 0;  
+    }
+    header.pdf-header .h2 {     
+        font-size: 10px;
+        color: #555;
+        margin: 0;  
     }
 
-    table.form-tbl { width: 100%; border-collapse: collapse; margin-bottom: 16px; }
-    table.form-tbl td {
-        border: 1px solid #bbb;
-        padding: 6px 8px;
+    /* ===== FOOTER គ្រប់ទំព័រ ===== */
+    footer.pdf-footer {
+        position: fixed;
+        width: 100%;
+        bottom: 0px;           
+        left: 0px;
+        right: 0px;
+        height: 25px;
+        text-align: right;  
+        font-size: 9px;
+        color: #555;
+        border-bottom: 2px solid #1F3864;
+        padding-top: 4px;
+        color: #1F3864;
+    }
+    .text-italic{
+        font-style: italic;
+    }
+
+    body { 
+    margin: 0px; 
+    font-size: 11px; 
+    color: #222; 
+    }
+
+    .doc-title {
+        text-align: center;
+        font-size: 14px;
+        font-weight: bold;
+        margin-top: 30px;
+        margin-bottom: 8px;
+    }
+
+    /* ════ របារផ្នែក ════ */
+    .sec-bar {
+        background: #1F3864;
+        color: #fff;
+        font-weight: bold;
         font-size: 12px;
+        padding: 5px 10px;
+        border: 1px solid #1F3864;
+        border-bottom: none;
+    }
+
+    /* ════ Page 1 — តារាង label/value ════ */
+    table.kv {
+        width: 100%;
+        border-collapse: collapse;
+        table-layout: fixed;
+        border: 1px solid #1F3864;        /* ស៊ុមក្រៅក្រាស់ ខៀវ */
+    }
+    table.kv td {
+        border: 1px solid #c5ccd6;        /* បន្ទាត់ក្នុងស្តើង ប្រផេះ */
+        padding: 6px 8px;
+        font-size: 11px;
+        vertical-align: middle;
+        line-height: 1.5;
+    }
+    table.kv td.lbl {
+        width: 150px;
+        white-space: nowrap;
+        font-weight: bold;
+    }
+    table.kv td.lbl:before { content: "- "; }
+    table.kv td.val {
+        color: #000000;
+        font-weight: normal;
+    }
+    table.kv td.photo-cell {
+        width: 130px;
+        text-align: center;
+        vertical-align: middle;
+        padding: 4px;
+    }
+    table.kv td.photo-cell img,
+    table.kv td.photo-cell > div > div {
+        border: 1px solid #1F3864;        /* ស៊ុមរូបក្រាស់ ខៀវ */
+    }
+
+    .sub { color: #555; font-weight: normal; }
+    .sub-val { color: #000000; font-weight: normal; }
+    .chk { font-size: 12px; }
+
+    /* ════ Page 2+ — តារាងទិន្នន័យ ════ */
+    .page-break { page-break-before: always; }
+
+    .sec-bar2 {
+        background: #1F3864;
+        color: #fff;
+        font-weight: bold;
+        font-size: 13px;
+        padding: 5px 10px;
+        border: 1px solid #1F3864;
+        border-bottom: none;
+        margin-top: 50px;
+    }
+
+    table.data-tbl {
+        width: 100%;
+        border-collapse: collapse;
+        table-layout: fixed;
+        border: 1px solid #1F3864;        /* ស៊ុមក្រៅក្រាស់ ខៀវ */
+    }
+    table.data-tbl th {
+        border: 1px solid #c5ccd6;
+        background: #f0f4f8;
+        color: #000000;
+        font-weight: bold;
+        font-size: 11px;
+        padding: 6px 4px;
+        text-align: center;
         vertical-align: middle;
     }
-    table.form-tbl td.lbl {
-        background: #f0f4f8;
-        font-weight: bold;
-        white-space: nowrap;
-        width: 150px;
-    }
-
-    table.data-tbl { width: 100%; border-collapse: collapse; }
-    table.data-tbl th, table.data-tbl td {
-        border: 1px solid #bbb;
+    table.data-tbl td {
+        border: 1px solid #c5ccd6;
         padding: 5px 6px;
-        font-size: 11px;
+        font-size: 10px;
         text-align: center;
+        vertical-align: middle;
+        color: #000000;
+        word-wrap: break-word;
     }
-    table.data-tbl th { background: #002366; color: #fff; }
-
-    .page-break { page-break-after: always; }
-    .empty-note { padding: 10px; text-align: center; color: #888; }
+    table.data-tbl td.empty {
+        color: #888;
+        font-style: italic;
+    }
 </style>
 </head>
 <body>
 
-<div class="pdf-header">
-    <div class="red">បញ្ជាការដ្ឋានកងទ័ពជើងទឹក / ROYAL CAMBODIAN NAVY</div>
-    <div class="line"></div>
-    <div class="blue">ស្នងការដ្ឋានប្រតិបត្តិការស្ឹក / OPERATIONS DIVISION</div>
-    <div class="line"></div>
-</div>
+<header class="pdf-header">
+    <div class="h1">បញ្ជាការដ្ឋានកងទ័ពជើងទឹក / ROYAL CAMBODIAN NAVY</div>
+</header>
 
-<div class="pdf-footer">
-    <div class="line"></div>
-    <div class="blue">ស្នងការដ្ឋានប្រតិបត្តិការស្ឹក / OPERATIONS DIVISION &nbsp;&nbsp; <span class="pagenum"></span></div>
-</div>
+<footer class="pdf-footer">
+    ស្នងការដ្ឋាន ប្រតិបត្តិការការសឹក / <span class="text-italic">OPERATIONS DIVISION</span>
+</footer>    
 
 @php
-    $fmt = fn($d) => $d ? \Illuminate\Support\Carbon::parse($d)->format('d/m/Y') : '—';
-    $loc = fn(...$p) => ($p = array_filter($p)) ? implode(' / ', $p) : '—';
-    $mi = $info->militaryInfo;
-    $fi = $info->familyInfo;
+    $fi  = $info->familyInfo;
+    $mi  = $info->militaryInfo;
+    $fmt = fn($d) => $d ? \Illuminate\Support\Carbon::parse($d)->format('d/m/Y') : '';
+
+    $photoSrc = null;
+    if ($info->photo) {
+        $photoPath = storage_path('app/public/' . $info->photo);
+        if (file_exists($photoPath)) {
+            $mime = mime_content_type($photoPath);
+            if (in_array($mime, ['image/jpeg', 'image/png'])) {
+                $photoSrc = 'data:' . $mime . ';base64,' . base64_encode(file_get_contents($photoPath));
+            }
+        }
+    }
+
+    $g = $info->gender;
+    $married   = (bool)($fi?->marital_status);
+    $cbMale    = $g === 'male'   ? '☑' : '☐';
+    $cbFemale  = $g === 'female' ? '☑' : '☐';
+    $cbSingle  = !$married ? '☑' : '☐';
+    $cbMarried =  $married ? '☑' : '☐';
+    $cbHusband = ($fi && !$fi->spouse_type) ? '☑' : '☐';
+    $cbWife    = ($fi &&  $fi->spouse_type) ? '☑' : '☐';
 @endphp
 
-{{-- ══════════════ PAGE 1 — GENERAL / MILITARY / FAMILY INFO ══════════════ --}}
-<div class="page-break">
-    <div class="section-title">I. ព័ត៌មានទូទៅ / GENERAL INFORMATION</div>
-    <table class="form-tbl">
-        <tr>
-            <td class="lbl">គោន្តនាម-នាម</td><td>{{ $info->name_kh ?: '—' }}</td>
-            <td class="lbl">ភេទ</td><td>{{ $info->gender === 'male' ? 'ប្រុស' : ($info->gender === 'female' ? 'ស្រី' : '—') }}</td>
-        </tr>
-        <tr>
-            <td class="lbl">អក្សរឡាតាំង</td><td>{{ $info->name ?: '—' }}</td>
-            <td class="lbl">អត្តលេខ</td><td>{{ $info->id_number ?: '—' }}</td>
-        </tr>
-        <tr>
-            <td class="lbl">ថ្ងៃខែឆ្នាំកំណើត</td><td colspan="3">{{ $fmt($info->date_of_birth) }}</td>
-        </tr>
-        <tr>
-            <td class="lbl">លេខអត្ត.យោធា</td><td colspan="3">{{ $info->military_id ?: '—' }}</td>
-        </tr>
-        <tr>
-            <td class="lbl">លេខអត្ត.សុីវិល</td><td colspan="3">{{ $info->civilian_id ?: '—' }}</td>
-        </tr>
-        <tr>
-            <td class="lbl">ទីកន្លែងកំណើត</td>
-            <td colspan="3">{{ $loc($info->birth_commune, $info->birth_district, $info->birth_province) }}</td>
-        </tr>
-        <tr>
-            <td class="lbl">ទីលំនៅបច្ចុប្បន្ន</td>
-            <td colspan="3">{{ $loc($info->current_commune, $info->current_district, $info->current_province) }}</td>
-        </tr>
-        <tr>
-            <td class="lbl">ទូរស័ព្ទ</td><td colspan="3">{{ $info->phone_number ?: '—' }}</td>
-        </tr>
-    </table>
+{{-- ═══════════════════════════════════════════════════════════ --}}
+{{-- ░░░░░░░░░░░░░░░░░  PAGE 1  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ --}}
+{{-- ═══════════════════════════════════════════════════════════ --}}
 
-    <div class="section-title">II. ព័ត៌មានយោធា / MILITARY INFORMATION</div>
-    <table class="form-tbl">
-        <tr><td class="lbl">ថ្ងៃខែចូលទ័ព</td><td colspan="3">{{ $fmt($mi?->military_enlistment_date) }}</td></tr>
-        <tr><td class="lbl">ឋានន្តរសក្តិ</td><td colspan="3">{{ $mi?->military_rank ?: '—' }}</td></tr>
-        <tr><td class="lbl">មុខតំណែង</td><td colspan="3">{{ $mi?->position ?: '—' }}</td></tr>
-        <tr><td class="lbl">អង្គភាព</td><td colspan="3">{{ $mi?->unit ?: '—' }}</td></tr>
-        <tr><td class="lbl">កងឯកភាព</td><td colspan="3">{{ $mi?->military_unit ?: '—' }}</td></tr>
-        <tr><td class="lbl">កំរិតវប្បធម៍</td><td colspan="3">{{ $mi?->education_level ?: '—' }}</td></tr>
-        <tr><td class="lbl">ជំនាញ-ឯកទេសយោធា</td><td colspan="3">{{ $mi?->military_specialty ?: '—' }}</td></tr>
-        <tr><td class="lbl">ថ្ងៃខែប្រកាសស័ក្តចុងក្រោយ</td><td colspan="3">{{ $fmt($mi?->last_date_military_rank) }}</td></tr>
-        <tr><td class="lbl">មុខតំណែងចុងក្រោយ</td><td colspan="3">{{ $mi?->last_position ?: '—' }}</td></tr>
-    </table>
 
-    <div class="section-title">III. ព័ត៌មានគ្រួសារ / FAMILY INFORMATION</div>
-    <table class="form-tbl">
-        <tr><td class="lbl">ស្ថានភាពគ្រួសារ</td><td colspan="3">{{ $fi?->marital_status ? 'មានគ្រួសារ' : 'នៅលីវ' }}</td></tr>
-        @if($fi?->marital_status)
-        <tr>
-            <td class="lbl">គោន្តនាម-នាម</td><td>{{ $fi->spouse_name ?: '—' }}</td>
-            <td class="lbl">ប្ដី/ប្រពន្ធ</td><td>{{ $fi->spouse_type ? 'ប្រពន្ធ' : 'ប្ដី' }}</td>
-        </tr>
-        <tr><td class="lbl">ថ្ងៃខែឆ្នាំកំណើត</td><td colspan="3">{{ $fmt($fi->spouse_dob) }}</td></tr>
-        <tr>
-            <td class="lbl">ទីកន្លែងកំណើត</td>
-            <td colspan="3">{{ $loc($fi->spouse_birth_commune, $fi->spouse_birth_district, $fi->spouse_birth_province) }}</td>
-        </tr>
-        <tr>
-            <td class="lbl">ទីលំនៅបច្ចុប្បន្ន</td>
-            <td colspan="3">{{ $loc($fi->spouse_current_commune, $fi->spouse_current_district, $fi->spouse_current_province) }}</td>
-        </tr>
-        <tr>
-            <td class="lbl">លិខិតរៀបអាពាហ៍ពិពាហ៍</td>
-            <td colspan="3">{{ $fi->marriage_certificate_number ?: '—' }} ({{ $fmt($fi->marriage_certificate_date) }})</td>
-        </tr>
-        @endif
-        <tr>
-            <td class="lbl">ចំនួនកូន</td>
-            <td colspan="3">{{ $fi?->number_of_children ?? 0 }} (ប្រុស ៖ {{ $fi?->male_children_count ?? 0 }}, ស្រី ៖ {{ $fi?->female_children_count ?? 0 }})</td>
-        </tr>
-        @foreach($fi?->children ?? [] as $i => $child)
-        <tr>
-            <td class="lbl">{{ $i + 1 }}. ឈ្មោះកូន</td><td>{{ $child->name ?: '—' }}</td>
-            <td class="lbl">ថ្ងៃខែឆ្នាំកំណើត</td><td>{{ $fmt($child->date_of_birth) }}</td>
-        </tr>
-        @endforeach
-    </table>
-</div>
+<div class="doc-title">ព័ត៌មានផ្ទាល់ខ្លួនរបស់នាយនាវី នាយនាវីរង ពលនាវី</div>
 
-{{-- ══════════════ PAGE 2 — MILITARY SERVICE HISTORY ══════════════ --}}
-<div class="page-break">
-    <div class="section-title">IV. ប្រវត្តិសេវាកម្មយោធា / MILITARY SERVICE HISTORY</div>
-    @if($info->serviceHistories->isEmpty())
-        <div class="empty-note">មិនទាន់មានទិន្នន័យ</div>
-    @else
-    <table class="data-tbl">
-        <thead>
+<div class="sec-bar">I. ព័ត៌មានផ្ទាល់ខ្លួន</div>
+
+<table class="kv">
+    {{-- ជួរ ១: គោត្តនាម + ភេទ + រូបថត (rowspan=5) --}}
+    <tr>
+        <td class="lbl">គោត្តនាម-នាម</td>
+        <td class="val">{{ $info->name_kh ?: '' }}</td>
+        <td style="width:160px; white-space:nowrap;">
+            <span class="sub">ភេទ៖</span>
+            <span class="chk">{{ $cbMale }} ប្រុស &nbsp; {{ $cbFemale }} ស្រី</span>
+        </td>
+        <td class="photo-cell" rowspan="5">
+            <div style="text-align:center;">
+                @if($photoSrc)
+                    <img src="{{ $photoSrc }}" style="width:115px; height:145px;" />
+                @else
+                    <div style="width:115px; height:145px; background:#eef2f7;
+                                color:#888; font-size:10px; line-height:145px; margin:0 auto;">
+                        មិនមានរូបភាព
+                    </div>
+                @endif
+            </div>
+        </td>
+    </tr>
+    {{-- ជួរ ២: អក្សរឡាតាំង + អត្តលេខ --}}
+    <tr>
+        <td class="lbl">អក្សរឡាតាំង</td>
+        <td class="val">{{ $info->name ?: '' }}</td>
+        <td style="white-space:nowrap;">
+            <span class="sub">អត្តលេខ៖</span>
+            <span class="sub-val">{{ $info->id_number ?: '' }}</span>
+        </td>
+    </tr>
+    {{-- ជួរ ៣: ថ្ងៃខែឆ្នាំកំណើត --}}
+    <tr>
+        <td class="lbl">ថ្ងៃខែឆ្នាំកំណើត</td>
+        <td class="val" colspan="2">{{ $fmt($info->date_of_birth) }}</td>
+    </tr>
+    {{-- ជួរ ៤: លេខអត្ត.យោធា --}}
+    <tr>
+        <td class="lbl">លេខអត្ត.យោធា</td>
+        <td class="val" colspan="2">{{ $info->military_id ?: '' }}</td>
+    </tr>
+    {{-- ជួរ ៥: លេខអត្ត.សុីវិល --}}
+    <tr>
+        <td class="lbl">លេខអត្ត.សុីវិល</td>
+        <td class="val" colspan="2">{{ $info->civilian_id ?: '' }}</td>
+    </tr>
+
+    {{-- ══ ពេញទទឹង (រូបថតចប់) ══ --}}
+    <tr>
+        <td class="lbl">ទីកន្លែងកំណើត</td>
+        <td><span class="sub">ឃុំ/សង្កាត់៖</span> <span class="sub-val">{{ $info->birth_commune ?: '' }}</span></td>
+        <td><span class="sub">ស្រុក/ខណ្ឌ៖</span> <span class="sub-val">{{ $info->birth_district ?: '' }}</span></td>
+        <td><span class="sub">ខេត្ត/ក្រុង៖</span> <span class="sub-val">{{ $info->birth_province ?: '' }}</span></td>
+        
+    </tr>
+    <tr>
+        <td class="lbl">ទីលំនៅបច្ចុប្បន្ន</td>
+        <td><span class="sub">ឃុំ/សង្កាត់៖</span> <span class="sub-val">{{ $info->current_commune ?: '' }}</span></td>
+        <td><span class="sub">ស្រុក/ខណ្ឌ៖</span> <span class="sub-val">{{ $info->current_district ?: '' }}</span></td>
+        <td><span class="sub">ខេត្ត/ក្រុង៖</span> <span class="sub-val">{{ $info->current_province ?: '' }}</span></td>
+    </tr>
+    <tr>
+        <td class="lbl">លេខទូរស័ព្ទ</td>
+        <td class="val" colspan="3">{{ $info->phone_number ?: '' }}</td>
+    </tr>
+    {{-- ── ផ្នែកយោធា (FK → ឈ្មោះ) ── --}}
+    <tr>
+        <td class="lbl">ថ្ងៃខែចូលទ័ព</td>
+        <td class="val" colspan="3">{{ $fmt($mi?->military_enlistment_date) }}</td>
+    </tr>
+    <tr>
+        <td class="lbl">ឋានន្តរសក្តិ</td>
+        <td class="val" colspan="3">{{ $mi?->militaryRank?->name_kh ?: ($mi?->militaryRank?->name ?: '') }}</td>
+    </tr>
+    <tr>
+        <td class="lbl">មុខតំណែង</td>
+        <td class="val" colspan="3">{{ $mi?->position?->name_kh ?: ($mi?->position?->name ?: '') }}</td>
+    </tr>
+    <tr>
+        <td class="lbl">អង្គភាព</td>
+        <td class="val" colspan="3">{{ $mi?->unit?->name_kh ?: ($mi?->unit?->name ?: '') }}</td>
+    </tr>
+    <tr>
+        <td class="lbl">កងឯកភាព</td>
+        <td class="val" colspan="3">{{ $mi?->militaryUnit?->name_kh ?: ($mi?->militaryUnit?->name ?: '') }}</td>
+    </tr>
+    <tr>
+        <td class="lbl">កំរិតវប្បធម៌</td>
+        <td class="val" colspan="3">{{ $mi?->educationLevel?->name_kh ?: ($mi?->educationLevel?->name ?: '') }}</td>
+    </tr>
+    <tr>
+        <td class="lbl">ជំនាញ-ឯកទេសយោធា</td>
+        <td class="val" colspan="3">{{ $mi?->militarySpecialty?->name_kh ?: ($mi?->militarySpecialty?->name ?: '') }}</td>
+    </tr>
+    <tr>
+        <td class="lbl">ថ្ងៃខែប្រកាសស័ក្តចុងក្រោយ</td>
+        <td class="val" colspan="3">{{ $fmt($mi?->last_date_military_rank) }}</td>
+    </tr>
+    <tr>
+        <td class="lbl">មុខតំណែងចុងក្រោយ</td>
+        <td class="val" colspan="3">{{ $mi?->last_position ?: '' }}</td>
+    </tr>
+
+    {{-- ── ស្ថានភាពគ្រួសារ ── --}}
+    <tr>
+        <td class="lbl">ស្ថានភាពគ្រួសារ</td>
+        <td colspan="3" class="chk">
+            {{ $cbSingle }} នៅលីវ &nbsp;&nbsp;&nbsp; {{ $cbMarried }} មានគ្រួសារ
+        </td>
+    </tr>
+
+    @if($married)
+    <tr>
+        <td class="lbl">គោត្តនាម-នាម</td>
+        <td class="val">{{ $fi->spouse_name ?: '' }}</td>
+        <td class="chk" colspan="2" style="white-space:nowrap;">{{ $cbHusband }} ប្ដី &nbsp; {{ $cbWife }} ប្រពន្ធ</td>
+    </tr>
+    <tr>
+        <td class="lbl">ថ្ងៃខែឆ្នាំកំណើត</td>
+        <td class="val" colspan="3">{{ $fmt($fi->spouse_dob) }}</td>
+    </tr>
+    <tr>
+        <td class="lbl">ទីកន្លែងកំណើត</td>
+        <td colspan="3">
+            <span class="sub">ឃុំ/សង្កាត់៖</span> <span class="sub-val">{{ $fi->spouse_birth_commune ?: '' }}</span> &nbsp;
+            <span class="sub">ស្រុក/ខណ្ឌ៖</span> <span class="sub-val">{{ $fi->spouse_birth_district ?: '' }}</span> &nbsp;
+            <span class="sub">ខេត្ត/ក្រុង៖</span> <span class="sub-val">{{ $fi->spouse_birth_province ?: '' }}</span>
+        </td>
+    </tr>
+    <tr>
+        <td class="lbl">ទីលំនៅបច្ចុប្បន្ន</td>
+        <td><span class="sub">ឃុំ/សង្កាត់៖</span> <span class="sub-val">{{ $fi->spouse_current_commune ?: '' }}</span></td>
+        <td><span class="sub">ស្រុក/ខណ្ឌ៖</span> <span class="sub-val">{{ $fi->spouse_current_district ?: '' }}</span> </td>
+        <td><span class="sub">ខេត្ត/ក្រុង៖</span> <span class="sub-val">{{ $fi->spouse_current_province ?: '' }}</span></td>
+    </tr>
+    <tr>
+        <td class="lbl">លិខិតរៀបអាពាហ៍ពិពាហ៍</td>
+        <td>
+            <span class="sub">លេខ៖</span> <span class="sub-val">{{ $fi->marriage_certificate_number ?: '' }}</span>
+        </td>
+        <td colspan="2">
+            <span class="sub-val">{{ $fmt($fi->marriage_certificate_date) }}</span>
+        </td>
+    </tr>
+    @endif
+
+    {{-- ចំនួនកូន --}}
+    <tr>
+        <td class="lbl">ចំនួនកូន</td>
+        <td colspan="3">
+            <span class="sub">សរុប៖  </span> <span class="sub-val">{{ $fi?->number_of_children ?? 0 }}</span>&nbsp;
+            <span class="sub">ប្រុស៖ </span> <span class="sub-val">{{ $fi?->male_children_count ?? 0 }}</span> &nbsp;
+            <span class="sub">ស្រី៖ </span> <span class="sub-val">{{ $fi?->female_children_count ?? 0 }}</span>
+        </td>
+    </tr>
+    {{-- បញ្ជីកូន --}}
+    @foreach($fi?->children ?? [] as $i => $child)
+    <tr>
+        <td class="lbl">{{ $i + 1 }}.ឈ្មោះកូន</td>
+        <td class="val">{{ $child->name ?: '' }}</td>
+        <td colspan="2">
+            <span class="sub">ថ្ងៃខែឆ្នាំកំណើត៖</span>
+            <span class="sub-val">{{ $fmt($child->date_of_birth) }}</span>
+        </td>
+    </tr>
+    @endforeach
+</table>
+
+{{-- ═══════════════════════════════════════════════════════════ --}}
+{{-- ░░░░░░░░░░░░░░░░░  PAGE 2  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ --}}
+{{-- ═══════════════════════════════════════════════════════════ --}}
+
+<div class="page-break"></div>
+
+<div class="sec-bar2">II. ព័ត៌មានការងារយោធា</div>
+
+<table class="data-tbl">
+    <thead>
         <tr>
-            <th>ល.រ</th><th>ថ្ងៃចូល</th><th>ថ្ងៃចេញ</th><th>ឋានន្តរសក្តិ</th>
-            <th>មុខតំណែង</th><th>ការិយាល័យ</th><th>កងឯកភាព</th><th>ទីកន្លែង</th>
+            <th colspan="2" style="width:30%;">រយៈកាលការងារ</th>
+            <th rowspan="2" style="width:14%;">ឋានន្តរសក្តិ</th>
+            <th rowspan="2" style="width:14%;">មុខតំណែង</th>
+            <th rowspan="2" style="width:14%;">ការិយាល័យ</th>
+            <th rowspan="2" style="width:14%;">កងឯកភាព</th>
+            <th rowspan="2" style="width:14%;">ទីកន្លែង</th>
         </tr>
-        </thead>
-        <tbody>
-        @foreach($info->serviceHistories as $i => $r)
+
+    </thead>
+
+    <tbody>
+        @forelse($info->serviceHistories as $r)
+        <tr class="val">
+            <td>
+                <span class="sub">{{ $fmt($r->start_date) }}</span>
+            </td>
+            <td>
+                <span class="sub">{{ $r->end_date ?: 'បច្ចុប្បន្ន' }}</span>
+            </td>
+
+            <td>{{ $r->military_rank ?: '' }}</td>
+            <td>{{ $r->position ?: '' }}</td>
+            <td>{{ $r->office ?: '' }}</td>
+            <td>{{ $r->military_unit ?: '' }}</td>
+            <td>{{ $r->place ?: '' }}</td>
+        </tr>
+        @empty
         <tr>
-            <td>{{ $i + 1 }}</td>
+            <td colspan="7" class="empty" style="padding:14px;">
+                មិនទាន់មានទិន្នន័យ
+            </td>
+        </tr>
+        @endforelse
+    </tbody>
+</table>
+
+
+{{-- ═══════════════════════════════════════════════════════════ --}}
+{{-- ░░░░░░░░░░░░░░░░░  PAGE 3  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ --}}
+{{-- ═══════════════════════════════════════════════════════════ --}}
+
+<div class="page-break"></div>
+
+<div class="sec-bar2">III. ព័ត៌មានអំពីការសិក្សា</div>
+
+<table class="data-tbl">
+    <thead>
+        <tr>
+            <th colSpan="3">រយៈកាលសិក្សា</th>
+            <th colSpan="2">ប្រភេទការអប់រំ</th>
+            <th colSpan="3">ទីកន្លែងសិក្សា</th>
+        </tr>
+        <tr>
+            <th colSpan="2">ឆ្នាំសិក្សា</th>
+            <th>រយៈពេល</th>
+            <th>កំរិតសិក្សា</th>
+            <th>ឈ្មោះវគ្គសិក្សា</th>
+            <th>ឈ្មោះគ្រឹះស្ថានអប់រំ</th>
+            <th>ក្នុងប្រទេស</th>
+            <th>ក្រៅប្រទេស</th>
+        </tr>
+
+    </thead>
+
+    <tbody>
+        @forelse($info->education as $r)
+        <tr>
+            <td>
+                <span class="sub">{{ $r->from_year ?: '' }}</span>
+            </td>
+            <td>
+                <span class="sub">{{ $r->to_year ?: '' }}</span>
+            </td>
+
+            <td>{{ $r->duration ?: '' }}</td>
+            <td>{{ $r->education_level ?: '' }}</td>
+            <td>{{ $r->course_name ?: '' }}</td>
+            <td>{{ $r->institution_name ?: '' }}</td>
+            <td>{{ $r->is_domestic ?: '' }}</td>
+            <td>{{ $r->is_overseas ?: '' }}</td>
+        </tr>
+        @empty
+        <tr>
+            <td colspan="8" class="empty" style="padding:14px;">
+                មិនទាន់មានទិន្នន័យ
+            </td>
+        </tr>
+        @endforelse
+    </tbody>
+</table>
+
+
+
+{{-- ═══════════════════════════════════════════════════════════ --}}
+{{-- ░░░░░░░░░░░░░░░░░  PAGE 4  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ --}}
+{{-- ═══════════════════════════════════════════════════════════ --}}
+
+<div class="page-break"></div>
+
+<div class="sec-bar2">IV. ព័ត៌មានអំពីជំនាញ-ឯកទេស (បំប៉ន)</div>
+
+<table class="data-tbl">
+    <thead>
+        <tr>
+            <th colSpan="2">រយៈកាលសិក្សា</th>
+            <th colSpan="3">ប្រភេទការអប់រំ</th>
+            <th colSpan="3">ទីកន្លែងសិក្សា</th>
+        </tr>
+        <tr>
+            <th>រយៈពេល</th>
+            <th>ចុះថ្ងៃខែឆ្នាំ</th>
+            <th>ប្រភេទជំនាញ</th>
+            <th>ឯកទេស</th>
+            <th>កំរិត</th>
+            <th>ឈ្មោះគ្រឹះស្ថានអប់រំ</th>
+            <th>ក្នុងប្រទេស</th>
+            <th>ក្រៅប្រទេស</th>
+        </tr>
+
+    </thead>
+
+    <tbody>
+        @forelse($info->specializedTrainings as $r)
+        <tr>
+            <td>{{ $r->duration_study ?: '' }}</td>
+            <td>{{ $r->register_date ?: '' }}</td>
+            <td>{{ $r->specialty_type ?: '' }}</td>
+            <td>{{ $r->specialty ?: '' }}</td>
+            <td>{{ $r->education_level ?: '' }}</td>
+            <td>{{ $r->institution_name ?: '' }}</td>
+            <td>{{ $r->is_domestic ?: '' }}</td>
+            <td>{{ $r->is_overseas ?: '' }}</td>
+           
+        </tr>
+        @empty
+        <tr>
+            <td colspan="8" class="empty" style="padding:14px;">
+                មិនទាន់មានទិន្នន័យ
+            </td>
+        </tr>
+        @endforelse
+    </tbody>
+</table>
+
+
+{{-- ═══════════════════════════════════════════════════════════ --}}
+{{-- ░░░░░░░░░░░░░░░░░  PAGE 5  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ --}}
+{{-- ═══════════════════════════════════════════════════════════ --}}
+
+<div class="page-break"></div>
+
+<div class="sec-bar2">V. ព័ត៌មានអំពីបេសកម្ម</div>
+
+<table class="data-tbl">
+    <thead>
+        <tr>
+            <th>ថ្ងៃចាប់ផ្ដើម</th>
+            <th>រយៈពេល</th>
+            <th>ប្រភេទជំនាញ</th>
+            <th>ឯកទេស</th>
+            <th>កំរិត</th>
+            <th>ឈ្មោះគ្រឹះស្ថានអប់រំ</th>
+            <th>ក្នុងប្រទេស</th>
+        </tr>
+
+    </thead>
+
+    <tbody>
+        @forelse($info->missions as $r)
+        <tr>
             <td>{{ $fmt($r->start_date) }}</td>
-            <td>{{ $r->end_date ?: '—' }}</td>
-            <td>{{ $r->military_rank ?: '—' }}</td>
-            <td>{{ $r->position ?: '—' }}</td>
-            <td>{{ $r->office ?: '—' }}</td>
-            <td>{{ $r->military_unit ?: '—' }}</td>
-            <td>{{ $r->place ?: '—' }}</td>
+            <td>{{ $r->duration ?: '' }}</td>
+            <td>{{ $r->mission_name ?: '' }}</td>
+            <td>{{ $r->mission_type ?: '' }}</td>
+            <td>{{ $r->assigned_unit ?: '' }}</td>
+            <td>{{ $r->role_during_mission ?: '' }}</td>
+            <td>{{ $r->result ?: '' }}</td>
+           
         </tr>
-        @endforeach
-        </tbody>
-    </table>
-    @endif
-</div>
+        @empty
+        <tr>
+            <td colspan="7" class="empty" style="padding:14px;">
+                មិនទាន់មានទិន្នន័យ
+            </td>
+        </tr>
+        @endforelse
+    </tbody>
+</table>
 
-{{-- ══════════════ PAGE 3 — EDUCATION ══════════════ --}}
-<div class="page-break">
-    <div class="section-title">V. ការសិក្សា / EDUCATION</div>
-    @if($info->education->isEmpty())
-        <div class="empty-note">មិនទាន់មានទិន្នន័យ</div>
-    @else
-    <table class="data-tbl">
-        <thead>
-        <tr>
-            <th>ល.រ</th><th>ពីឆ្នាំ</th><th>ដល់ឆ្នាំ</th><th>រយៈពេល</th><th>កំរិតវប្បធម៍</th>
-            <th>ឈ្មោះវគ្គសិក្សា</th><th>គ្រឹះស្ថានសិក្សា</th><th>ក្នុងប្រទេស</th><th>ក្រៅប្រទេស</th>
-        </tr>
-        </thead>
-        <tbody>
-        @foreach($info->education as $i => $r)
-        <tr>
-            <td>{{ $i + 1 }}</td>
-            <td>{{ $r->from_year ?: '—' }}</td>
-            <td>{{ $r->to_year ?: '—' }}</td>
-            <td>{{ $r->duration ?: '—' }}</td>
-            <td>{{ $r->education_level ?: '—' }}</td>
-            <td>{{ $r->course_name ?: '—' }}</td>
-            <td>{{ $r->institution_name ?: '—' }}</td>
-            <td>{{ $r->is_domestic ?: '—' }}</td>
-            <td>{{ $r->is_overseas ?: '—' }}</td>
-        </tr>
-        @endforeach
-        </tbody>
-    </table>
-    @endif
-</div>
 
-{{-- ══════════════ PAGE 4 — SPECIALIZED TRAINING ══════════════ --}}
-<div class="page-break">
-    <div class="section-title">VI. ការបង្ហាត់បង្រៀនឯកទេស / SPECIALIZED TRAINING</div>
-    @if($info->specializedTrainings->isEmpty())
-        <div class="empty-note">មិនទាន់មានទិន្នន័យ</div>
-    @else
-    <table class="data-tbl">
-        <thead>
-        <tr>
-            <th>ល.រ</th><th>រយៈពេលសិក្សា</th><th>ថ្ងៃចូលរៀន</th><th>ប្រភេទឯកទេស</th>
-            <th>ឯកទេស</th><th>កំរិតវប្បធម៍</th><th>គ្រឹះស្ថានសិក្សា</th><th>ក្នុងប្រទេស</th><th>ក្រៅប្រទេស</th>
-        </tr>
-        </thead>
-        <tbody>
-        @foreach($info->specializedTrainings as $i => $r)
-        <tr>
-            <td>{{ $i + 1 }}</td>
-            <td>{{ $r->duration_study ?: '—' }}</td>
-            <td>{{ $r->register_date ?: '—' }}</td>
-            <td>{{ $r->specialty_type ?: '—' }}</td>
-            <td>{{ $r->specialty ?: '—' }}</td>
-            <td>{{ $r->education_level ?: '—' }}</td>
-            <td>{{ $r->institution_name ?: '—' }}</td>
-            <td>{{ $r->is_domestic ?: '—' }}</td>
-            <td>{{ $r->is_overseas ?: '—' }}</td>
-        </tr>
-        @endforeach
-        </tbody>
-    </table>
-    @endif
-</div>
+{{-- ═══════════════════════════════════════════════════════════ --}}
+{{-- ░░░░░░░░░░░░░░░░░  PAGE 6  ░░░░░░░░░░░░░░░░░░░░░░░ --}}
+{{-- ═══════════════════════════════════════════════════════════ --}}
 
-{{-- ══════════════ PAGE 5 — MISSIONS ══════════════ --}}
-<div class="page-break">
-    <div class="section-title">VII. បេសកកម្ម / MISSIONS</div>
-    @if($info->missions->isEmpty())
-        <div class="empty-note">មិនទាន់មានទិន្នន័យ</div>
-    @else
-    <table class="data-tbl">
-        <thead>
-        <tr>
-            <th>ល.រ</th><th>ថ្ងៃចាប់ផ្តើម</th><th>រយៈពេល</th><th>ឈ្មោះបេសកកម្ម</th>
-            <th>ប្រភេទបេសកកម្ម</th><th>អង្គភាពចំណាត់ការ</th><th>តួនាទីក្នុងបេសកកម្ម</th><th>លទ្ធផល</th>
-        </tr>
-        </thead>
-        <tbody>
-        @foreach($info->missions as $i => $r)
-        <tr>
-            <td>{{ $i + 1 }}</td>
-            <td>{{ $fmt($r->start_date) }}</td>
-            <td>{{ $r->duration ?: '—' }}</td>
-            <td>{{ $r->mission_name ?: '—' }}</td>
-            <td>{{ $r->mission_type ?: '—' }}</td>
-            <td>{{ $r->assigned_unit ?: '—' }}</td>
-            <td>{{ $r->role_during_mission ?: '—' }}</td>
-            <td>{{ $r->result ?: '—' }}</td>
-        </tr>
-        @endforeach
-        </tbody>
-    </table>
-    @endif
-</div>
+<div class="page-break"></div>
 
-{{-- ══════════════ PAGE 6 — HEALTH ══════════════ --}}
-<div>
-    <div class="section-title">VIII. សុខភាព / HEALTH</div>
-    @if($info->health->isEmpty())
-        <div class="empty-note">មិនទាន់មានទិន្នន័យ</div>
-    @else
-    <table class="data-tbl">
-        <thead>
-        <tr>
-            <th>ល.រ</th><th>ថ្ងៃពិនិត្យ</th><th>ទម្ងន់</th><th>កម្ពស់</th><th>BMI</th>
-            <th>សម្ពាធឈាម</th><th>ស្ថានភាពរាងកាយ</th><th>ការចាក់វ៉ាក់សាំង</th>
-            <th>ជំងឺរ៉ាំរ៉ៃ</th><th>ការប្រើថ្នាំទៀងទាត់</th><th>វេជ្ជបណ្ឌិតទទួលបន្ទុក</th><th>ថ្ងៃពិនិត្យលើកក្រោយ</th>
-        </tr>
-        </thead>
-        <tbody>
-        @foreach($info->health as $i => $r)
-        <tr>
-            <td>{{ $i + 1 }}</td>
-            <td>{{ $fmt($r->health_check_date) }}</td>
-            <td>{{ $r->weight ?? '—' }}</td>
-            <td>{{ $r->height ?? '—' }}</td>
-            <td>{{ $r->bmi_standard_level ?? '—' }}</td>
-            <td>{{ $r->blood_pressure ?: '—' }}</td>
-            <td>{{ $r->physical_condition ?: '—' }}</td>
-            <td>{{ $r->vaccination ?: '—' }}</td>
-            <td>{{ $r->chronic_disease ?: '—' }}</td>
-            <td>{{ $r->regular_medication ?: '—' }}</td>
-            <td>{{ $r->assigned_doctor ?: '—' }}</td>
-            <td>{{ $fmt($r->next_health_check_date) }}</td>
-        </tr>
-        @endforeach
-        </tbody>
-    </table>
-    @endif
-</div>
+<div class="sec-bar2">VI. ព័ត៌មានអំពីសុខភាព</div>
+
+@php
+    // បើ health ជា hasMany → យក record ដំបូង; បើ hasOne → ប្រើផ្ទាល់
+    $h = $info->health instanceof \Illuminate\Support\Collection
+        ? $info->health->first()
+        : $info->health;
+@endphp
+
+<table class="kv">
+    {{-- ថ្ងៃពិនិត្យសុខភាព --}}
+    <tr>
+        <td class="lbl">ថ្ងៃពិនិត្យសុខភាព</td>
+        <td class="val" colspan="5">{{ $fmt($h?->health_check_date) }}</td>
+    </tr>
+
+    {{-- ទម្ងន់ + កម្ពស់ + BMI (៣ field ក្នុងជួរតែ ១) --}}
+    <tr>
+        <td class="lbl">ទម្ងន់</td>
+        <td class="val" style="width:120px;">{{ $h?->weight ?? '' }} <span class="sub">kg</span></td>
+        <td class="lbl">កម្ពស់</td>
+        <td class="val" style="width:120px;">{{ $h?->height ?? '' }} <span class="sub">cm</span></td>
+        <td class="lbl">កំរិតស្តង់ដា</td>
+        <td class="val">{{ $h?->bmi_standard_level ?? '' }} <span class="sub">BMI</span></td>
+    </tr>
+
+    {{-- សម្ពាធឈាម + កាយសម្បទា --}}
+    <tr>
+        <td class="lbl">សម្ពាធឈាម</td>
+        <td class="val" colspan="2">{{ $h?->blood_pressure ?: '' }}</td>
+        <td class="lbl">កាយសម្បទា</td>
+        <td class="val" colspan="2">{{ $h?->physical_condition ?: '' }}</td>
+    </tr>
+
+    {{-- វ៉ាក់សាំង --}}
+    <tr>
+        <td class="lbl">វ៉ាក់សាំង</td>
+        <td class="val" colspan="5">{{ $h?->vaccination ?: '' }}</td>
+    </tr>
+
+    {{-- ជំងឺប្រចាំកាយ --}}
+    <tr>
+        <td class="lbl">ជំងឺប្រចាំកាយ</td>
+        <td class="val" colspan="5">{{ $h?->chronic_disease ?: 'គ្មាន' }}</td>
+    </tr>
+
+    {{-- ថ្នាំប្រចាំកាយ --}}
+    <tr>
+        <td class="lbl">ថ្នាំប្រចាំកាយ</td>
+        <td class="val" colspan="5">{{ $h?->regular_medication ?: 'គ្មាន' }}</td>
+    </tr>
+
+    {{-- គ្រូពេទ្យប្រចាំ --}}
+    <tr>
+        <td class="lbl">គ្រូពេទ្យប្រចាំ</td>
+        <td class="val" colspan="5">{{ $h?->assigned_doctor ?: 'គ្មាន' }}</td>
+    </tr>
+
+    {{-- ពិនិត្យសុខភាពបន្ទាប់ --}}
+    <tr>
+        <td class="lbl">ពិនិត្យសុខភាពបន្ទាប់</td>
+        <td class="val" colspan="5">{{ $fmt($h?->next_health_check_date) }}</td>
+    </tr>
+</table>
 
 </body>
 </html>
