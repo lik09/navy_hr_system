@@ -4,65 +4,18 @@
 <meta charset="utf-8">
 <style>
     * { font-family: 'Noto Sans Khmer', sans-serif; }
-    /* margin ផ្តល់ចន្លោះឲ្យ header/footer នៅគ្រប់ទំព័រ */
-    @page {
-        margin: 20px 25px 25px 25px;   /* top right bottom left */
-    }
 
-    /* ===== HEADER គ្រប់ទំព័រ ===== */
-    header.pdf-header {
-        position: fixed;
-        top: 0px;              
-        left: 0px;
-        right: 0px;
-        height: 20px;
-        text-align: left;
-        padding-bottom: 5px;
-        
-    }
-    header.pdf-header .h1 {    
-        font-size: 13px;
-        font-weight: bold;
-        color: #1F3864;
-        line-height: 1.4;
-        margin: 0;  
-    }
-    header.pdf-header .h2 {     
-        font-size: 10px;
-        color: #555;
-        margin: 0;  
-    }
-
-    /* ===== FOOTER គ្រប់ទំព័រ ===== */
-    footer.pdf-footer {
-        position: fixed;
-        width: 100%;
-        bottom: 0px;           
-        left: 0px;
-        right: 0px;
-        height: 25px;
-        text-align: right;  
-        font-size: 9px;
-        color: #555;
-        border-bottom: 2px solid #1F3864;
-        padding-top: 4px;
-        color: #1F3864;
-    }
-    .text-italic{
-        font-style: italic;
-    }
-
-    body { 
-    margin: 0px; 
-    font-size: 11px; 
-    color: #222; 
+    body {
+    margin: 0px;
+    font-size: 11px;
+    color: #222;
     }
 
     .doc-title {
         text-align: center;
         font-size: 14px;
         font-weight: bold;
-        margin-top: 30px;
+        /* margin-top: 5px; */
         margin-bottom: 8px;
     }
 
@@ -89,7 +42,10 @@
         padding: 6px 8px;
         font-size: 11px;
         vertical-align: middle;
-        line-height: 1.5;
+        line-height: 1.7;
+        word-wrap: break-word;
+        word-break: break-all;
+
     }
     table.kv td.lbl {
         width: 150px;
@@ -127,8 +83,10 @@
         padding: 5px 10px;
         border: 1px solid #1F3864;
         border-bottom: none;
-        margin-top: 50px;
+        margin-top: 5px;
     }
+
+    /* .title-moul { font-family: 'moul', 'notosanskhmer'; } */
 
     table.data-tbl {
         width: 100%;
@@ -163,14 +121,6 @@
 </head>
 <body>
 
-<header class="pdf-header">
-    <div class="h1">បញ្ជាការដ្ឋានកងទ័ពជើងទឹក / ROYAL CAMBODIAN NAVY</div>
-</header>
-
-<footer class="pdf-footer">
-    ស្នងការដ្ឋាន ប្រតិបត្តិការការសឹក / <span class="text-italic">OPERATIONS DIVISION</span>
-</footer>    
-
 @php
     $fi  = $info->familyInfo;
     $mi  = $info->militaryInfo;
@@ -202,9 +152,9 @@
 {{-- ═══════════════════════════════════════════════════════════ --}}
 
 
-<div class="doc-title">ព័ត៌មានផ្ទាល់ខ្លួនរបស់នាយនាវី នាយនាវីរង ពលនាវី</div>
+<div class="doc-title title-moul">ព័ត៌មានផ្ទាល់ខ្លួនរបស់នាយនាវី នាយនាវីរង ពលនាវី</div>
 
-<div class="sec-bar">I. ព័ត៌មានផ្ទាល់ខ្លួន</div>
+<div class="sec-bar title-moul">I. ព័ត៌មានផ្ទាល់ខ្លួន</div>
 
 <table class="kv">
     {{-- ជួរ ១: គោត្តនាម + ភេទ + រូបថត (rowspan=5) --}}
@@ -380,17 +330,17 @@
 
 <div class="page-break"></div>
 
-<div class="sec-bar2">II. ព័ត៌មានការងារយោធា</div>
+<div class="sec-bar2 title-moul">II. ព័ត៌មានការងារយោធា</div>
 
 <table class="data-tbl">
     <thead>
         <tr>
             <th colspan="2" style="width:30%;">រយៈកាលការងារ</th>
-            <th rowspan="2" style="width:14%;">ឋានន្តរសក្តិ</th>
-            <th rowspan="2" style="width:14%;">មុខតំណែង</th>
-            <th rowspan="2" style="width:14%;">ការិយាល័យ</th>
-            <th rowspan="2" style="width:14%;">កងឯកភាព</th>
-            <th rowspan="2" style="width:14%;">ទីកន្លែង</th>
+            <th style="width:14%;">ឋានន្តរសក្តិ</th>
+            <th style="width:14%;">មុខតំណែង</th>
+            <th style="width:14%;">ការិយាល័យ</th>
+            <th style="width:14%;">កងឯកភាព</th>
+            <th style="width:14%;">ទីកន្លែង</th>
         </tr>
 
     </thead>
@@ -428,7 +378,7 @@
 
 <div class="page-break"></div>
 
-<div class="sec-bar2">III. ព័ត៌មានអំពីការសិក្សា</div>
+<div class="sec-bar2 title-moul">III. ព័ត៌មានអំពីការសិក្សា</div>
 
 <table class="data-tbl">
     <thead>
@@ -484,7 +434,7 @@
 
 <div class="page-break"></div>
 
-<div class="sec-bar2">IV. ព័ត៌មានអំពីជំនាញ-ឯកទេស (បំប៉ន)</div>
+<div class="sec-bar2 title-moul">IV. ព័ត៌មានអំពីជំនាញ-ឯកទេស (បំប៉ន)</div>
 
 <table class="data-tbl">
     <thead>
@@ -494,14 +444,14 @@
             <th colSpan="3">ទីកន្លែងសិក្សា</th>
         </tr>
         <tr>
-            <th>រយៈពេល</th>
-            <th>ចុះថ្ងៃខែឆ្នាំ</th>
-            <th>ប្រភេទជំនាញ</th>
-            <th>ឯកទេស</th>
-            <th>កំរិត</th>
-            <th>ឈ្មោះគ្រឹះស្ថានអប់រំ</th>
-            <th>ក្នុងប្រទេស</th>
-            <th>ក្រៅប្រទេស</th>
+            <th style="width:9%;">រយៈពេល</th>
+            <th style="width:11%;">ចុះថ្ងៃខែឆ្នាំ</th>
+            <th style="width:12%;">ប្រភេទជំនាញ</th>
+            <th style="width:12%;">ឯកទេស</th>
+            <th style="width:8%;">កំរិត</th>
+            <th style="width:28%;">ឈ្មោះគ្រឹះស្ថានអប់រំ</th>
+            <th style="width:10%;">ក្នុងប្រទេស</th>
+            <th style="width:10%;">ក្រៅប្រទេស</th>
         </tr>
 
     </thead>
@@ -536,18 +486,18 @@
 
 <div class="page-break"></div>
 
-<div class="sec-bar2">V. ព័ត៌មានអំពីបេសកម្ម</div>
+<div class="sec-bar2 title-moul">V. ព័ត៌មានអំពីបេសកម្ម</div>
 
 <table class="data-tbl">
     <thead>
         <tr>
-            <th>ថ្ងៃចាប់ផ្ដើម</th>
-            <th>រយៈពេល</th>
-            <th>ប្រភេទជំនាញ</th>
-            <th>ឯកទេស</th>
-            <th>កំរិត</th>
-            <th>ឈ្មោះគ្រឹះស្ថានអប់រំ</th>
-            <th>ក្នុងប្រទេស</th>
+            <th style="width:12%;">ថ្ងៃចាប់ផ្ដើម</th>
+            <th style="width:10%;">រយៈពេល</th>
+            <th style="width:16%;">ឈ្មោះបេសកម្ម</th>
+            <th style="width:16%;">ប្រភេទបេសកម្ម</th>
+            <th style="width:12%;">កងឯកភាពបំពេញ</th>
+            <th style="width:24%;">តួនាទីអំឡុងបំពេញ</th>
+            <th style="width:10%;">លទ្ធផល</th>
         </tr>
 
     </thead>
@@ -581,7 +531,7 @@
 
 <div class="page-break"></div>
 
-<div class="sec-bar2">VI. ព័ត៌មានអំពីសុខភាព</div>
+<div class="sec-bar2 title-moul">VI. ព័ត៌មានអំពីសុខភាព</div>
 
 @php
     // បើ health ជា hasMany → យក record ដំបូង; បើ hasOne → ប្រើផ្ទាល់
@@ -599,49 +549,49 @@
 
     {{-- ទម្ងន់ + កម្ពស់ + BMI (៣ field ក្នុងជួរតែ ១) --}}
     <tr>
-        <td class="lbl">ទម្ងន់</td>
+        <td class="lbl">- ទម្ងន់</td>
         <td class="val" style="width:120px;">{{ $h?->weight ?? '' }} <span class="sub">kg</span></td>
-        <td class="lbl">កម្ពស់</td>
+        <td class="lbl">- កម្ពស់</td>
         <td class="val" style="width:120px;">{{ $h?->height ?? '' }} <span class="sub">cm</span></td>
-        <td class="lbl">កំរិតស្តង់ដា</td>
-        <td class="val">{{ $h?->bmi_standard_level ?? '' }} <span class="sub">BMI</span></td>
+        <td class="lbl">- កំរិតស្តង់ដា</td>
+        <td class="val" style="width:120px;">{{ $h?->bmi_standard_level ?? '' }} <span class="sub">BMI</span></td>
     </tr>
 
     {{-- សម្ពាធឈាម + កាយសម្បទា --}}
     <tr>
-        <td class="lbl">សម្ពាធឈាម</td>
+        <td class="lbl">- សម្ពាធឈាម</td>
         <td class="val" colspan="2">{{ $h?->blood_pressure ?: '' }}</td>
-        <td class="lbl">កាយសម្បទា</td>
+        <td class="lbl">- កាយសម្បទា</td>
         <td class="val" colspan="2">{{ $h?->physical_condition ?: '' }}</td>
     </tr>
 
     {{-- វ៉ាក់សាំង --}}
     <tr>
-        <td class="lbl">វ៉ាក់សាំង</td>
+        <td class="lbl">- វ៉ាក់សាំង</td>
         <td class="val" colspan="5">{{ $h?->vaccination ?: '' }}</td>
     </tr>
 
     {{-- ជំងឺប្រចាំកាយ --}}
     <tr>
-        <td class="lbl">ជំងឺប្រចាំកាយ</td>
+        <td class="lbl">- ជំងឺប្រចាំកាយ</td>
         <td class="val" colspan="5">{{ $h?->chronic_disease ?: 'គ្មាន' }}</td>
     </tr>
 
     {{-- ថ្នាំប្រចាំកាយ --}}
     <tr>
-        <td class="lbl">ថ្នាំប្រចាំកាយ</td>
+        <td class="lbl">- ថ្នាំប្រចាំកាយ</td>
         <td class="val" colspan="5">{{ $h?->regular_medication ?: 'គ្មាន' }}</td>
     </tr>
 
     {{-- គ្រូពេទ្យប្រចាំ --}}
     <tr>
-        <td class="lbl">គ្រូពេទ្យប្រចាំ</td>
+        <td class="lbl">- គ្រូពេទ្យប្រចាំ</td>
         <td class="val" colspan="5">{{ $h?->assigned_doctor ?: 'គ្មាន' }}</td>
     </tr>
 
     {{-- ពិនិត្យសុខភាពបន្ទាប់ --}}
     <tr>
-        <td class="lbl">ពិនិត្យសុខភាពបន្ទាប់</td>
+        <td class="lbl">- ពិនិត្យសុខភាពបន្ទាប់</td>
         <td class="val" colspan="5">{{ $fmt($h?->next_health_check_date) }}</td>
     </tr>
 </table>

@@ -37,26 +37,26 @@ class PersonalInfo extends Model
 
     public function serviceHistories()
     {
-        return $this->hasMany(MilitaryServiceHistory::class);
+        return $this->hasMany(MilitaryServiceHistory::class)->orderBy('id');
     }
 
     public function education()
     {
-        return $this->hasMany(Education::class);
+        return $this->hasMany(Education::class)->orderBy('id');
     }
 
     public function specializedTrainings()
     {
-        return $this->hasMany(SpecializedTraining::class);
+        return $this->hasMany(SpecializedTraining::class)->orderBy('id');
     }
 
     public function missions()
     {
-        return $this->hasMany(Mission::class);
+        return $this->hasMany(Mission::class)->orderBy('id');
     }
 
     public function health()
     {
-        return $this->hasMany(Health::class);
+        return $this->hasMany(Health::class)->orderBy('id');
     }
 }

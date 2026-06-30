@@ -40,21 +40,33 @@ class PersonnelExportController extends Controller
         $defaultFontDirs = (new ConfigVariables())->getDefaults()['fontDir'];
         $defaultFontData = (new FontVariables())->getDefaults()['fontdata'];
 
+        $fontdata = $defaultFontData + [
+            'notosanskhmer' => ['R' => 'KhmerOSSiemreap.ttf', 'useOTL' => 0xFF, 'useKashida' => 75],
+        ];
+        if (file_exists(storage_path('fonts/Moul-Regular.ttf'))) {
+            $fontdata['moul'] = ['R' => 'Moul-Regular.ttf', 'useOTL' => 0xFF, 'useKashida' => 75];
+        }
+
         $mpdf = new Mpdf([
-            'mode'         => 'utf-8',
-            'format'       => 'A4',
-            'default_font' => 'notosanskhmer',
-            'fontDir'      => array_merge($defaultFontDirs, [storage_path('fonts')]),
-            'fontdata'     => $defaultFontData + [
-                'notosanskhmer' => [
-                    'R'          => 'KhmerOSSiemreap.ttf',
-                    'useOTL'     => 0xFF,
-                    'useKashida' => 75,
-                ],
-            ],
-            'tempDir'      => storage_path('mpdf_tmp'),
+            'mode'          => 'utf-8',
+            'format'        => 'A4',
+            'default_font'  => 'notosanskhmer',
+            'fontDir'       => array_merge($defaultFontDirs, [storage_path('fonts')]),
+            'fontdata'      => $fontdata,
+            'tempDir'       => storage_path('mpdf_tmp'),
+            'margin_top'    => 16,
+            'margin_bottom' => 20,
+            'margin_header' => 10,
+            'margin_footer' => 10,
+            'margin_left'   => 10,
+            'margin_right'  => 10,
         ]);
 
+        $headerHtml = '<p style="font-family: notosanskhmer; font-size: 13px; font-weight: bold; color: #1F3864; margin: 0; padding: 0; line-height: 1.4;">បញ្ជាការដ្ឋានកងទ័ពជើងទឹក / ROYAL CAMBODIAN NAVY</p>';
+        $footerHtml = '<p style="font-family: notosanskhmer; font-size: 9px; color: #1F3864; text-align: right; border-bottom: 2px solid #1F3864; padding-bottom: 3px; margin: 0;">ស្នងការដ្ឋាន ប្រតិបត្តិការការសឹក / <em>OPERATIONS DIVISION</em></p>';
+
+        $mpdf->SetHTMLHeader($headerHtml);
+        $mpdf->SetHTMLFooter($footerHtml);
         $mpdf->WriteHTML($html);
 
         return $mpdf->Output('', \Mpdf\Output\Destination::STRING_RETURN);
