@@ -9,7 +9,9 @@ use App\Models\PersonalInfo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Facades\Excel;
-use Spatie\Browsershot\Browsershot;
+use Mpdf\Config\ConfigVariables;
+use Mpdf\Config\FontVariables;
+use Mpdf\Mpdf;
 
 class PersonnelExportController extends Controller
 {
@@ -35,14 +37,27 @@ class PersonnelExportController extends Controller
     {
         $html = view($view, $data)->render();
 
-        return Browsershot::html($html)
-            ->setChromePath(env('CHROME_BINARY_PATH', '/usr/bin/chromium-browser'))
-            ->setNodeModulePath(base_path('node_modules'))
-            ->noSandbox()
-            ->format('A4')
-            ->showBackground()
-            ->timeout(60)
-            ->pdf();
+        $defaultFontDirs = (new ConfigVariables())->getDefaults()['fontDir'];
+        $defaultFontData = (new FontVariables())->getDefaults()['fontdata'];
+
+        $mpdf = new Mpdf([
+            'mode'         => 'utf-8',
+            'format'       => 'A4',
+            'default_font' => 'notosanskhmer',
+            'fontDir'      => array_merge($defaultFontDirs, [storage_path('fonts')]),
+            'fontdata'     => $defaultFontData + [
+                'notosanskhmer' => [
+                    'R'          => 'KhmerOSSiemreap.ttf',
+                    'useOTL'     => 0xFF,
+                    'useKashida' => 75,
+                ],
+            ],
+            'tempDir'      => storage_path('mpdf_tmp'),
+        ]);
+
+        $mpdf->WriteHTML($html);
+
+        return $mpdf->Output('', \Mpdf\Output\Destination::STRING_RETURN);
     }
 
     public function pdf(Request $request, $id)
