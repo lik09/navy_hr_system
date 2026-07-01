@@ -15,7 +15,6 @@
         text-align: center;
         font-size: 14px;
         font-weight: bold;
-        /* margin-top: 5px; */
         margin-bottom: 8px;
     }
 
@@ -28,6 +27,11 @@
         padding: 5px 10px;
         border: 1px solid #1F3864;
         border-bottom: none;
+    }
+
+    .num-sec-bar{
+       font-family: 'Noto Sans Khmer';
+       font-weight: bold;
     }
 
     /* ════ Page 1 — តារាង label/value ════ */
@@ -44,7 +48,6 @@
         vertical-align: middle;
         line-height: 1.7;
         word-wrap: break-word;
-        word-break: break-all;
 
     }
     table.kv td.lbl {
@@ -71,6 +74,7 @@
     .sub { color: #555; font-weight: normal; }
     .sub-val { color: #000000; font-weight: normal; }
     .chk { font-size: 12px; }
+    .chkbox { font-family: dejavusans; font-size: 13px; }
 
     /* ════ Page 2+ — តារាងទិន្នន័យ ════ */
     .page-break { page-break-before: always; }
@@ -86,7 +90,10 @@
         margin-top: 5px;
     }
 
-    /* .title-moul { font-family: 'moul', 'notosanskhmer'; } */
+    .title-moul { 
+        font-family: 'moul', 'notosanskhmer'; 
+        font-weight: 400;
+    }
 
     table.data-tbl {
         width: 100%;
@@ -112,6 +119,7 @@
         vertical-align: middle;
         color: #000000;
         word-wrap: break-word;
+        line-height: 1.7;
     }
     table.data-tbl td.empty {
         color: #888;
@@ -122,6 +130,8 @@
 <body>
 
 @php
+    use App\Helpers\KhmerTextHelper;
+
     $fi  = $info->familyInfo;
     $mi  = $info->militaryInfo;
     $fmt = fn($d) => $d ? \Illuminate\Support\Carbon::parse($d)->format('d/m/Y') : '';
@@ -143,8 +153,8 @@
     $cbFemale  = $g === 'female' ? '☑' : '☐';
     $cbSingle  = !$married ? '☑' : '☐';
     $cbMarried =  $married ? '☑' : '☐';
-    $cbHusband = ($fi && !$fi->spouse_type) ? '☑' : '☐';
-    $cbWife    = ($fi &&  $fi->spouse_type) ? '☑' : '☐';
+    $cbHusband = ($fi && $married && !$fi->spouse_type) ? '☑' : '☐';
+    $cbWife    = ($fi && $married &&  $fi->spouse_type) ? '☑' : '☐';
 @endphp
 
 {{-- ═══════════════════════════════════════════════════════════ --}}
@@ -154,23 +164,23 @@
 
 <div class="doc-title title-moul">ព័ត៌មានផ្ទាល់ខ្លួនរបស់នាយនាវី នាយនាវីរង ពលនាវី</div>
 
-<div class="sec-bar title-moul">I. ព័ត៌មានផ្ទាល់ខ្លួន</div>
+<div class="sec-bar title-moul"><span class="num-sec-bar">I.</span> ព័ត៌មានផ្ទាល់ខ្លួន</div>
 
 <table class="kv">
     {{-- ជួរ ១: គោត្តនាម + ភេទ + រូបថត (rowspan=5) --}}
     <tr>
-        <td class="lbl">គោត្តនាម-នាម</td>
+        <td class="lbl">- គោត្តនាម-នាម</td>
         <td class="val">{{ $info->name_kh ?: '' }}</td>
         <td style="width:160px; white-space:nowrap;">
             <span class="sub">ភេទ៖</span>
-            <span class="chk">{{ $cbMale }} ប្រុស &nbsp; {{ $cbFemale }} ស្រី</span>
+            <span class="chk"><span class="chkbox">{{ $cbMale }}</span> ប្រុស &nbsp; <span class="chkbox">{{ $cbFemale }}</span> ស្រី</span>
         </td>
         <td class="photo-cell" rowspan="5">
             <div style="text-align:center;">
                 @if($photoSrc)
                     <img src="{{ $photoSrc }}" style="width:115px; height:145px;" />
                 @else
-                    <div style="width:115px; height:145px; background:#eef2f7;
+                    <div style="width:115px; height:145px;
                                 color:#888; font-size:10px; line-height:145px; margin:0 auto;">
                         មិនមានរូបភាព
                     </div>
@@ -180,7 +190,7 @@
     </tr>
     {{-- ជួរ ២: អក្សរឡាតាំង + អត្តលេខ --}}
     <tr>
-        <td class="lbl">អក្សរឡាតាំង</td>
+        <td class="lbl">- អក្សរឡាតាំង</td>
         <td class="val">{{ $info->name ?: '' }}</td>
         <td style="white-space:nowrap;">
             <span class="sub">អត្តលេខ៖</span>
@@ -189,110 +199,108 @@
     </tr>
     {{-- ជួរ ៣: ថ្ងៃខែឆ្នាំកំណើត --}}
     <tr>
-        <td class="lbl">ថ្ងៃខែឆ្នាំកំណើត</td>
+        <td class="lbl">- ថ្ងៃខែឆ្នាំកំណើត</td>
         <td class="val" colspan="2">{{ $fmt($info->date_of_birth) }}</td>
     </tr>
     {{-- ជួរ ៤: លេខអត្ត.យោធា --}}
     <tr>
-        <td class="lbl">លេខអត្ត.យោធា</td>
+        <td class="lbl">- លេខអត្ត.យោធា</td>
         <td class="val" colspan="2">{{ $info->military_id ?: '' }}</td>
     </tr>
     {{-- ជួរ ៥: លេខអត្ត.សុីវិល --}}
     <tr>
-        <td class="lbl">លេខអត្ត.សុីវិល</td>
+        <td class="lbl">- លេខអត្ត.សុីវិល</td>
         <td class="val" colspan="2">{{ $info->civilian_id ?: '' }}</td>
     </tr>
 
     {{-- ══ ពេញទទឹង (រូបថតចប់) ══ --}}
     <tr>
-        <td class="lbl">ទីកន្លែងកំណើត</td>
+        <td class="lbl">- ទីកន្លែងកំណើត</td>
         <td><span class="sub">ឃុំ/សង្កាត់៖</span> <span class="sub-val">{{ $info->birth_commune ?: '' }}</span></td>
         <td><span class="sub">ស្រុក/ខណ្ឌ៖</span> <span class="sub-val">{{ $info->birth_district ?: '' }}</span></td>
         <td><span class="sub">ខេត្ត/ក្រុង៖</span> <span class="sub-val">{{ $info->birth_province ?: '' }}</span></td>
         
     </tr>
     <tr>
-        <td class="lbl">ទីលំនៅបច្ចុប្បន្ន</td>
+        <td class="lbl">- ទីលំនៅបច្ចុប្បន្ន</td>
         <td><span class="sub">ឃុំ/សង្កាត់៖</span> <span class="sub-val">{{ $info->current_commune ?: '' }}</span></td>
         <td><span class="sub">ស្រុក/ខណ្ឌ៖</span> <span class="sub-val">{{ $info->current_district ?: '' }}</span></td>
         <td><span class="sub">ខេត្ត/ក្រុង៖</span> <span class="sub-val">{{ $info->current_province ?: '' }}</span></td>
     </tr>
     <tr>
-        <td class="lbl">លេខទូរស័ព្ទ</td>
+        <td class="lbl">- លេខទូរស័ព្ទ</td>
         <td class="val" colspan="3">{{ $info->phone_number ?: '' }}</td>
     </tr>
     {{-- ── ផ្នែកយោធា (FK → ឈ្មោះ) ── --}}
     <tr>
-        <td class="lbl">ថ្ងៃខែចូលទ័ព</td>
+        <td class="lbl">- ថ្ងៃខែចូលទ័ព</td>
         <td class="val" colspan="3">{{ $fmt($mi?->military_enlistment_date) }}</td>
     </tr>
     <tr>
-        <td class="lbl">ឋានន្តរសក្តិ</td>
+        <td class="lbl">- ឋានន្តរសក្តិ</td>
         <td class="val" colspan="3">{{ $mi?->militaryRank?->name_kh ?: ($mi?->militaryRank?->name ?: '') }}</td>
     </tr>
     <tr>
-        <td class="lbl">មុខតំណែង</td>
+        <td class="lbl">- មុខតំណែង</td>
         <td class="val" colspan="3">{{ $mi?->position?->name_kh ?: ($mi?->position?->name ?: '') }}</td>
     </tr>
     <tr>
-        <td class="lbl">អង្គភាព</td>
+        <td class="lbl">- អង្គភាព</td>
         <td class="val" colspan="3">{{ $mi?->unit?->name_kh ?: ($mi?->unit?->name ?: '') }}</td>
     </tr>
     <tr>
-        <td class="lbl">កងឯកភាព</td>
+        <td class="lbl">- កងឯកភាព</td>
         <td class="val" colspan="3">{{ $mi?->militaryUnit?->name_kh ?: ($mi?->militaryUnit?->name ?: '') }}</td>
     </tr>
     <tr>
-        <td class="lbl">កំរិតវប្បធម៌</td>
+        <td class="lbl">- កំរិតវប្បធម៌</td>
         <td class="val" colspan="3">{{ $mi?->educationLevel?->name_kh ?: ($mi?->educationLevel?->name ?: '') }}</td>
     </tr>
     <tr>
-        <td class="lbl">ជំនាញ-ឯកទេសយោធា</td>
+        <td class="lbl">- ជំនាញ-ឯកទេសយោធា</td>
         <td class="val" colspan="3">{{ $mi?->militarySpecialty?->name_kh ?: ($mi?->militarySpecialty?->name ?: '') }}</td>
     </tr>
     <tr>
-        <td class="lbl">ថ្ងៃខែប្រកាសស័ក្តចុងក្រោយ</td>
+        <td class="lbl">- ថ្ងៃខែប្រកាសស័ក្តចុងក្រោយ</td>
         <td class="val" colspan="3">{{ $fmt($mi?->last_date_military_rank) }}</td>
     </tr>
     <tr>
-        <td class="lbl">មុខតំណែងចុងក្រោយ</td>
+        <td class="lbl">- មុខតំណែងចុងក្រោយ</td>
         <td class="val" colspan="3">{{ $mi?->last_position ?: '' }}</td>
     </tr>
 
     {{-- ── ស្ថានភាពគ្រួសារ ── --}}
     <tr>
-        <td class="lbl">ស្ថានភាពគ្រួសារ</td>
+        <td class="lbl">- ស្ថានភាពគ្រួសារ</td>
         <td colspan="3" class="chk">
-            {{ $cbSingle }} នៅលីវ &nbsp;&nbsp;&nbsp; {{ $cbMarried }} មានគ្រួសារ
+            <span class="chkbox">{{ $cbSingle }}</span> នៅលីវ &nbsp;&nbsp;&nbsp; <span class="chkbox">{{ $cbMarried }}</span> មានគ្រួសារ
         </td>
     </tr>
 
     @if($married)
     <tr>
-        <td class="lbl">គោត្តនាម-នាម</td>
+        <td class="lbl">- គោត្តនាម-នាម</td>
         <td class="val">{{ $fi->spouse_name ?: '' }}</td>
-        <td class="chk" colspan="2" style="white-space:nowrap;">{{ $cbHusband }} ប្ដី &nbsp; {{ $cbWife }} ប្រពន្ធ</td>
+        <td class="chk" colspan="2" style="white-space:nowrap;"><span class="chkbox">{{ $cbHusband }}</span> ប្ដី &nbsp; <span class="chkbox">{{ $cbWife }}</span> ប្រពន្ធ</td>
     </tr>
     <tr>
-        <td class="lbl">ថ្ងៃខែឆ្នាំកំណើត</td>
+        <td class="lbl">- ថ្ងៃខែឆ្នាំកំណើត</td>
         <td class="val" colspan="3">{{ $fmt($fi->spouse_dob) }}</td>
     </tr>
     <tr>
-        <td class="lbl">ទីកន្លែងកំណើត</td>
-        <td colspan="3">
-            <span class="sub">ឃុំ/សង្កាត់៖</span> <span class="sub-val">{{ $fi->spouse_birth_commune ?: '' }}</span> &nbsp;
-            <span class="sub">ស្រុក/ខណ្ឌ៖</span> <span class="sub-val">{{ $fi->spouse_birth_district ?: '' }}</span> &nbsp;
-            <span class="sub">ខេត្ត/ក្រុង៖</span> <span class="sub-val">{{ $fi->spouse_birth_province ?: '' }}</span>
-        </td>
+        <td class="lbl">- ទីកន្លែងកំណើត</td>
+        <td><span class="sub">ឃុំ/សង្កាត់៖</span> <span class="sub-val">{{ $fi->spouse_birth_commune ?: '' }}</span></td>
+        <td><span class="sub">ស្រុក/ខណ្ឌ៖</span> <span class="sub-val">{{ $fi->spouse_birth_district ?: '' }}</span></td>
+        <td><span class="sub">ខេត្ត/ក្រុង៖</span> <span class="sub-val">{{ $fi->spouse_birth_province ?: '' }}</span></td>
     </tr>
     <tr>
-        <td class="lbl">ទីលំនៅបច្ចុប្បន្ន</td>
+        <td class="lbl">- ទីលំនៅបច្ចុប្បន្ន</td>
         <td><span class="sub">ឃុំ/សង្កាត់៖</span> <span class="sub-val">{{ $fi->spouse_current_commune ?: '' }}</span></td>
         <td><span class="sub">ស្រុក/ខណ្ឌ៖</span> <span class="sub-val">{{ $fi->spouse_current_district ?: '' }}</span> </td>
         <td><span class="sub">ខេត្ត/ក្រុង៖</span> <span class="sub-val">{{ $fi->spouse_current_province ?: '' }}</span></td>
     </tr>
     <tr>
-        <td class="lbl">លិខិតរៀបអាពាហ៍ពិពាហ៍</td>
+        <td class="lbl">- លិខិតរៀបអាពាហ៍ពិពាហ៍</td>
         <td>
             <span class="sub">លេខ៖</span> <span class="sub-val">{{ $fi->marriage_certificate_number ?: '' }}</span>
         </td>
@@ -304,7 +312,7 @@
 
     {{-- ចំនួនកូន --}}
     <tr>
-        <td class="lbl">ចំនួនកូន</td>
+        <td class="lbl">- ចំនួនកូន</td>
         <td colspan="3">
             <span class="sub">សរុប៖  </span> <span class="sub-val">{{ $fi?->number_of_children ?? 0 }}</span>&nbsp;
             <span class="sub">ប្រុស៖ </span> <span class="sub-val">{{ $fi?->male_children_count ?? 0 }}</span> &nbsp;
@@ -314,7 +322,7 @@
     {{-- បញ្ជីកូន --}}
     @foreach($fi?->children ?? [] as $i => $child)
     <tr>
-        <td class="lbl">{{ $i + 1 }}.ឈ្មោះកូន</td>
+        <td class="lbl">- {{ $i + 1 }}.ឈ្មោះកូន</td>
         <td class="val">{{ $child->name ?: '' }}</td>
         <td colspan="2">
             <span class="sub">ថ្ងៃខែឆ្នាំកំណើត៖</span>
@@ -330,7 +338,7 @@
 
 <div class="page-break"></div>
 
-<div class="sec-bar2 title-moul">II. ព័ត៌មានការងារយោធា</div>
+<div class="sec-bar2 title-moul"><span class="num-sec-bar">II.</span> ព័ត៌មានការងារយោធា</div>
 
 <table class="data-tbl">
     <thead>
@@ -355,11 +363,11 @@
                 <span class="sub">{{ $r->end_date ?: 'បច្ចុប្បន្ន' }}</span>
             </td>
 
-            <td>{{ $r->military_rank ?: '' }}</td>
-            <td>{{ $r->position ?: '' }}</td>
-            <td>{{ $r->office ?: '' }}</td>
-            <td>{{ $r->military_unit ?: '' }}</td>
-            <td>{{ $r->place ?: '' }}</td>
+            <td>{!! KhmerTextHelper::wrap($r->military_rank) !!}</td>
+            <td>{!! KhmerTextHelper::wrap($r->position) !!}</td>
+            <td>{!! KhmerTextHelper::wrap($r->office) !!}</td>
+            <td>{!! KhmerTextHelper::wrap($r->military_unit) !!}</td>
+            <td>{!! KhmerTextHelper::wrap($r->place) !!}</td>
         </tr>
         @empty
         <tr>
@@ -378,7 +386,7 @@
 
 <div class="page-break"></div>
 
-<div class="sec-bar2 title-moul">III. ព័ត៌មានអំពីការសិក្សា</div>
+<div class="sec-bar2 title-moul"><span class="num-sec-bar">III.</span> ព័ត៌មានអំពីការសិក្សា</div>
 
 <table class="data-tbl">
     <thead>
@@ -409,12 +417,12 @@
                 <span class="sub">{{ $r->to_year ?: '' }}</span>
             </td>
 
-            <td>{{ $r->duration ?: '' }}</td>
-            <td>{{ $r->education_level ?: '' }}</td>
-            <td>{{ $r->course_name ?: '' }}</td>
-            <td>{{ $r->institution_name ?: '' }}</td>
-            <td>{{ $r->is_domestic ?: '' }}</td>
-            <td>{{ $r->is_overseas ?: '' }}</td>
+            <td>{!! KhmerTextHelper::wrap($r->duration) !!}</td>
+            <td>{!! KhmerTextHelper::wrap($r->education_level) !!}</td>
+            <td>{!! KhmerTextHelper::wrap($r->course_name) !!}</td>
+            <td>{!! KhmerTextHelper::wrap($r->institution_name) !!}</td>
+            <td>{!! KhmerTextHelper::wrap($r->is_domestic) !!}</td>
+            <td>{!! KhmerTextHelper::wrap($r->is_overseas) !!}</td>
         </tr>
         @empty
         <tr>
@@ -434,7 +442,7 @@
 
 <div class="page-break"></div>
 
-<div class="sec-bar2 title-moul">IV. ព័ត៌មានអំពីជំនាញ-ឯកទេស (បំប៉ន)</div>
+<div class="sec-bar2 title-moul"><span class="num-sec-bar">IV.</span> ព័ត៌មានអំពីជំនាញ-ឯកទេស <span class="num-sec-bar">(</span>បំប៉ន<span class="num-sec-bar">)</span></div>
 
 <table class="data-tbl">
     <thead>
@@ -461,10 +469,10 @@
         <tr>
             <td>{{ $r->duration_study ?: '' }}</td>
             <td>{{ $r->register_date ?: '' }}</td>
-            <td>{{ $r->specialty_type ?: '' }}</td>
-            <td>{{ $r->specialty ?: '' }}</td>
-            <td>{{ $r->education_level ?: '' }}</td>
-            <td>{{ $r->institution_name ?: '' }}</td>
+            <td>{!! KhmerTextHelper::wrap($r->specialty_type) !!}</td>
+            <td>{!! KhmerTextHelper::wrap($r->specialty) !!}</td>
+            <td>{!! KhmerTextHelper::wrap($r->education_level) !!}</td>
+            <td>{!! KhmerTextHelper::wrap($r->institution_name) !!}</td>
             <td>{{ $r->is_domestic ?: '' }}</td>
             <td>{{ $r->is_overseas ?: '' }}</td>
            
@@ -486,7 +494,7 @@
 
 <div class="page-break"></div>
 
-<div class="sec-bar2 title-moul">V. ព័ត៌មានអំពីបេសកម្ម</div>
+<div class="sec-bar2 title-moul"><span class="num-sec-bar">V.</span> ព័ត៌មានអំពីបេសកម្ម</div>
 
 <table class="data-tbl">
     <thead>
@@ -507,11 +515,11 @@
         <tr>
             <td>{{ $fmt($r->start_date) }}</td>
             <td>{{ $r->duration ?: '' }}</td>
-            <td>{{ $r->mission_name ?: '' }}</td>
-            <td>{{ $r->mission_type ?: '' }}</td>
-            <td>{{ $r->assigned_unit ?: '' }}</td>
-            <td>{{ $r->role_during_mission ?: '' }}</td>
-            <td>{{ $r->result ?: '' }}</td>
+            <td>{!! KhmerTextHelper::wrap($r->mission_name) !!}</td>
+            <td>{!! KhmerTextHelper::wrap($r->mission_type) !!}</td>
+            <td>{!! KhmerTextHelper::wrap($r->assigned_unit) !!}</td>
+            <td>{!! KhmerTextHelper::wrap($r->role_during_mission) !!}</td>
+            <td>{!! KhmerTextHelper::wrap($r->result) !!}</td>
            
         </tr>
         @empty
@@ -531,7 +539,7 @@
 
 <div class="page-break"></div>
 
-<div class="sec-bar2 title-moul">VI. ព័ត៌មានអំពីសុខភាព</div>
+<div class="sec-bar2 title-moul"><span class="num-sec-bar">VI.</span> ព័ត៌មានអំពីសុខភាព</div>
 
 @php
     // បើ health ជា hasMany → យក record ដំបូង; បើ hasOne → ប្រើផ្ទាល់

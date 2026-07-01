@@ -26,6 +26,7 @@ import Role from './pages/Role/Role.jsx';
 import Permission from './pages/Role/Permission.jsx';
 import RolePermission from './pages/Role/RolePermission.jsx';
 import User from './pages/user/user.jsx';
+import TopProgressBar from './components/ui/TopProgressBar.jsx';
 
 const App = () => {
   const mode = useThemeStore((s) => s.mode);
@@ -45,6 +46,7 @@ const App = () => {
 
   return (
     <ConfigProvider theme={themeConfig}>
+      <TopProgressBar />
       <BrowserRouter>
         <Routes>
           <Route path="/login"    element={<Login />} />

@@ -54,6 +54,7 @@ class PersonnelExportController extends Controller
             'fontDir'       => array_merge($defaultFontDirs, [storage_path('fonts')]),
             'fontdata'      => $fontdata,
             'tempDir'       => storage_path('mpdf_tmp'),
+            'useDictionaryLBR' => false,
             'margin_top'    => 16,
             'margin_bottom' => 20,
             'margin_header' => 10,
@@ -62,8 +63,27 @@ class PersonnelExportController extends Controller
             'margin_right'  => 10,
         ]);
 
-        $headerHtml = '<p style="font-family: notosanskhmer; font-size: 13px; font-weight: bold; color: #1F3864; margin: 0; padding: 0; line-height: 1.4;">បញ្ជាការដ្ឋានកងទ័ពជើងទឹក / ROYAL CAMBODIAN NAVY</p>';
-        $footerHtml = '<p style="font-family: notosanskhmer; font-size: 9px; color: #1F3864; text-align: right; border-bottom: 2px solid #1F3864; padding-bottom: 3px; margin: 0;">ស្នងការដ្ឋាន ប្រតិបត្តិការការសឹក / <em>OPERATIONS DIVISION</em></p>';
+        $headerHtml = '<p 
+            style="font-family: moul; 
+            font-size: 10px; 
+            font-weight: normal; 
+            color: #008DDA; 
+            margin: 0; 
+            padding: 0; 
+            line-height: 1.4;">
+            បញ្ជាការដ្ឋានកងទ័ពជើងទឹក <span style="font-family: dejavuserif; font-weight: bold;">/ ROYAL CAMBODIAN NAVY</span>
+        </p>';
+
+        $footerHtml = '<p 
+            style="font-family: moul;
+            font-weight: 300;
+            font-size: 9px; 
+            color: #008DDA;
+            text-align: right; 
+            border-bottom: 2px solid #1F3864; 
+            padding-bottom: 3px; margin: 0;">
+            ស្នងការដ្ឋាន ប្រតិបត្តិការការសឹក <em style="font-family: Noto Sans Khmer; ">/ OPERATIONS DIVISION</em>
+        </p>';
 
         $mpdf->SetHTMLHeader($headerHtml);
         $mpdf->SetHTMLFooter($footerHtml);

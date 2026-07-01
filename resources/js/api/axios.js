@@ -1,5 +1,6 @@
 import axios from 'axios';
 import useAuthStore from '../store/authStore';
+import useProgressStore from '../store/progressStore';
 
 const api = axios.create({
   baseURL: '/api',
@@ -19,7 +20,7 @@ api.interceptors.request.use((config) => {
 
 api.interceptors.response.use(
   (response) => response,
-  
+
   (error) => {
     if (error.response?.status === 401) {
       useAuthStore.getState().logout();
@@ -38,70 +39,120 @@ export const apiFormData = (url, method = 'POST', formData) => {
   });
 };
 
-// export const downloadFile = async (url, filename) => {
-//   const res = await api.get(url, { responseType: 'blob' });
-//   const blobUrl = window.URL.createObjectURL(new Blob([res.data]));
-//   const link = document.createElement('a');
-//   link.href = blobUrl;
-//   link.download = filename;
-//   document.body.appendChild(link);
-//   link.click();
-//   link.remove();
-//   window.URL.revokeObjectURL(blobUrl);
-// };
-
+// ── Excel / binary file download (Content-Disposition attachment) ──────────
 export const downloadFile = async (url, filename) => {
-  const res = await api.get(url, {
-    responseType: 'blob',
-    headers: { Accept: '*/*' },   // ✅ កុំ​ស្នើ JSON, ទទួល​អ្វី​ក៏​បាន
-  });
+  const { start, update, finish, fail } = useProgressStore.getState();
+  start();
 
-  const contentType = res.headers['content-type'] || '';
+  try {
+    const res = await api.get(url, {
+      responseType: 'blob',
+      headers: { Accept: '*/*' },
+      onDownloadProgress: (e) => {
+        if (e.total) {
+          update(Math.round((e.loaded * 100) / e.total));
+        } else {
+          // Server មិន return Content-Length → estimate ស្វ័យប្រវត្តិ
+          update((useProgressStore.getState().progress || 0) + 10);
+        }
+      },
+    });
 
-  // ✅ បើ server ត្រឡប់ JSON/HTML (error) ជំនួស​ឲ្យ file → អាន error ពិត
-  if (contentType.includes('application/json') || contentType.includes('text/html')) {
-    const text = await res.data.text();
-    console.error('Download failed — server returned:', text);
-    throw new Error(text.slice(0, 300));
+    const contentType = res.headers['content-type'] || '';
+
+    // ✅ បើ server ត្រឡប់ JSON/HTML (error) ជំនួសឲ្យ file → អាន error ពិត
+    if (contentType.includes('application/json') || contentType.includes('text/html')) {
+      const text = await res.data.text();
+      console.error('Download failed — server returned:', text);
+      fail();
+      throw new Error(text.slice(0, 300));
+    }
+
+    const blobUrl = window.URL.createObjectURL(new Blob([res.data], { type: contentType }));
+    const link = document.createElement('a');
+    link.href = blobUrl;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.URL.revokeObjectURL(blobUrl);
+
+    finish();
+  } catch (err) {
+    fail();
+    throw err;
   }
-
-  const blobUrl = window.URL.createObjectURL(new Blob([res.data], { type: contentType }));
-  const link = document.createElement('a');
-  link.href = blobUrl;
-  link.download = filename;
-  document.body.appendChild(link);
-  link.click();
-  link.remove();
-  window.URL.revokeObjectURL(blobUrl);
 };
-
 
 export const openFileInTab = async (url) => {
-  const res = await api.get(url, {
-    responseType: 'blob',
-    headers: { Accept: '*/*' },
-  });
+  const { start, update, finish, fail } = useProgressStore.getState();
+  start();
 
-  const contentType = res.headers['content-type'] || 'application/pdf';
+  try {
+    const res = await api.get(url, {
+      responseType: 'blob',
+      headers: { Accept: '*/*' },
+      onDownloadProgress: (e) => {
+        if (e.total) {
+          update(Math.round((e.loaded * 100) / e.total));
+        } else {
+          update((useProgressStore.getState().progress || 0) + 10);
+        }
+      },
+    });
 
-  if (contentType.includes('application/json') || contentType.includes('text/html')) {
-    const text = await res.data.text();
-    throw new Error(text.slice(0, 300));
+    const contentType = res.headers['content-type'] || 'application/pdf';
+
+    if (contentType.includes('application/json') || contentType.includes('text/html')) {
+      const text = await res.data.text();
+      fail();
+      throw new Error(text.slice(0, 300));
+    }
+
+    const blobUrl = window.URL.createObjectURL(new Blob([res.data], { type: contentType }));
+    window.open(blobUrl, '_blank');
+    setTimeout(() => window.URL.revokeObjectURL(blobUrl), 60000);
+
+    finish();
+  } catch (err) {
+    fail();
+    throw err;
   }
-
-  const blobUrl = window.URL.createObjectURL(new Blob([res.data], { type: contentType }));
-  window.open(blobUrl, '_blank');
-  setTimeout(() => window.URL.revokeObjectURL(blobUrl), 60000);
 };
 
+// ── PDF via base64 JSON response (mPDF controller returns JSON) ────────────
 export const fetchPdfBlobUrl = async (url) => {
-  const res = await api.get(url); // JSON response — IDM ignores JSON, won't intercept
-  const { pdf, filename } = res.data;
-  if (!pdf) throw new Error('Server response missing pdf field');
-  const binaryStr = atob(pdf);
-  const bytes = Uint8Array.from(binaryStr, (c) => c.charCodeAt(0));
-  const blob = new Blob([bytes], { type: 'application/pdf' });
-  return { blobUrl: URL.createObjectURL(blob), filename: filename ?? 'personnel.pdf' };
+  const { start, update, finish, fail } = useProgressStore.getState();
+  start();
+
+  try {
+    const res = await api.get(url, {
+      onDownloadProgress: (e) => {
+        if (e.total) {
+          update(Math.round((e.loaded * 100) / e.total));
+        } else {
+          // JSON+base64 response ជាទូទៅមិនមាន Content-Length ច្បាស់ (chunked)
+          update((useProgressStore.getState().progress || 0) + 15);
+        }
+      },
+    });
+
+    const { pdf, filename } = res.data;
+    if (!pdf) {
+      fail();
+      throw new Error('Server response missing pdf field');
+    }
+
+    const binaryStr = atob(pdf);
+    const bytes = Uint8Array.from(binaryStr, (c) => c.charCodeAt(0));
+    const blob = new Blob([bytes], { type: 'application/pdf' });
+
+    finish();
+    return { blobUrl: URL.createObjectURL(blob), filename: filename ?? 'personnel.pdf' };
+  } catch (err) {
+    fail();
+    throw err;
+  }
 };
 
 export const debugPdfFetch = async (url) => {
